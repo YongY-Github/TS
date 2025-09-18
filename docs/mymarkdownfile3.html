@@ -1,0 +1,708 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>3.0 Basic Time Series Concepts &#8212; My sample book</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b76e3c8a" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'mymarkdownfile3';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to your Jupyter Book" href="intro.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">My sample book</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Welcome to your Jupyter Book
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">3.0 Basic Time Series Concepts</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Fmymarkdownfile3.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/mymarkdownfile3.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>3.0 Basic Time Series Concepts</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-time-series">3.1 What is a time series?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#white-noise">3.2 White noise</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-time-series">3.3 Stationary time series</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autocorrelation-function-acf">3.4 Autocorrelation Function (ACF)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#partial-autocorrelation-function-pacf">3.5 Partial Autocorrelation Function (PACF)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unit-root-test">3.6 Unit Root Test</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-augmented-dickey-fuller-test">3.6.1 The Augmented Dickey-Fuller Test</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-adf-gls-test">3.6.2 The ADF-GLS test</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-kpss-test">3.6.3 The KPSS test</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="basic-time-series-concepts">
+<h1>3.0 Basic Time Series Concepts<a class="headerlink" href="#basic-time-series-concepts" title="Link to this heading">#</a></h1>
+<section id="what-is-a-time-series">
+<h2>3.1 What is a time series?<a class="headerlink" href="#what-is-a-time-series" title="Link to this heading">#</a></h2>
+<div class="admonition-definition admonition">
+<p class="admonition-title">Definition</p>
+<p>A <strong>time series</strong> is a realization of a random variable indexed by time.</p>
+</div>
+<p>A time series is a set of data points collected at regular intervals over time. These data points can be any type of measurable quantity, such as stock prices, temperature readings, or monthly sales figures. Time series data is commonly used in various fields, including economics, finance, engineering, and environmental science, to study patterns and trends over time. The analysis of time series involves methods to detect, model, and forecast future values based on past observations. Time series analysis is an important tool for making informed decisions in a wide range of applications, from stock trading to weather forecasting.</p>
+<p>A time series can be denoted as</p>
+<div class="math notranslate nohighlight">
+\[
+X_t = \{ x_1, x_2, \ldots, x_T \}
+\]</div>
+<p>In time series analysis and forecasting, our task is to better model and understand the above stochastic process.</p>
+<div class="dropdown admonition seealso">
+<p class="admonition-title">See also</p>
+<p>Check this out</p>
+<ul class="simple">
+<li><p>CDF or cumulative density function i.e. <span class="math notranslate nohighlight">\(P(X \leq x) = F_X (x)\)</span></p>
+<ul>
+<li><p><span class="math notranslate nohighlight">\(F_x (x)\)</span> gives us the full description of of random variable <span class="math notranslate nohighlight">\(X\)</span>.</p></li>
+</ul>
+</li>
+<li><p>For two random variables, <span class="math notranslate nohighlight">\(P(X \leq x, Y \leq y)=F_{X,Y}(x,y)\)</span></p></li>
+<li><p>What if we have many variables?</p>
+<ul>
+<li><p>How do we estimate their joint distribution?</p></li>
+<li><p>It would be virtually impossible, so we make some assumptions to make things manageable</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="white-noise">
+<h2>3.2 White noise<a class="headerlink" href="#white-noise" title="Link to this heading">#</a></h2>
+<p>White noise is a term used to describe a type of time series data that is characterized by randomness, with no predictable pattern or structure. More specifically, a white noise process is a sequence of random variables that are uncorrelated and have a constant mean and variance.</p>
+<p>More formally, a white noise process <span class="math notranslate nohighlight">\(w_1, w_2, \dots\)</span> (sometimes denoted <span class="math notranslate nohighlight">\(a_1, a_2, \dots\)</span>) has the following features:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(Cov(w_t, w_s) = 0\)</span> for <span class="math notranslate nohighlight">\(t \neq s\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(E[w_t] = 0\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(Var[w_t] = \sigma_w^2\)</span>, which is a constant (w.r.t. <span class="math notranslate nohighlight">\(t\)</span>)</p></li>
+</ul>
+<p>We often require the noise to be independent and identically (iid) random variables with mean <span class="math notranslate nohighlight">\(0\)</span> and variance <span class="math notranslate nohighlight">\(\sigma_w^2\)</span>, denoted <span class="math notranslate nohighlight">\(w_t \sim wn(0,\sigma_w^2)\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10101</span><span class="p">)</span>
+<span class="n">wn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2000</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x14e17e58e00&gt;]
+</pre></div>
+</div>
+<img alt="_images/f8cf12f7adb6aa1a5011f2a81eaa691bebdd8da31c770da3041ec0526c404ed3.png" src="_images/f8cf12f7adb6aa1a5011f2a81eaa691bebdd8da31c770da3041ec0526c404ed3.png" />
+</div>
+</div>
+<p>The above is a particular case is the Gaussian white noise, that is, <span class="math notranslate nohighlight">\(w_t \sim N(0, \sigma_w^2)\)</span>, with mean <span class="math notranslate nohighlight">\(0\)</span> and variance <span class="math notranslate nohighlight">\(4\)</span>. Gaussian white noise is a rather strict condition, but allows us to manage things easier statistically.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Suppose <span class="math notranslate nohighlight">\(X\)</span> and <span class="math notranslate nohighlight">\(Y\)</span> are random variables, then we can denote expectation as <span class="math notranslate nohighlight">\(\mu_X = E[X]\)</span> and <span class="math notranslate nohighlight">\(\mu_Y = E[Y]\)</span> and variance as <span class="math notranslate nohighlight">\(\sigma_X^2 = Var[X]\)</span> and <span class="math notranslate nohighlight">\(\sigma_Y^2 = Var[Y]\)</span>.</p>
+<ul class="simple">
+<li><p>Note that variance is <span class="math notranslate nohighlight">\(Var[X] = E[(X - \mu_X)^2] = E[X^2] - \mu^2_X\)</span></p></li>
+<li><p>Covariance is <span class="math notranslate nohighlight">\(Cov(X,Y) = E[(X - \mu_X)(Y- \mu_Y)] = E[XY] - \mu_X \mu_Y\)</span></p></li>
+<li><p>And correlation is <span class="math notranslate nohighlight">\(\rho_{X,Y} = Corr(X,Y) = \displaystyle\frac{Cov(X,Y)}{\sqrt{Var(X)}\sqrt{Var(Y)}}\)</span></p></li>
+</ul>
+<p>We have <span class="math notranslate nohighlight">\(-1 \leq \rho \leq 1\)</span> (you should be able to proof this through the Cauchy-Swartz Inequality). Note also that uncorrelated does not necessarily mean independent. However, independence guarantees no correlation.</p>
+</div>
+<p>In time series context, we are interested in, say, <span class="math notranslate nohighlight">\(Cov(X_{t}, X_{t-1})\)</span>, which we denote <span class="math notranslate nohighlight">\(\gamma(1)\)</span>, <span class="math notranslate nohighlight">\(Cov(X_{t}, X_{t-2})\)</span> or <span class="math notranslate nohighlight">\(\gamma(2)\)</span>, <span class="math notranslate nohighlight">\(Cov(X_t, X_{t-3})\)</span> or <span class="math notranslate nohighlight">\(\gamma(3)\)</span>, and so on.</p>
+<p>Hence, for stationary processes (with constant variance), the correlation of <span class="math notranslate nohighlight">\(X_t\)</span> and its lag <span class="math notranslate nohighlight">\(X_{t-h}\)</span> is</p>
+<p><span class="math notranslate nohighlight">\(\rho(h) = \displaystyle\frac{Cov(X_t, X_{t-h})}{\sqrt{Var(X_t)} \sqrt{Var(X_{t-1})}} = \frac{\gamma(h)}{\gamma(0)}\)</span>.</p>
+</section>
+<section id="stationary-time-series">
+<h2>3.3 Stationary time series<a class="headerlink" href="#stationary-time-series" title="Link to this heading">#</a></h2>
+<p>What does it mean for a ssries <span class="math notranslate nohighlight">\(X_t\)</span> to be stationary? Stochastically, it means that its joint distribution does not change over time.</p>
+<div class="admonition-definition admonition">
+<p class="admonition-title">Definition</p>
+<p>A <strong>strictly</strong> stationary time series <span class="math notranslate nohighlight">\(x_1, \ldots , x_t, \ldots\)</span> have a joint distribution that does not change in the following sense:
+<span class="math notranslate nohighlight">\(F_{t_1 +h, t_2 +h, \ldots , t_n +h} (x_1, \ldots , x_n) = F_{t_1, t_2, \ldots , t_n} (x_1, \ldots , x_n)\)</span> for all <span class="math notranslate nohighlight">\(n = 1, 2, \ldots ,\)</span> for all time points and all time shifts <span class="math notranslate nohighlight">\(h\)</span>.</p>
+</div>
+<p>Put differently, a strictly stationary time series is one for which the probabilistic behavior of every collection of values <span class="math notranslate nohighlight">\( \{ x_{t_1}, x_{t_2}, \ldots , x_{t_n} \}\)</span> is identical to that of the time shifted set <span class="math notranslate nohighlight">\( \{ x_{t_{1+h}}, x_{t_{2+h}}, \ldots , x_{t_{n+h}} \}\)</span>, where <span class="math notranslate nohighlight">\(h\)</span> represents the time shift or lag.</p>
+<p><em>Example</em>: For <span class="math notranslate nohighlight">\(n=1, F_t(x) = P(X_t \leq x) = F_{t+h}(x)\)</span>.</p>
+<p><em>Example</em>: For <span class="math notranslate nohighlight">\(n=2\)</span>, the joint distribution of <span class="math notranslate nohighlight">\(X_t\)</span> and <span class="math notranslate nohighlight">\(X_s\)</span> is the same as that of <span class="math notranslate nohighlight">\(X_{t+h}\)</span> and <span class="math notranslate nohighlight">\(X_{s+h}\)</span>.</p>
+<div class="admonition-definition admonition">
+<p class="admonition-title">Definition</p>
+<p>A <strong>weakly</strong> stationary time series <span class="math notranslate nohighlight">\(x_1, \ldots , x_t, \ldots\)</span> is a finite variance process such that</p>
+<ul class="simple">
+<li><p>the mean value function, <span class="math notranslate nohighlight">\(μ_t\)</span>, is constant and does not depend on time <span class="math notranslate nohighlight">\(t\)</span>, and</p></li>
+<li><p>the autocovariance function, <span class="math notranslate nohighlight">\(\gamma_X(h)\)</span> depends on <span class="math notranslate nohighlight">\(s\)</span> and <span class="math notranslate nohighlight">\(t\)</span> only through their difference <span class="math notranslate nohighlight">\(h\)</span>.</p></li>
+</ul>
+</div>
+<p>Henceforth, we will use the term stationary to mean <em>weakly</em> stationary; if a process is stationary in the strict sense, we will use the term strictly stationary.</p>
+<p>More succintly, <span class="math notranslate nohighlight">\(X_t\)</span> is weakly stationary if</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(E[X_t]\)</span> is constant</p></li>
+<li><p><span class="math notranslate nohighlight">\(Cov(X_{t+h}, X_{s+h}) = Cov(X_t, X_s)\)</span> for any <span class="math notranslate nohighlight">\(t, s\)</span></p></li>
+<li><p>If <span class="math notranslate nohighlight">\(t=s\)</span> then we have <span class="math notranslate nohighlight">\(Var(X_{t+h}) = Var(X_t)\)</span>, which is some constant <span class="math notranslate nohighlight">\(\sigma_X^2\)</span>.</p></li>
+</ul>
+<p>Further note that a weakly stationary series <span class="math notranslate nohighlight">\(X_t\)</span> has <span class="math notranslate nohighlight">\(\gamma_X(h) = Cov(x_t, x_{t+h})\)</span> that is only dependent on <span class="math notranslate nohighlight">\(h\)</span> and not <span class="math notranslate nohighlight">\(t\)</span> (<span class="math notranslate nohighlight">\(\gamma_X(h)\)</span> is known as the autocovariance function of <span class="math notranslate nohighlight">\(X\)</span> defined at lag <span class="math notranslate nohighlight">\(h\)</span>).</p>
+<p><em>Example</em>: Is the white noise <span class="math notranslate nohighlight">\(wn_t\)</span> stationary?</p>
+<p>To get the mean and standard deviation of a series in Python, use the  <code class="docutils literal notranslate"><span class="pre">np.mean()</span></code> and  <code class="docutils literal notranslate"><span class="pre">np.std()</span></code> commands from the <strong>Numpy</strong> library.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Mean of white noise:&#39;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">wn</span><span class="p">),</span> <span class="mi">3</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Standard deviation of white noise:&#39;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">wn</span><span class="p">),</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mean of white noise: 0.015
+Standard deviation of white noise: 2.004
+</pre></div>
+</div>
+</div>
+</div>
+<p>So the mean is basically <span class="math notranslate nohighlight">\(0\)</span> while the variance is constant. Does this make it white noise?</p>
+</section>
+<section id="autocorrelation-function-acf">
+<h2>3.4 Autocorrelation Function (ACF)<a class="headerlink" href="#autocorrelation-function-acf" title="Link to this heading">#</a></h2>
+<div class="admonition-definition admonition">
+<p class="admonition-title">Definition</p>
+<p>The autocorrelation function (ACF) of a stationary time series <span class="math notranslate nohighlight">\(\rho_X(h)\)</span> may be written as</p>
+<p><span class="math notranslate nohighlight">\( \rho_X(h) = \displaystyle\frac{\gamma (t+h, t)}{\sqrt{\gamma(t+h, t+h) \gamma(t,t)}}\)</span></p>
+</div>
+<p>Which if <span class="math notranslate nohighlight">\(X_t\)</span> is <em>weakly</em> stationary can be written simply as <span class="math notranslate nohighlight">\(\rho_X(h) = \displaystyle\frac{\gamma(h)}{\gamma(0)}\)</span></p>
+<p>And by the Cauchy-Schwartz inequality, <span class="math notranslate nohighlight">\(-1 \leq \rho_X(h) \leq 1\)</span>.</p>
+<p>Similarly, the autocovariance function <span class="math notranslate nohighlight">\(\gamma_X\)</span> satisfies:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(|\gamma(h)| \leq \gamma (0)\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\gamma(h) = \gamma (-h)\)</span></p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">statsmodels.graphics.tsaplots</span> <span class="kn">import</span> <span class="n">plot_acf</span><span class="p">,</span> <span class="n">plot_pacf</span>
+
+<span class="c1"># Plot autocorrelation function of white noise</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s2">&quot;figure&quot;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">wn</span><span class="p">,</span> <span class="n">zero</span><span class="o">=</span><span class="kc">False</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Number of Lags&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Autocorrelation&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;ACF for White Noise&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/f38062e53b0b0579b83ba603eb56c38b8a538a1cc7d800d79d03a8d043b0add0.png" src="_images/f38062e53b0b0579b83ba603eb56c38b8a538a1cc7d800d79d03a8d043b0add0.png" />
+</div>
+</div>
+</section>
+<section id="partial-autocorrelation-function-pacf">
+<h2>3.5 Partial Autocorrelation Function (PACF)<a class="headerlink" href="#partial-autocorrelation-function-pacf" title="Link to this heading">#</a></h2>
+</section>
+<section id="unit-root-test">
+<h2>3.6 Unit Root Test<a class="headerlink" href="#unit-root-test" title="Link to this heading">#</a></h2>
+<section id="the-augmented-dickey-fuller-test">
+<h3>3.6.1 The Augmented Dickey-Fuller Test<a class="headerlink" href="#the-augmented-dickey-fuller-test" title="Link to this heading">#</a></h3>
+<p>The Augmented Dickey–Fuller (ADF) test is implemented using the t-statistic on <span class="math notranslate nohighlight">\(\phi\)</span> in the following regression:</p>
+<p><span class="math notranslate nohighlight">\(\Delta X_t = \mu_t + \phi X_{t-1} + \sum_{i=1}^{p} \Delta X_{t-i} + \epsilon_t\)</span></p>
+<p>This test statistic is probably the best-known and most widely used unit root test. It is a one-sided test whose null hypothesis is <span class="math notranslate nohighlight">\(\phi = 0\)</span> versus the alternative <span class="math notranslate nohighlight">\(\phi &lt; 0\)</span> (and hence large negative values of the test statistic lead to the rejection of the null). Under the null, <span class="math notranslate nohighlight">\(X_t\)</span> must be differenced at least once to achieve stationarity; under the alternative, <span class="math notranslate nohighlight">\(X_t\)</span> is already stationary and no differencing is required.</p>
+<p>One peculiar aspect of this test is that its limit distribution is non-standard under the null hypothesis: moreover, the shape of the distribution, and consequently the critical values for the test, depends on the form of the <span class="math notranslate nohighlight">\(\mu_t\)</span> term. A full analysis of the various cases can be found in Hamilton (1994) which contains an excellent discussion, but any recent time series textbook covers this topic.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">statsmodels.tsa.stattools</span> <span class="kn">import</span> <span class="n">adfuller</span>
+
+<span class="c1"># Check whether white noise is stationary or not</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">adfuller</span><span class="p">(</span><span class="n">wn</span><span class="p">)</span>
+<span class="n">result</span>
+
+<span class="n">t_statistic</span><span class="p">,</span> <span class="n">p_value</span><span class="p">,</span> <span class="n">critical_value</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">5</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">5</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="s1">&#39;1%&#39;</span><span class="p">],</span> <span class="mi">5</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Test statistic:&#39;</span><span class="p">,</span> <span class="n">t_statistic</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;p-value:&#39;</span><span class="p">,</span> <span class="n">p_value</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Critical Value:&#39;</span><span class="p">,</span> <span class="n">critical_value</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Test statistic: -25.96555
+p-value: 0.0
+Critical Value: -3.43363
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-adf-gls-test">
+<h3>3.6.2 The ADF-GLS test<a class="headerlink" href="#the-adf-gls-test" title="Link to this heading">#</a></h3>
+<p>Elliott, Rothenberg and Stock (1996) proposed a variant of the ADF test which involves an alternative method of handling the parameters pertaining to the deterministic term <span class="math notranslate nohighlight">\(\mu_t\)</span>: these are estimated first via Generalized Least Squares, and in a second stage an ADF regression is performed using the GLS residuals. This variant offers greater power than the regular ADF test for the cases <span class="math notranslate nohighlight">\(\mu_t = \mu_0\)</span> and <span class="math notranslate nohighlight">\(\mu_t = \mu_0 + \mu_{1t}\)</span>.</p>
+</section>
+<section id="the-kpss-test">
+<h3>3.6.3 The KPSS test<a class="headerlink" href="#the-kpss-test" title="Link to this heading">#</a></h3>
+<p>The KPSS test (Kwiatkowski, Phillips, Schmidt and Shin, 1992) is a unit root test in which the null hypothesis is opposite to that in the ADF test: under the null, the series in question is stationary; the alternative is that the series is I(1). The basic intuition behind this test statistic is very simple: if <span class="math notranslate nohighlight">\(X_t\)</span> can be written as <span class="math notranslate nohighlight">\(X_t = \mu + \epsilon_t\)</span>, where <span class="math notranslate nohighlight">\(\epsilon_t\)</span> is some zero-mean stationary process, then not only does the sample average of the <span class="math notranslate nohighlight">\(X_t\)</span>s provide a consistent estimator of <span class="math notranslate nohighlight">\(\mu\)</span>, but the long-run variance of ut is a well-defined, finite number. Neither of these properties hold under the alternative.</p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="intro.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Welcome to your Jupyter Book</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-time-series">3.1 What is a time series?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#white-noise">3.2 White noise</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-time-series">3.3 Stationary time series</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autocorrelation-function-acf">3.4 Autocorrelation Function (ACF)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#partial-autocorrelation-function-pacf">3.5 Partial Autocorrelation Function (PACF)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unit-root-test">3.6 Unit Root Test</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-augmented-dickey-fuller-test">3.6.1 The Augmented Dickey-Fuller Test</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-adf-gls-test">3.6.2 The ADF-GLS test</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-kpss-test">3.6.3 The KPSS test</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By The Jupyter Book Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
