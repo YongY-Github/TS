@@ -14,6 +14,7 @@ toc:
   - file: index.md
   - file: basics.ipynb
   - file: returns.md
+  - file: z04-basicTS.md
     
 exports:
   - format: pdf
