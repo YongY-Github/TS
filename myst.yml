@@ -1,0 +1,28 @@
+version: 1
+
+project:
+  title: Applied Time Series
+  authors:
+    - name: -YY-
+  bibliography:
+    - references.bib
+
+  # github: https://github.com/YongY-Github/TS
+  # To autogenerate a Table of Contents, run "myst init --write-toc"
+
+toc:
+  - file: index.md
+  - file: basics.ipynb
+  - file: returns.md
+    
+exports:
+  - format: pdf
+    output: _build/exports/math-econ.pdf
+    articles:
+      - index.md
+
+site:
+  template: book-theme
+  options:
+    logo_text: Applied Time Series
+    outline_maxdepth: 1
