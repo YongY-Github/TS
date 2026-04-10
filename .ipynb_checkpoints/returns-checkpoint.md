@@ -30,10 +30,10 @@ Notice already that −20% and +25% do not cancel out to zero if you just averag
 
 ## Simple (artithmetic) returns
 
-For a price $p_t$, the **simple return** is
+For a price $P_t$, the **simple return** is
 
 $$
-r_t = \frac{p_t - p_{t-1}}{p_{t-1}} = \frac{p_t}{p_{t-1}} - 1.
+R_t = \frac{P_t - P_{t-1}}{P_{t-1}} = \frac{P_t}{P_{t-1}} - 1.
 $$
 
 ```{code-cell} python
@@ -45,10 +45,10 @@ In this series, 2021 has $r_{2021} = -0.20$ and 2022 has $r_{2022} = +0.25$.
 
 ## Log returns
 
-The **log return** (a.k.a. continuously compounded return) is
+The **log return** often denoted $r_t$ (a.k.a. continuously compounded return) is:
 
 $$
-log(1 + r_t) = \log\left(\frac{p_t}{p_{t-1}}\right)
+log(1 + R_t) = \log\left(\frac{P_t}{P_{t-1}}\right)
 $$
 
 ```{code-cell} python
@@ -64,7 +64,7 @@ If you naïvely sum simple returns over time, you don’t get the correct multi-
 
 :::{math}
 :enumerated: false
-(1+r_1)(1+r_2) - 1 \neq r_1 + r_2 \quad \text{(in general)}
+(1+R_1)(1+R_2) - 1 \neq R_1 + R_2 \quad \text{(in general)}
 :::
 
 ```{code-cell} python
@@ -78,20 +78,20 @@ Instead, use **geometric compounding**:
 (1 - 0.20) * (1 + 0.25) - 1   # equals 0.0
 ```
 
-> **Key Takeaway:.** The −20% then +25% sequence returns you exactly to the starting price (net 0%), but (-0.20 + 0.25 = 0.05) is **not** the correct multi-period return. Simple returns don’t “sum nicely.”
+> **Key Takeaway:** A −20% then +25% sequence returns you exactly to the starting price (net 0%), but (-0.20 + 0.25 = 0.05) is **not** the correct multi-period return. Simple returns don’t “sum nicely.”
 
 ## Compounding and time-additivity with logs
 
 For (T) periods, the compounded gross return is
 
 $$
-\prod_{t=1}^T (1 + r_t) = \frac{p_T}{p_0}
+\prod_{t=1}^T (1 + R_t) = \frac{P_T}{P_0}
 $$
 
 Taking logs,
 
 $$
-\sum_{t=1}^T \log(1+r_t) = \log\left(\frac{p_T}{p_0}\right) = \log p_T - \log p_0
+\sum_{t=1}^T \log(1+R_t) = \log\left(\frac{P_T}{P_0}\right) = \log P_T - \log P_0
 $$
 
 > **Time-additivity:** This is the killer feature - **log returns add over time**! That’s why they’re convenient for analytics, modeling, and comparing horizons.
@@ -122,7 +122,7 @@ print(cum_gross)
 
 ### Cumulative log return
 
-Cumulative log return should equal $log p_t - \log p_0$:
+Cumulative log return should equal $\log P_t - \log P_0$:
 
 ```{code-cell} python
 cum_log = np.log(df["rtn"] + 1).cumsum()
@@ -132,7 +132,7 @@ cum_log
 np.log(df["price"].iloc[-1]) - np.log(df["price"].iloc[0])  # ≈ 0.22314
 ```
 
-> **Consistency check:** The final cumulative log return is (\log(125) - \log(100) \approx 0.22314). Exponentiating brings you back to the geometric gross return:
+> **Consistency check:** The final cumulative log return is $\log(125) - \log(100) \approx 0.22314$. Exponentiating brings you back to the geometric gross return:
 
 ```{code-cell} python
 np.exp(0.2231435513142097)   # ≈ 1.25  → +25%
@@ -140,7 +140,7 @@ np.exp(0.2231435513142097)   # ≈ 1.25  → +25%
 
 ## Small-return approximation
 
-For small returns, $log(1+r) \approx r$. The code below shows how close this is:
+For small returns, $log(1+R) \approx R$. The code below shows how close this is:
 
 ```{code-cell} python
 print(f"The log of .1% is {np.log(1.001)}")
@@ -151,7 +151,7 @@ print(f"The log of 10% is {np.log(1.1)}")
 print(f"The log of 20% is {np.log(1.2)}")
 ```
 
-> **Rule of thumb:** Below ~5–10% per period, (\log(1+r)) and (r) are quite close. As returns get larger (or negative and large in magnitude), the approximation worsens—use logs exactly.
+> **Rule of thumb:** Below ~5–10% per period, $\log(1+R)$ and $R$ are quite close. As returns get larger (or negative and large in magnitude), the approximation worsens—use logs exactly.
 
 ## Practical notes
 
@@ -159,7 +159,7 @@ print(f"The log of 20% is {np.log(1.2)}")
 * **Multi-period performance.** Use **geometric compounding** of simple returns or, equivalently, **sum** log returns and then exponentiate:
 
 $$
-  \exp\Big(\sum_t \ell_t\Big) - 1.
+  \exp\Big(\sum_t r_t \Big) - 1.
 $$
   
 * **Arithmetic vs geometric means.** Over time, the geometric mean return reflects compounding. The arithmetic mean can overstate multi-period growth when volatility is present.
