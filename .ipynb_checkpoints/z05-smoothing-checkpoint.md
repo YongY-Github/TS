@@ -1,0 +1,592 @@
+---
+kernelspec:
+  name: jb2-env
+  display_name: Python (jb2-env)
+---
+
+# Smoothing and Trend Estimation
+
+Time series data often contain a mixture of:
+
+- broad low-frequency movement
+- short-run fluctuations
+- irregular noise
+
+Before building formal stochastic models, it is often useful to first **visualize the main pattern** in the data. Smoothing methods help us do this by reducing short-run variation and revealing the underlying path of the series.
+
+In this chapter, we focus on smoothing as a **descriptive tool**. Later, we will study stochastic models such as AR, MA, ARMA, and ARIMA.
+
+---
+
+## Learning Objectives
+
+By the end of this chapter, you should be able to:
+
+- explain why smoothing is useful
+- apply moving average smoothing
+- understand simple exponential smoothing
+- interpret Holt and Holt–Winters smoothing
+- understand the idea behind LOESS and spline smoothing
+- interpret the HP filter
+- explain the role of smoothing parameters such as window width, bandwidth, and $\lambda$
+- distinguish smoothing from stochastic modeling
+
+---
+
+## Why Smooth a Time Series?
+
+A raw time series often looks irregular and noisy. Even when there is an underlying broad movement, that movement may be hard to see directly from the original series.
+
+To illustrate this, let us simulate a **random walk**.
+
+```{code-cell} python
+import numpy as np
+import matplotlib.pyplot as plt
+
+np.random.seed(123)
+n = 250
+t = np.arange(n)
+
+w = np.random.normal(scale=1.0, size=n)
+x = np.cumsum(w)
+
+fig, ax = plt.subplots(figsize=(8,3))
+ax.plot(x, lw=1)
+ax.set_title("Random Walk")
+ax.set_xlabel("Time")
+ax.set_ylabel("$x_t$")
+plt.show()
+````
+
+The series shows a broad evolving path, but there is also substantial short-run variation.
+
+```{admonition} Key Idea
+Smoothing helps us extract the **broad movement** of a series by reducing short-run variation.
+```
+
+```{admonition} Important
+When we smooth a random walk, the resulting curve should be interpreted as a **descriptive long-run movement**, not necessarily as a deterministic trend.
+
+Smoothing does not by itself tell us whether the series is trend-stationary or difference-stationary.
+```
+
+---
+
+## Moving Average Smoothing
+
+One of the simplest smoothing methods is the **moving average**.
+
+A centered moving average with window size $k = 2h+1$ is given by
+
+$$
+\hat{m}*t = \frac{1}{k} \sum*{j=-h}^{h} x_{t+j}.
+$$
+
+This replaces each observation by the average of nearby observations.
+
+---
+
+### Example: Moving Average Smoothing of a Random Walk
+
+```{code-cell} python
+def moving_average(x, k):
+    return np.convolve(x, np.ones(k)/k, mode='same')
+
+ma5 = moving_average(x, 5)
+ma15 = moving_average(x, 15)
+ma35 = moving_average(x, 35)
+
+fig, ax = plt.subplots(figsize=(8,3))
+ax.plot(x, alpha=0.35, lw=1, label="Original series")
+ax.plot(ma5, lw=1.5, label="MA(5)")
+ax.plot(ma15, lw=1.8, label="MA(15)")
+ax.plot(ma35, lw=2.0, label="MA(35)")
+ax.legend()
+ax.set_title("Moving Average Smoothing of a Random Walk")
+ax.set_xlabel("Time")
+ax.set_ylabel("$x_t$")
+plt.show()
+```
+
+A small window follows the data more closely, while a larger window produces a smoother curve.
+
+```{admonition} Interpretation
+- A **small window** is more responsive to local changes
+- A **large window** produces a smoother series but may blur short-run movements
+```
+
+---
+
+## Edge Effects
+
+A practical issue with moving averages is that observations near the beginning and end of the sample have fewer neighbors available.
+
+```{admonition} Practical Note
+Centered moving averages are most natural for describing the middle of a series, but they are less convenient near the boundaries of the sample.
+```
+
+This is one reason why other smoothing methods are often preferred in practice.
+
+---
+
+## Exponential Smoothing
+
+Moving averages give equal weight to all observations inside the window. Exponential smoothing instead gives **more weight to recent observations** and progressively less weight to older observations.
+
+The basic formula is
+
+$$
+\hat{m}*t = \alpha x_t + (1-\alpha)\hat{m}*{t-1},
+$$
+
+where $0 < \alpha < 1$.
+
+The choice of $\alpha$ determines how responsive the smoothed series is to new observations.
+
+---
+
+### Example: Exponential Smoothing of a Random Walk
+
+```{code-cell} python
+def exp_smooth(x, alpha):
+    m = np.zeros_like(x)
+    m[0] = x[0]
+    for i in range(1, len(x)):
+        m[i] = alpha*x[i] + (1-alpha)*m[i-1]
+    return m
+
+es_02 = exp_smooth(x, 0.2)
+es_05 = exp_smooth(x, 0.5)
+es_08 = exp_smooth(x, 0.8)
+
+fig, ax = plt.subplots(figsize=(8,3))
+ax.plot(x, alpha=0.35, lw=1, label="Original series")
+ax.plot(es_02, lw=2, label="$\\alpha=0.2$")
+ax.plot(es_05, lw=2, label="$\\alpha=0.5$")
+ax.plot(es_08, lw=2, label="$\\alpha=0.8$")
+ax.legend()
+ax.set_title("Exponential Smoothing of a Random Walk")
+ax.set_xlabel("Time")
+ax.set_ylabel("$x_t$")
+plt.show()
+```
+
+```{admonition} Interpretation
+- Small $\alpha$ gives a smoother curve because the method remembers the past more strongly
+- Large $\alpha$ gives a more responsive curve because recent observations get more weight
+```
+
+---
+
+## Moving Average Smoothing vs Exponential Smoothing
+
+Both methods reduce short-run variation, but they do so differently.
+
+* A **moving average** uses a fixed local window
+* **Exponential smoothing** uses all past observations, but weights decline geometrically with distance into the past
+
+```{admonition} Practical Comparison
+Moving averages are simple and intuitive.
+
+Exponential smoothing is often more convenient in practice because it updates recursively and adapts naturally as new data arrive.
+```
+
+---
+
+## Holt’s Linear Method
+
+Simple exponential smoothing is designed mainly for series whose underlying level changes gradually but without a distinct trend component. Holt’s method extends exponential smoothing by allowing both a **level** and a **trend**.
+
+The updating equations are
+
+$$
+\ell_t = \alpha x_t + (1-\alpha)(\ell_{t-1} + b_{t-1}),
+$$
+
+$$
+b_t = \beta(\ell_t - \ell_{t-1}) + (1-\beta)b_{t-1},
+$$
+
+where:
+
+* $\ell_t$ is the estimated level
+* $b_t$ is the estimated slope or trend
+
+Even when the underlying series is a random walk, Holt’s method can still provide a smooth description of its changing local direction.
+
+---
+
+### Example: Holt Smoothing
+
+```{code-cell} python
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+
+holt_model = ExponentialSmoothing(x, trend='add', seasonal=None)
+holt_fit = holt_model.fit(optimized=True)
+
+fig, ax = plt.subplots(figsize=(8,3))
+ax.plot(x, alpha=0.35, lw=1, label="Original series")
+ax.plot(holt_fit.fittedvalues, lw=2, label="Holt fitted values")
+ax.legend()
+ax.set_title("Holt Smoothing of a Random Walk")
+ax.set_xlabel("Time")
+ax.set_ylabel("$x_t$")
+plt.show()
+```
+
+```{admonition} Interpretation
+Holt’s method allows the smoothed series to adapt not only to the current level but also to the recent local slope.
+```
+
+---
+
+## Holt–Winters Smoothing
+
+Holt–Winters smoothing extends Holt’s method further by including a **seasonal component**.
+
+In practice, Holt–Winters is most useful when a series has:
+
+* a changing level
+* a changing trend
+* repeating seasonal patterns
+
+A pure random walk has no seasonality, so Holt–Winters is not especially natural for that specific series. To illustrate Holt–Winters, we therefore add a seasonal component to a persistent series.
+
+---
+
+### Example: Persistent Series with Seasonality
+
+```{code-cell} python
+np.random.seed(123)
+n = 240
+t = np.arange(n)
+
+persistent = np.cumsum(np.random.normal(scale=0.6, size=n))
+seasonal = 3*np.sin(2*np.pi*t/12)
+x_hw = persistent + seasonal
+
+hw_model = ExponentialSmoothing(
+    x_hw,
+    trend='add',
+    seasonal='add',
+    seasonal_periods=12
+)
+hw_fit = hw_model.fit(optimized=True)
+
+fig, ax = plt.subplots(figsize=(8,3))
+ax.plot(x_hw, alpha=0.35, lw=1, label="Series")
+ax.plot(hw_fit.fittedvalues, lw=2, label="Holt-Winters fit")
+ax.legend()
+ax.set_title("Holt-Winters Smoothing")
+ax.set_xlabel("Time")
+ax.set_ylabel("$x_t$")
+plt.show()
+```
+
+```{admonition} Key Idea
+Holt–Winters is useful when a series has both trend-like movement and seasonality.
+```
+
+---
+
+## LOESS Smoothing
+
+A more flexible approach is **LOESS** (locally estimated scatterplot smoothing). Instead of averaging nearby values directly, LOESS fits a small local regression around each point.
+
+The main idea is simple:
+
+* observations near $t$ receive larger weights
+* observations farther away receive smaller weights
+* the fitted value at $t$ comes from a local regression using those weighted data
+
+```{admonition} Intuition
+LOESS allows the smoothed curve to adapt flexibly to local changes in shape.
+```
+
+---
+
+### Example: LOESS Smoothing of a Random Walk
+
+```{code-cell} python
+import statsmodels.api as sm
+
+loess_10 = sm.nonparametric.lowess(x, t, frac=0.10, return_sorted=False)
+loess_25 = sm.nonparametric.lowess(x, t, frac=0.25, return_sorted=False)
+loess_45 = sm.nonparametric.lowess(x, t, frac=0.45, return_sorted=False)
+
+fig, ax = plt.subplots(figsize=(8,3))
+ax.plot(x, alpha=0.30, lw=1, label="Original series")
+ax.plot(loess_10, lw=1.5, label="LOESS frac=0.10")
+ax.plot(loess_25, lw=2.0, label="LOESS frac=0.25")
+ax.plot(loess_45, lw=2.0, label="LOESS frac=0.45")
+ax.legend()
+ax.set_title("LOESS Smoothing of a Random Walk")
+ax.set_xlabel("Time")
+ax.set_ylabel("$x_t$")
+plt.show()
+```
+
+The fraction parameter controls the amount of smoothing.
+
+```{admonition} Interpretation
+- Small fraction → less smoothing, more local detail
+- Large fraction → more smoothing, less local detail
+```
+
+---
+
+## Splines
+
+Another flexible smoothing method uses **splines**, which are piecewise polynomial curves joined smoothly at a set of points called knots.
+
+Rather than forcing one global straight line or polynomial through the data, splines allow the fitted curve to bend gradually across the sample.
+
+```{admonition} Intuition
+Splines are flexible smooth curves built from local polynomial pieces.
+```
+
+---
+
+### Example: Spline Smoothing of a Random Walk
+
+```{code-cell} python
+from scipy.interpolate import UnivariateSpline
+
+spline_1 = UnivariateSpline(t, x, s=100)
+spline_2 = UnivariateSpline(t, x, s=400)
+spline_3 = UnivariateSpline(t, x, s=1000)
+
+fig, ax = plt.subplots(figsize=(8,3))
+ax.plot(x, alpha=0.30, lw=1, label="Original series")
+ax.plot(spline_1(t), lw=1.5, label="Spline s=100")
+ax.plot(spline_2(t), lw=2.0, label="Spline s=400")
+ax.plot(spline_3(t), lw=2.0, label="Spline s=1000")
+ax.legend()
+ax.set_title("Spline Smoothing of a Random Walk")
+ax.set_xlabel("Time")
+ax.set_ylabel("$x_t$")
+plt.show()
+```
+
+The smoothing parameter controls how wiggly or how smooth the fitted curve is.
+
+---
+
+## The Hodrick–Prescott (HP) Filter
+
+The **HP filter** is widely used in macroeconomics to decompose a series into:
+
+* a smooth trend component
+* a cyclical component
+
+It writes the series as
+
+$$
+x_t = \tau_t + c_t,
+$$
+
+where:
+
+* $\tau_t$ is the trend
+* $c_t$ is the cycle
+
+The HP filter chooses $\tau_t$ to balance two goals:
+
+1. stay close to the data
+2. remain smooth over time
+
+Formally, it minimizes
+
+$$
+\sum_{t=1}^n (x_t - \tau_t)^2
++
+\lambda \sum_{t=2}^{n-1}
+\left[
+(\tau_{t+1} - \tau_t) - (\tau_t - \tau_{t-1})
+\right]^2.
+$$
+
+The second term penalizes variation in the slope of the trend.
+
+---
+
+### Example: HP Filter on a Random Walk
+
+```{code-cell} python
+cycle_100, trend_100 = sm.tsa.filters.hpfilter(x, lamb=100)
+cycle_1600, trend_1600 = sm.tsa.filters.hpfilter(x, lamb=1600)
+cycle_6400, trend_6400 = sm.tsa.filters.hpfilter(x, lamb=6400)
+
+fig, ax = plt.subplots(figsize=(8,3))
+ax.plot(x, alpha=0.30, lw=1, label="Original series")
+ax.plot(trend_100, lw=1.5, label="$\\lambda=100$")
+ax.plot(trend_1600, lw=2.0, label="$\\lambda=1600$")
+ax.plot(trend_6400, lw=2.0, label="$\\lambda=6400$")
+ax.legend()
+ax.set_title("HP Filter Applied to a Random Walk")
+ax.set_xlabel("Time")
+ax.set_ylabel("$x_t$")
+plt.show()
+```
+
+```{admonition} Interpretation
+- Small $\lambda$ allows the trend to follow the data more closely
+- Large $\lambda$ produces a smoother trend
+```
+
+---
+
+## Smoothing Parameters and the Bias–Variance Trade-off
+
+All smoothing methods involve a tuning parameter:
+
+* moving average → window width
+* exponential smoothing → $\alpha$
+* LOESS → fraction or bandwidth
+* spline smoothing → smoothing parameter
+* HP filter → $\lambda$
+
+These choices reflect a common trade-off.
+
+```{admonition} Bias–Variance Trade-off
+- **More smoothing** reduces noise but may hide important structure
+- **Less smoothing** preserves detail but may leave too much noise
+```
+
+This trade-off is central to all smoothing methods.
+
+---
+
+## A Closer Look at Bandwidth
+
+The term **bandwidth** is especially common in kernel and LOESS smoothing.
+
+A bandwidth determines how much of the neighborhood around a point is used when constructing the local smooth.
+
+* small bandwidth → very local fit
+* large bandwidth → broad, smooth fit
+
+In practice, bandwidth choice is crucial because it determines the visual and analytical character of the resulting curve.
+
+```{admonition} Practical Advice
+When trying a smoothing method, it is often useful to plot several choices of the tuning parameter and compare the results visually.
+```
+
+---
+
+## Smoothing vs Detrending
+
+Smoothing estimates a broad underlying path, but detrending goes one step further by removing that path from the data.
+
+If $\hat{m}_t$ is an estimated smooth component, then the detrended series is
+
+$$
+\tilde{x}_t = x_t - \hat{m}_t.
+$$
+
+This leaves the short-run deviations around the smoothed path.
+
+---
+
+### Example: Detrending a Random Walk by Subtracting a Smooth
+
+```{code-cell} python
+trend_loess = sm.nonparametric.lowess(x, t, frac=0.25, return_sorted=False)
+resid_loess = x - trend_loess
+
+fig, ax = plt.subplots(figsize=(8,3))
+ax.plot(resid_loess, lw=1)
+ax.set_title("Residuals After LOESS Smoothing")
+ax.set_xlabel("Time")
+ax.set_ylabel("$x_t - \\hat{m}_t$")
+plt.show()
+```
+
+```{admonition} Important
+For a random walk, subtracting a smooth curve does **not automatically** produce a stationary series.
+
+Later, in the ARIMA chapter, we will see that **differencing** is often more appropriate for such processes.
+```
+
+---
+
+## Smoothing vs Modeling
+
+It is important to distinguish two different goals in time series analysis.
+
+```{admonition} Two Different Goals
+- **Smoothing** describes broad movement in the data
+- **Modeling** attempts to represent the stochastic mechanism that generates the data
+```
+
+This distinction is especially important for persistent series such as random walks. A smooth curve may summarize the path of the data, but that does not mean the underlying process is a deterministic trend plus stationary noise.
+
+---
+
+## When Should We Use Smoothing?
+
+Smoothing is useful when we want to:
+
+* visualize the broad movement of a series
+* estimate a low-frequency component
+* compare long-run paths across series
+* remove short-run noise before descriptive analysis
+
+It is less appropriate when our main goal is to build a formal stochastic model of dependence.
+
+---
+
+## Common Pitfalls
+
+```{admonition} Common Mistakes
+:class: warning
+
+**1. Over-smoothing**  
+Too much smoothing may hide turning points and meaningful variation.
+
+**2. Under-smoothing**  
+Too little smoothing may leave too much noise and fail to reveal the broad pattern.
+
+**3. Confusing smoothing with modeling**  
+A smooth curve is not the same thing as a time-series model.
+
+**4. Treating every smooth as a deterministic trend**  
+For persistent processes such as random walks, the smooth component is often better interpreted descriptively rather than structurally.
+
+**5. Ignoring the choice of tuning parameter**  
+Different window widths, bandwidths, or smoothing penalties can produce very different conclusions.
+```
+
+---
+
+## Comparing Methods
+
+Different smoothing methods are useful in different situations.
+
+```{admonition} Practical Summary
+- **Moving average**: simple and intuitive
+- **Exponential smoothing**: recursive and adaptive
+- **Holt**: captures evolving local slope
+- **Holt–Winters**: useful with seasonality
+- **LOESS**: flexible local smoothing
+- **Splines**: smooth flexible curves
+- **HP filter**: popular macroeconomic trend-cycle decomposition
+```
+
+---
+
+## Big Picture
+
+Smoothing is often the first step in time series analysis.
+
+It helps us:
+
+* reveal broad movement
+* reduce short-run noise
+* think carefully about trend and low-frequency variation
+* prepare for later modeling
+
+```{admonition} Looking Ahead
+In the next chapter, we move from descriptive smoothing to **stochastic models for stationary time series**, including AR, MA, and ARMA processes.
+```
+

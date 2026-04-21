@@ -16,6 +16,9 @@ toc:
   - file: returns.md
   - file: trading.ipynb
   - file: z04-basicTS.md
+  - file: z05-smoothing.md
+  - file: z06-ARMA.md
+  - file: z07-ARIMA.md
     
 exports:
   - format: pdf
