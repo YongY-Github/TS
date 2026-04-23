@@ -27,5 +27,5 @@ exports:
 site:
   template: book-theme
   options:
-    logo_text: Applied Time Series
+    logo_text: Applied Time Series with Gretl
     outline_maxdepth: 1

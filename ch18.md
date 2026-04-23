@@ -127,7 +127,7 @@ IBO     bond rate
 IDE     bank deposit rate
 ```
 
-```{image} figs/ch18/gretl_1.png
+```{figure} figs/ch18/gretl_1.png
 :name: fig-denmark
 :width: 90%
 :align: center
@@ -144,7 +144,7 @@ Denmark Macro Data
 * Dependent: `LRM`
 * Regressors: `LRM(-1) LRY LRY(-1)`
 
-> To get the lags, click the [`lags...`] icon in the **specify model** box. 
+To get the lags, click the `lags...` icon in the **specify model** box. 
 
 #### Command
 
@@ -191,15 +191,11 @@ After estimating an ARDL model, it is important to check whether the model is we
 
 Recall that a correctly specified dynamic model should leave **no predictable structure in the residuals**.
 
----
-
 ```{admonition} Key Principle
 For a well-specified ARDL model, the residuals $\hat{u}_t$ should behave like **white noise**.
 ````
 
----
-
-## 18.6.1 What Do We Mean by White Noise?
+### 18.6.1 What Do We Mean by White Noise?
 
 Residuals are white noise if they satisfy:
 
@@ -207,25 +203,19 @@ Residuals are white noise if they satisfy:
 * constant variance
 * **no autocorrelation**
 
----
-
 ```{admonition} Intuition
 If residuals are not white noise, then there is still information in the data that the model has failed to capture.
 ```
 
----
+#### Step 1: Visual Inspection
 
-## 18.6.2 Step 1: Visual Inspection
-
-### Residual Plot
+#### Residual Plot
 
 #### Menu
 
-**Graph → Time series plot**
+`Graph → Time series plot`
 
-Select residuals (e.g. `uhat`).
-
----
+Select residuals (e.g. `uhat`). Or right click on variable and select `Time series plot`. 
 
 #### Command
 
@@ -233,13 +223,13 @@ Select residuals (e.g. `uhat`).
 gnuplot uhat --time-series
 ```
 
----
+```{figure} figs/ch18/gretl_2.png
+:name: fig-residd
+:width: 70%
+:align: center
 
-```markdown
-[GRETL Screenshot Placeholder: Residual time series plot]
+Residual
 ```
-
----
 
 ```{admonition} What to Look For
 - No obvious trend  
@@ -247,19 +237,17 @@ gnuplot uhat --time-series
 - Fluctuations around zero  
 ```
 
----
+#### Step 2: Autocorrelation Function (ACF)
 
-## 18.6.3 Step 2: Autocorrelation Function (ACF)
-
-### Correlogram
+#### Correlogram
 
 #### Menu
 
-**Variable → Correlogram**
-
 Select `uhat`.
 
----
+`Variable → Correlogram`
+
+Or right click!
 
 #### Command
 
@@ -267,13 +255,13 @@ Select `uhat`.
 corrgm uhat
 ```
 
----
+```{figure} figs/ch18/gretl_3.png
+:name: fig-residual-plot
+:width: 90%
+:align: center
 
-```markdown
-[GRETL Screenshot Placeholder: Residual correlogram]
+Correlogram
 ```
-
----
 
 ```{admonition} Interpretation
 All autocorrelations should lie within the confidence bands.
@@ -281,38 +269,55 @@ All autocorrelations should lie within the confidence bands.
 Significant spikes suggest missing dynamics.
 ```
 
----
+#### Step 3: Formal Test for Serial Correlation
 
-## 18.6.4 Step 3: Formal Test for Serial Correlation
-
-### Breusch–Godfrey Test
+#### Breusch–Godfrey or Ljung-Box Q Test
 
 #### Menu
 
-**Model → Tests → Autocorrelation → Breusch-Godfrey**
+In the **Model** window
+`Tests → Autocorrelation`
 
 ---
 
-```markdown
-[GRETL Screenshot Placeholder: BG test output]
+```gretl
+Breusch-Godfrey test for autocorrelation up to order 4
+OLS, using observations 1974:2-1987:3 (T = 54)
+Dependent variable: uhat
+
+             coefficient   std. error   t-ratio    p-value
+  --------------------------------------------------------
+  const       0.342059     0.336486      1.017     0.3147 
+  LRY        −0.00513435   0.162471     −0.03160   0.9749 
+  LRY_1       0.0773596    0.173429      0.4461    0.6576 
+  LRM_1      −0.0657127    0.0631492    −1.041     0.3035 
+  uhat_1     −0.0607536    0.158039     −0.3844    0.7024 
+  uhat_2      0.427085     0.147320      2.899     0.0057  ***
+  uhat_3      0.110868     0.162276      0.6832    0.4979 
+  uhat_4      0.240594     0.160901      1.495     0.1417 
+
+  Unadjusted R-squared = 0.283633
+
+Test statistic: LMF = 4.553230,
+with p-value = P(F(4,46) > 4.55323) = 0.0035
+
+Alternative statistic: TR^2 = 15.316197,
+with p-value = P(Chi-square(4) > 15.3162) = 0.00409
+
+Ljung-Box Q' = 23.0858,
+with p-value = P(Chi-square(4) > 23.0858) = 0.000122
 ```
-
----
 
 ```{admonition} Hypotheses
 - $H_0$: no serial correlation  
 - $H_1$: serial correlation present  
 ```
 
----
-
 ```{admonition} Decision Rule
 If the p-value is small, reject $H_0$ → model is misspecified.
 ```
 
----
-
-## 18.6.5 What If Residuals Are Not White Noise?
+### 18.6.2 What If Residuals Are Not White Noise?
 
 If residuals exhibit autocorrelation, this indicates that the model is incomplete.
 
@@ -332,7 +337,7 @@ Failure of residual diagnostics usually means the model has not captured the ful
 
 ---
 
-## 18.6.6 Important Distinction
+### 18.6.3 Important Distinction
 
 ```{admonition} Important Distinction
 In this chapter, ARDL is used as a **dynamic model**.
@@ -342,9 +347,7 @@ At this stage, we require residuals to be **white noise**, but we do not yet req
 The issue of stationarity of residuals becomes crucial in the next chapter on cointegration.
 ```
 
----
-
-## 18.6.7 Summary
+### 18.6.4 Summary
 
 ```{admonition} Diagnostic Checklist
 After estimating an ARDL model:
@@ -355,39 +358,33 @@ After estimating an ARDL model:
 4. Adjust the model if needed  
 ```
 
----
-
 ## 18.7 Short-Run vs Long-Run Effects
 
 In ARDL models:
 
-* $\alpha$ → **immediate (short-run) effect**
-* $\beta_1, \beta_2$ → **delayed effects**
-* $\phi_i$ → **persistence (dependence on past values of $y_t$)**
-
----
+- $\beta_0$ → **immediate (short-run) effect**  
+- $\beta_1, \beta_2$ → **delayed effects**  
+- $\phi_i$ → **persistence (dependence on past values of $y_t$)**  
 
 ```{admonition} Key Insight
-Dynamic models allow us to distinguish between **short-run responses** and **long-run equilibrium effects**.
-```
+Dynamic models distinguish between:
 
----
+- **short-run responses** (immediate and lagged effects), and  
+- **long-run equilibrium effects** (cumulative impact over time).
+````
 
 ### Long-Run Effect
 
 If the system is stable, the long-run relationship is:
 
-$$
+```{math}
+:enumerated: false
 \text{Long-run multiplier} = \frac{\sum \beta_j}{1 - \sum \phi_i}
-$$
-
----
+```
 
 ```{admonition} Interpretation
 The long-run multiplier measures the **total cumulative effect** of a change in $x_t$ on $y_t$ after all dynamic adjustments have taken place.
 ```
-
----
 
 ## 18.8 Dynamic Interpretation
 
@@ -397,43 +394,30 @@ Consider an economic example:
 * output does not adjust immediately
 * effects unfold gradually over time
 
----
-
-```markdown
-[Figure Placeholder: dynamic adjustment path]
-```
-
----
-
 ```{admonition} Intuition
 Dynamic models capture how shocks **propagate over time**, rather than affecting variables instantaneously.
 ```
-
----
 
 ## 18.9 Connection to Differencing
 
 Recall from Chapter 17:
 
-$$
+```{math}
+:enumerated: false
 \Delta y_t = \beta \Delta x_t + u_t
-$$
+```
 
-This is a **restricted dynamic model**:
+This can be viewed as a **restricted dynamic model**:
 
 * no lagged levels
 * no persistence
 * no long-run structure
 
----
-
 ```{admonition} Key Insight
-Differencing removes long-run information and focuses only on short-run changes.
+Differencing focuses purely on **short-run changes**, removing long-run information from the data.
 ```
 
----
-
-## 18.10 Limitations of Pure Differencing
+## 18.10 Why Differencing Is Not Enough
 
 While differencing solves the spurious regression problem, it comes at a cost:
 
@@ -441,115 +425,62 @@ While differencing solves the spurious regression problem, it comes at a cost:
 * inability to model equilibrium behavior
 * oversimplification of dynamics
 
----
-
 ```{admonition} Motivation
-We need a model that captures both:
+We need a framework that captures both:
 
 - short-run changes  
 - long-run equilibrium  
 ```
 
----
-
 ## 18.11 Looking Ahead: ECM
 
 This leads to the **Error Correction Model (ECM)**:
 
-$$
+```{math}
+:enumerated: false
 \Delta y_t = \beta \Delta x_t + \gamma (y_{t-1} - \theta x_{t-1}) + u_t
-$$
-
----
+```
 
 ```{admonition} Key Idea
 ECM combines:
 
-- short-run dynamics (through $\Delta x_t$)  
+- short-run dynamics (through $\Delta x_t$), and  
 - long-run equilibrium (through $y_{t-1} - \theta x_{t-1}$)
 ```
 
----
+```{admonition} Intuition (Optional)
+Think of two variables connected by a long-run relationship as being tied together by a rubber band.
 
-## Key Takeaways
-
-* Differencing leads naturally to dynamic models
-* ARDL is a flexible and widely used framework
-* Dynamic models capture delayed and persistent effects
-* Differencing alone may discard long-run information
-* ECM provides a bridge between short-run and long-run
-
----
-
-```{admonition} Preview
-ARDL models can also be used to test for long-run relationships between non-stationary variables.
-
-We return to this in the next chapter on cointegration.
+They may drift apart in the short run, but forces exist that pull them back together.
 ```
-
----
 
 ## 18.12 From Dynamics to Long-Run Relationships
 
-In this chapter, we introduced **dynamic models**, such as ARDL, which allow us to model how variables evolve over time.
-
-In particular, we saw that differencing leads to models of the form:
-
-$$
-\Delta y_t = \beta \Delta x_t + u_t
-$$
-
----
+Dynamic models help us understand **how variables adjust over time**, but they do not yet resolve the issue of nonstationarity.
 
 ```{admonition} Key Observation
-Differencing helps us avoid spurious regression by making the data stationary.
+Differencing avoids spurious regression by making the data stationary — but it may also remove meaningful long-run information.
 ```
 
----
-
-```{admonition} Question
-What if we have removed too much information?
+```{admonition} The Core Question
+Have we removed too much information by differencing?
 ```
 
----
-
-## 18.13 The Cost of Differencing
-
-When we difference a time series:
-
-* we remove trends
-* we eliminate long-run movements
-* we focus only on short-run changes
-
----
-
-```{admonition} Insight
-Differencing may discard meaningful long-run relationships between variables.
-```
-
----
-
-## 18.14 A Tension
+## 18.13 A Fundamental Tension
 
 ```{admonition} The Core Problem
 - Using levels → risk of spurious regression  
-- Using differences → loss of long-run information  
+- Using differences → loss of long-run relationships  
 ```
-
----
 
 👉 Neither approach is fully satisfactory on its own.
 
----
-
-## 18.15 A Way Forward
+## 18.14 A Way Forward
 
 Is it possible to:
 
-* keep the long-run relationship (levels), and
+* retain long-run relationships (levels), and
 * avoid spurious regression?
-
----
 
 ```{admonition} Preview
 Yes — if a particular combination of variables is stationary.
@@ -557,23 +488,17 @@ Yes — if a particular combination of variables is stationary.
 This concept is called **cointegration**.
 ```
 
----
-
-## 18.16 Looking Ahead
+## 18.15 Looking Ahead
 
 In the next chapter, we will see that:
 
 * some non-stationary variables are **linked in the long run**
 * deviations from equilibrium are **temporary**
 
----
-
 ```{math}
 :enumerated: false
 \Delta y_t = \beta \Delta x_t + \gamma (y_{t-1} - \theta x_{t-1}) + u_t
 ```
-
----
 
 ```{admonition} Big Picture
 Dynamic models describe short-run changes.
@@ -583,13 +508,13 @@ Cointegration explains long-run equilibrium.
 ECM combines both.
 ```
 
----
+## Key Takeaways
 
-```{admonition} Intuition (Optional)
-Think of two variables connected by a long-run relationship as being tied together by a rubber band.
-
-They may drift apart in the short run, but forces exist that pull them back together.
-```
+* ARDL models capture both immediate and delayed effects
+* Dynamic models describe how shocks propagate over time
+* Differencing isolates short-run movements but removes long-run structure
+* A complete framework must incorporate both short-run and long-run behavior
+* ECM provides this bridge
 
 ---
 
@@ -597,65 +522,59 @@ They may drift apart in the short run, but forces exist that pull them back toge
 
 ### A.1 A Simple ARDL(1,1)
 
-$$
+```{math}
+:enumerated: false
 y_t = \alpha + \phi y_{t-1} + \beta_0 x_t + \beta_1 x_{t-1} + u_t
-$$
-
----
+```
 
 ### A.2 Steady-State (Long-Run Equilibrium)
 
-$$
+```{math}
+:enumerated: false
 y_t = y_{t-1} = y, \quad x_t = x_{t-1} = x
-$$
-
----
+```
 
 ### A.3 Long-Run Relationship
 
-$$
+```{math}
+:enumerated: false
 y = \frac{\alpha}{1 - \phi} + \frac{\beta_0 + \beta_1}{1 - \phi} x
-$$
-
----
+```
 
 ```{admonition} Key Result
 Long-run multiplier:
 
-$$
-\frac{\beta_0 + \beta_1}{1 - \phi}
-$$
 ```
 
----
+```{math}
+:enumerated: false
+\frac{\beta_0 + \beta_1}{1 - \phi}
+```
 
 ### A.4 Dynamic Adjustment
 
-$$
+```{math}
+:enumerated: false
 \Delta y_t = (\phi - 1)y_{t-1} + \beta_0 x_t + \beta_1 x_{t-1} + u_t
-$$
-
----
+```
 
 ### A.5 Stability Condition
 
-$$
+```{math}
+:enumerated: false
 |\phi| < 1
-$$
-
----
+```
 
 ```{admonition} Interpretation
 If $|\phi| < 1$, shocks decay over time and the system converges to equilibrium.
 ```
 
----
-
 ### A.6 Link to ECM
 
-$$
+```{math}
+:enumerated: false
 \Delta y_t = \beta \Delta x_t + \gamma (y_{t-1} - \theta x_{t-1}) + u_t
-$$
+```
 
 ---
 

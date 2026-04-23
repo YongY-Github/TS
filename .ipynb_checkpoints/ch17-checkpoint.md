@@ -24,25 +24,25 @@ We begin by generating two independent random walks.
 
 ---
 
-### Step 1: Create Data in GRETL
-
 #### Menu
 
-1. Go to: `Add → Random variable → Normal distribution`
+### Step 1: Create Data in GRETL
 
-2. Generate two variables:
+1. Set up for data entry: `File → New data set` and select `Time series: T=200` with time series frequency as `Other`. This will create an `index` variable.
+
+3.   Go to: `Add → Random variable → Normal distribution`
+
+4. Generate two variables:
 
    * `u`
    * `v`
 
-3. Then create cumulative sums: `Add → Define new variable`
+5. Then create cumulative sums: `Add → Define new variable`
 
    * `x = cum(u)`
    * `y = cum(v)`
 
 ### Step 2: Plot the Series
-
-#### Menu
 
 `Graph → Time series plot`
 
@@ -50,12 +50,11 @@ Select `x` and `y`.
 
 ---
 
-:::{dropdown} Script
-#### GRETL
+#### Command
 
 ```gretl
 nulldata 200
-set seed 1234
+set seed 124
 
 series u = normal()
 series v = normal()
@@ -66,7 +65,7 @@ series y = cum(v)
 gnuplot x y --time-series --with-lines
 ```
 
-#### Python
+:::{dropdown} Python Script
 
 ```{code-cell} python
 import numpy as np
@@ -74,7 +73,7 @@ import matplotlib.pyplot as plt
 
 # 1. Initialize dataset size and set the random seed
 n = 200
-np.random.seed(1234)
+np.random.seed(124)
 
 # 2. Generate series u and v from a standard normal distribution
 u = np.random.standard_normal(n)
@@ -102,9 +101,12 @@ plt.show()
 
 ---
 
-```{image} figs/ch17/gretl_1.png
+```{figure} figs/ch17/gretl_1.png
+:name: fig-random_walks
 :width: 90%
 :align: center
+
+Two random walks
 ```
 
 ---
@@ -144,15 +146,15 @@ Dependent variable: y
 
              coefficient   std. error   t-ratio    p-value 
   ---------------------------------------------------------
-  const        3.75874     0.394810       9.520   6.24e-018 ***
-  x           −0.466912    0.0453499    −10.30    3.49e-020 ***
+  const       0.578591     0.295706      1.957    0.0518    *
+  x           0.660102     0.0333565    19.79     8.40e-049 ***
 
-Mean dependent var   6.740362   S.D. dependent var   4.690510
-Sum squared resid    2851.546   S.E. of regression   3.794963
-R-squared            0.348691   Adjusted R-squared   0.345401
-F(1, 198)            106.0031   P-value(F)           3.49e-20
-Log-likelihood      −549.5176   Akaike criterion     1103.035
-Schwarz criterion    1109.632   Hannan-Quinn         1105.705
+Mean dependent var  −4.061555   S.D. dependent var   4.385945
+Sum squared resid    1285.510   S.E. of regression   2.548033
+R-squared            0.664188   Adjusted R-squared   0.662492
+F(1, 198)            391.6158   P-value(F)           8.40e-49
+Log-likelihood      −469.8470   Akaike criterion     943.6941
+Schwarz criterion    950.2907   Hannan-Quinn         946.3636
 ```
 
 ---
@@ -219,6 +221,12 @@ In regression window:
 
 `Save → Residuals`
 
+#### Command
+
+```gretl
+series uhat = $uhat
+```
+
 ### Step 5: Plot Residuals
 
 #### Menu
@@ -227,13 +235,13 @@ In regression window:
 
 Select `uhat`.
 
-:::{dropdown} Script
-#### GRETL
+#### Command
 
 ```gretl
-series uhat = $uhat
 gnuplot uhat --time-series --with-lines
 ```
+
+:::{dropdown} Python Script
 
 #### Python
 
@@ -261,9 +269,9 @@ plt.show()
 
 ---
 
-```{image} figs/ch17/gretl_2.png
-:name: fig-residual-plot
-:width: 90%
+```{figure} figs/ch17/gretl_2.png
+:name: fig-resid
+:width: 70%
 :align: center
 
 Residual plot
@@ -281,6 +289,8 @@ Clearly this looks nonstatinary. But let's do a formal check.
 
 Select `uhat`.
 
+If you do not see this option, go to `Data → Dataset structure...` and select `Time series`... `Other`. You can also right click on `uhat` and select `Correlogram`.
+ 
 ---
 
 #### Command
@@ -289,7 +299,7 @@ Select `uhat`.
 corrgm uhat
 ```
 
-```{image} figs/ch17/gretl_3.png
+```{figure} figs/ch17/gretl_3.png
 :name: fig-correlogram
 :width: 90%
 :align: center
@@ -334,63 +344,79 @@ adf 0 x
 adf 0 y
 adf 0 uhat
 ```
+It is better to use the **menu** because Gretl will determine the approproiate lag for the ADF test. 
 
 ---
 
 ```gretl
-? adf 0 x
-
-Dickey-Fuller test for x
+Augmented Dickey-Fuller test for x
+testing down from 14 lags, criterion AIC
 sample size 199
 unit-root null hypothesis: a = 1
 
   test with constant 
+  including 0 lags of (1-L)x
   model: (1-L)y = b0 + (a-1)*y(-1) + e
-  estimated value of (a - 1): -0.0168864
-  test statistic: tau_c(1) = -1.32174
-  p-value 0.6194
+  estimated value of (a - 1): -0.0224933
+  test statistic: tau_c(1) = -1.57309
+  asymptotic p-value 0.4964
+  1st-order autocorrelation coeff. for e: -0.030
 
   with constant and trend 
+  including 0 lags of (1-L)x
   model: (1-L)y = b0 + b1*t + (a-1)*y(-1) + e
-  estimated value of (a - 1): -0.0124333
-  test statistic: tau_ct(1) = -0.923675
-  p-value 0.9503
+  estimated value of (a - 1): -0.0780285
+  test statistic: tau_ct(1) = -2.78519
+  asymptotic p-value 0.2027
+  1st-order autocorrelation coeff. for e: -0.001
+```
 
-? adf 0 y
-
-Dickey-Fuller test for y
+```gretl
+Augmented Dickey-Fuller test for y
+testing down from 14 lags, criterion AIC
 sample size 199
 unit-root null hypothesis: a = 1
 
   test with constant 
+  including 0 lags of (1-L)y
   model: (1-L)y = b0 + (a-1)*y(-1) + e
-  estimated value of (a - 1): -0.02404
-  test statistic: tau_c(1) = -1.5531
-  p-value 0.5047
+  estimated value of (a - 1): -0.0198401
+  test statistic: tau_c(1) = -1.22352
+  asymptotic p-value 0.6666
+  1st-order autocorrelation coeff. for e: 0.012
 
   with constant and trend 
+  including 0 lags of (1-L)y
   model: (1-L)y = b0 + b1*t + (a-1)*y(-1) + e
-  estimated value of (a - 1): -0.0163954
-  test statistic: tau_ct(1) = -0.945463
-  p-value 0.9477
+  estimated value of (a - 1): -0.0553024
+  test statistic: tau_ct(1) = -2.3086
+  asymptotic p-value 0.4287
+  1st-order autocorrelation coeff. for e: 0.027
+```
 
-? adf 0 uhat
-
-Dickey-Fuller test for uhat
-sample size 199
+```gretl
+Augmented Dickey-Fuller test for uhat
+testing down from 14 lags, criterion AIC
+sample size 195
 unit-root null hypothesis: a = 1
 
   test with constant 
-  model: (1-L)y = b0 + (a-1)*y(-1) + e
-  estimated value of (a - 1): -0.0471964
-  test statistic: tau_c(1) = -2.17431
-  p-value 0.2164
+  including 4 lags of (1-L)uhat
+  model: (1-L)y = b0 + (a-1)*y(-1) + ... + e
+  estimated value of (a - 1): -0.117113
+  test statistic: tau_c(1) = -2.93493
+  asymptotic p-value 0.04143
+  1st-order autocorrelation coeff. for e: 0.004
+  lagged differences: F(4, 189) = 2.860 [0.0248]
 
   with constant and trend 
-  model: (1-L)y = b0 + b1*t + (a-1)*y(-1) + e
-  estimated value of (a - 1): -0.0466435
-  test statistic: tau_ct(1) = -2.02618
-  p-value 0.5831
+  including 4 lags of (1-L)uhat
+  model: (1-L)y = b0 + b1*t + (a-1)*y(-1) + ... + e
+  estimated value of (a - 1): -0.117152
+  test statistic: tau_ct(1) = -2.93311
+  asymptotic p-value 0.1519
+  1st-order autocorrelation coeff. for e: 0.003
+  lagged differences: F(4, 188) = 2.821 [0.0264]
 ```
 
 :::{dropdown} Python Script
@@ -480,22 +506,22 @@ ols d_y const d_x
 ```
 
 ```markdown
-Model 2: OLS, using observations 2-200 (n = 199)
+Model 2: OLS, using observations 2-200 (T = 199)
 Dependent variable: d_y
 
              coefficient   std. error   t-ratio   p-value
   -------------------------------------------------------
-  const      0.000742608   0.0725424    0.01024   0.9918 
-  d_x        0.0625065     0.0680560    0.9185    0.3595 
+  const      −0.0721970    0.0706927    −1.021    0.3084 
+  d_x        −0.0574247    0.0647031    −0.8875   0.3759 
 
-Mean dependent var   0.000505   S.D. dependent var   1.022925
-Sum squared resid    206.2991   S.E. of regression   1.023330
-R-squared            0.004264   Adjusted R-squared  -0.000791
-F(1, 197)            0.843562   P-value(F)           0.359503
-Log-likelihood      −285.9530   Akaike criterion     575.9060
-Schwarz criterion    582.4926   Hannan-Quinn         578.5717
+Mean dependent var  −0.068429   S.D. dependent var   0.994910
+Sum squared resid    195.2089   S.E. of regression   0.995444
+R-squared            0.003982   Adjusted R-squared  -0.001073
+F(1, 197)            0.787676   P-value(F)           0.375886
+Log-likelihood      −280.4549   Akaike criterion     564.9099
+Schwarz criterion    571.4965   Hannan-Quinn         567.5757
+rho                  0.000807   Durbin-Watson        1.978732
 ```
-
 
 :::{dropdown} Python Script
 #### Python
@@ -574,9 +600,22 @@ If residuals are stationary, the regression may be meaningful — this is called
 
 ---
 
+This is a great opportunity — both versions are strong but with slightly different strengths:
+
+* your earlier version → **more formal (variance growth, estimator behavior)**
+* my later version → **clean intuition + narrative clarity**
+
+👉 The goal is to **blend them into one coherent appendix**:
+
+* keep the **formal backbone**
+* preserve the **intuitive storyline**
+* avoid redundancy
+
+---
+
 ## Appendix 17A — Why Nonstationarity Leads to Spurious Regression
 
-This appendix provides a more formal explanation of why spurious regression arises when working with non-stationary time series.
+This appendix provides an intuitive but slightly more formal explanation of why regressions involving non-stationary time series can produce misleading results.
 
 ### A.1 Setup
 
@@ -585,7 +624,7 @@ Consider two independent random walks:
 ```{math}
 :enumerated: false
 x_t = x_{t-1} + u_t, \quad u_t \sim \text{WN}(0, \sigma_u^2)
-```
+````
 
 ```{math}
 :enumerated: false
@@ -594,19 +633,23 @@ y_t = y_{t-1} + v_t, \quad v_t \sim \text{WN}(0, \sigma_v^2)
 
 Assume:
 
-- $u_t$ and $v_t$ are independent  
-- there is **no true relationship** between $x_t$ and $y_t$  
+* $u_t$ and $v_t$ are independent
+* there is **no true relationship** between $x_t$ and $y_t$
 
-### A.2 Growth of Variance
+```{admonition} Key Point
+By construction, $x_t$ and $y_t$ are completely unrelated.
+```
 
-For a random walk:
+### A.2 Accumulation of Shocks
+
+A random walk can be written as:
 
 ```{math}
 :enumerated: false
 x_t = \sum_{s=1}^t u_s
 ```
 
-so:
+so its variance is:
 
 ```{math}
 :enumerated: false
@@ -614,12 +657,25 @@ so:
 ```
 
 ```{admonition} Key Observation
-The variance of a random walk grows over time — it does not remain constant.
-````
+The variance of a random walk **grows over time** — it does not remain constant.
+```
 
 This is the defining feature of **non-stationarity**.
 
-### A.3 Regression Problem
+### A.3 Persistent Trending Behavior
+
+Because shocks accumulate:
+
+* both $x_t$ and $y_t$ tend to **drift over time**
+* they exhibit **persistent trending behavior**
+
+Even though these trends are random, they can look systematic in finite samples.
+
+```{admonition} Intuition
+Random walks often appear to trend, even when driven purely by chance.
+```
+
+### A.4 The Regression Problem
 
 Now consider the regression:
 
@@ -635,49 +691,45 @@ The OLS estimator is:
 \hat{\beta} = \frac{\sum x_t y_t}{\sum x_t^2}
 ```
 
-### A.4 Why the Estimator Misbehaves
+### A.5 Why the Estimator Misbehaves
 
 Even though $x_t$ and $y_t$ are independent:
 
-* both are sums of persistent shocks
-* both exhibit strong trending behavior
+* both contain **persistent trends**
+* large values of $x_t$ tend to coincide with large values of $y_t$
 
-As $t$ increases:
+As the sample grows:
 
-* $\sum x_t^2$ grows rapidly
-* $\sum x_t y_t$ also grows due to shared trending patterns
-
----
+* $\sum x_t^2$ increases
+* $\sum x_t y_t$ also increases due to shared trending behavior
 
 ```{admonition} Key Insight
-Trending behavior induces **apparent correlation** even when none exists.
+Trending behavior induces **apparent correlation**, even when variables are unrelated.
 ```
 
-### A.5 Failure of Standard Asymptotics
+### A.6 Failure of Standard Inference
 
-In standard regression theory:
+Standard regression theory assumes:
 
-* variables are stationary
-* variances are constant
-* central limit theorem applies
+* constant variance
+* weak dependence
+* stable distributions over time
 
-But here:
+But with non-stationary data:
 
-* variance grows with $t$
-* dependence structure is strong
-* standard t-statistics no longer follow a t-distribution
-
----
+* variance increases with $t$
+* shocks have long-lasting effects
+* observations are highly dependent
 
 ```{admonition} Important
-The usual statistical tests are **not valid** under non-stationarity.
+Standard t-tests and F-tests are **not valid** when variables are non-stationary.
 ```
 
-### A.6 Residual Behavior
+### A.7 Residual Behavior
 
-More importantly, if the regression were meaningful, residuals should be stationary.
+If the regression were meaningful, the residuals should be stationary.
 
-However, in spurious regression:
+However:
 
 ```{math}
 :enumerated: false
@@ -687,47 +739,28 @@ e_t = y_t - \hat{\alpha} - \hat{\beta} x_t
 inherits non-stationarity from $y_t$ and $x_t$.
 
 ```{admonition} Key Diagnostic
-Non-stationary residuals are a hallmark of spurious regression.
+Non-stationary residuals are a hallmark of **spurious regression**.
 ```
-
-### A.7 Differencing as a Solution
-
-Taking first differences:
-
-```{math}
-:enumerated: false
-\Delta x_t = u_t, \quad \Delta y_t = v_t
-```
-
-which are stationary.
-
-Regression in differences:
-
-```{math}
-:enumerated: false
-\Delta y_t = \beta_1 \Delta x_t + \varepsilon_t
-```
-
-now satisfies standard assumptions.
-
----
 
 ### A.8 Big Picture
 
 ```{admonition} Summary
 Spurious regression arises because:
 
-- non-stationary series exhibit persistent trends  
-- these trends create artificial correlation  
-- standard regression theory breaks down  
+- non-stationary series drift over time  
+- random trends can align by chance  
+- OLS interprets this as a meaningful relationship  
+- standard inference breaks down  
 ```
 
----
+### A.9 How to Fix the Problem
 
-### A.9 Looking Ahead
+There are two main approaches:
 
-In the next chapter, we will see an important exception:
+* difference the data (focus on short-run relationships)
+* test for cointegration (recover long-run relationships)
 
-👉 If a linear combination of non-stationary variables is stationary, then the relationship is **not spurious** — this is called **cointegration**.
 
----
+```{admonition} Looking Ahead
+In later chapters, we will see that if a linear combination of non-stationary variables is stationary, the relationship is **not spurious** — this is called **cointegration**.
+```

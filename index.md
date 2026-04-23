@@ -1,4 +1,4 @@
-# Applied Time Series with GRETL: From Data to Trading Strategies
+# Applied Time Series with Gretl: From Data to Trading Strategies
 
 This is a small book (or, as of now, a set of notes) to give you a *feel* for **time series analysis and forecasting** with some application in economics and finance.
 
