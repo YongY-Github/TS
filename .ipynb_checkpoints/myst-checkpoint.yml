@@ -12,14 +12,12 @@ project:
 
 toc:
   - file: index.md
-  - file: basics.ipynb
-  - file: returns.md
-  - file: trading.ipynb
-  - file: z04-basicTS.md
-  - file: z05-smoothing.md
-  - file: z06-ARMA.md
-  - file: z07-ARIMA.md
-    
+  - file: ch17.md
+  - file: ch18.md
+  - file: ch19.md
+  - file: ch20.md
+  - file: ch21.md
+  
 exports:
   - format: pdf
     output: _build/exports/math-econ.pdf
