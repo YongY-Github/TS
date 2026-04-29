@@ -8,29 +8,38 @@ kernelspec:
 
 In Chapter 17, we saw that regressions involving nonstationary variables can produce **spurious results**.
 
-In Chapter 18, we introduced dynamic models (ARDL), which help capture short-run dependence.
+In Chapter 18, we introduced dynamic models such as ARDL, which capture short-run dependence and adjustment dynamics.
 
-However, an important question remains:
+An important question now arises:
 
-> **Can nonstationary variables still have a meaningful long-run relationship?**
+```{admonition} Central Question
+Can nonstationary variables still have a meaningful long-run relationship?
+```
 
-The answer is **yes** — and this is the idea behind **cointegration**.
+The answer is yes.
+
+This idea is called **cointegration**.
+
+---
 
 ## Learning Objectives
 
 By the end of this chapter, you should be able to:
 
-- understand the concept of cointegration  
-- distinguish spurious regression from cointegrated relationships  
-- implement the Engle–Granger test in GRETL  
-- interpret residual stationarity  
-- understand the idea of long-run equilibrium  
+- explain the idea of cointegration
+- distinguish spurious regression from cointegrated relationships
+- understand long-run equilibrium
+- implement the Engle–Granger procedure in GRETL
+- interpret residual stationarity
+- understand the logic of the ARDL bounds test
 
-## 20.1 Motivation: Spurious vs Meaningful Relationships
+---
+
+# 20.1 Motivation: Spurious vs Meaningful Relationships
 
 Recall from Chapter 17:
 
-If we regress two nonstationary series:
+If we regress two unrelated nonstationary variables,
 
 ```{math}
 :enumerated: false
@@ -39,110 +48,160 @@ y_t = \alpha + \beta x_t + e_t
 
 we may obtain:
 
-- high $R^2$  
-- significant t-statistics  
-- but **completely meaningless results**
+- high $R^2$
+- significant t-statistics
+- apparently strong relationships
+
+even when the variables are unrelated.
 
 ```{admonition} Key Problem
-Nonstationary variables can move together purely by chance, leading to **spurious regression**.
-````
+Nonstationary variables may move together purely by chance, leading to **spurious regression**.
+```
 
-But sometimes, variables move together **because they are linked by economic forces**.
+However, some nonstationary variables genuinely move together because they are linked by economic forces.
 
-Examples:
+Examples include:
 
-* consumption and income
-* prices in related markets
-* exchange rates and interest rates
+- consumption and income
+- exchange rates and prices
+- interest rates and inflation
+- prices in related financial markets
 
-## 20.2 What Is Cointegration?
+```{admonition} Key Idea
+Some nonstationary variables drift over time together because they share a long-run equilibrium relationship.
+```
+
+---
+
+# 20.2 What Is Cointegration?
+
+Suppose:
+
+- $x_t$ is nonstationary
+- $y_t$ is nonstationary
+
+but a particular linear combination is stationary.
+
+Then the variables are cointegrated.
 
 ```{admonition} Definition: Cointegration
-Two nonstationary series $x_t$ and $y_t$ are **cointegrated** or **co-trending** if a linear combination of them is stationary.
+Two variables are cointegrated if they are individually nonstationary, but some linear combination of them is stationary.
 ```
 
 Formally:
 
-* $x_t \sim I(1)$
-* $y_t \sim I(1)$
+```{math}
+:enumerated: false
+x_t \sim I(1),
+\qquad
+y_t \sim I(1)
+```
 
 but:
 
-$$
-e_t = y_t - \beta x_t
-$$
+```{math}
+:enumerated: false
+e_t = y_t - \beta x_t \sim I(0)
+```
 
-is **stationary** or $I(0)$.
+```{admonition} Key Insight
+Cointegration means the variables may wander over time, but they do not drift too far apart in the long run.
+```
 
 ---
 
-```{admonition} Key Idea
-Cointegration means that although variables wander over time, they do not drift too far apart.
-```
+# 20.3 Intuition: Long-Run Equilibrium
 
-## 20.3 Intuition: Long-Run Equilibrium
+Even if two variables individually behave like random walks, their difference may remain stable.
 
-Even if $x_t$ and $y_t$ individually behave like random walks:
-
-* their difference may be stable
-* deviations from equilibrium are temporary
-
+This suggests that some equilibrium force ties them together.
 
 ```{admonition} Intuition
-Cointegrated variables are tied together by a **long-run equilibrium relationship**.
+Cointegrated variables are connected by a long-run equilibrium relationship.
 ```
 
+```{admonition} Intuition (Optional)
+Think of two variables connected by a rubber band.
+
+They may drift apart temporarily, but forces exist that pull them back together over time.
+```
+
+Examples:
+
+- consumption cannot permanently diverge from income
+- exchange rates and relative prices remain linked in the long run
+- stock prices of related firms may move together over time
+
 ---
 
-## 20.4 Spurious Regression vs Cointegration
+# 20.4 Spurious Regression vs Cointegration
 
-This is a crucial distinction.
+This distinction is fundamental.
 
-| Case                | Residuals     | Interpretation              |
-| ------------------- | ------------- | --------------------------- |
-| Spurious regression | Nonstationary | No meaningful relationship  |
-| Cointegration       | Stationary    | Long-run equilibrium exists |
-
----
+| Case | Residuals | Interpretation |
+|---|---|---|
+| Spurious regression | Nonstationary | No meaningful relationship |
+| Cointegration | Stationary | Long-run equilibrium exists |
 
 ```{admonition} Diagnostic Principle
-The key to distinguishing spurious regression from cointegration is:
+The key question is:
 
-→ **Are the residuals stationary?**
+→ Are the residuals stationary?
 ```
 
-## 20.5 Engle–Granger Two-Step Procedure
+If residuals are stationary, the regression may be meaningful despite nonstationarity in the original variables.
 
-We now describe a practical method for testing cointegration.
+---
 
-Get data from Gretl:
+# 20.5 The Engle–Granger Two-Step Procedure
 
-`File → Open data → Sample file...` and select `gdp` data from the `POE 4th ed.` database.
+We now describe the classic Engle–Granger procedure for testing cointegration.
 
-which contains the variables:
+We use quarterly GDP data from Gretl.
+
+## Step 1: Load the Data
+
+### Menu
+
+`File → Open data → Sample file...`
+
+Select:
+
+```text
+gdp
+```
+
+from the `POE 4th ed.` database.
+
+The dataset contains:
 
 ```gretl
 usa     real GDP of USA
 aus     real GDP of Australia
 ```
 
----
-
-### Step 1: Estimate Long-Run Relationship
+## Step 2: Estimate the Long-Run Relationship
 
 Estimate:
 
-$$
-aus_t = \alpha + \beta usa_t + e_t
-$$
+```{math}
+:enumerated: false
+aus_t
+=
+\alpha
++
+\beta usa_t
++
+e_t
+```
 
----
-
-#### Gretl Command
+## Gretl Command
 
 ```gretl
 ols aus const usa
 ```
+
+## Output
 
 ```gretl
 Model 1: OLS, using observations 1970:1-2000:4 (T = 124)
@@ -153,371 +212,455 @@ Dependent variable: aus
   const       −1.07237     0.403225      −2.659   0.0089    ***
   usa          1.00099     0.00610028   164.1     5.85e-145 ***
 
-Mean dependent var   62.72528   S.D. dependent var   17.65155
-Sum squared resid    172.8638   S.E. of regression   1.190343
-R-squared            0.995489   Adjusted R-squared   0.995452
-F(1, 122)            26925.45   P-value(F)           5.8e-145
-Log-likelihood      −196.5462   Akaike criterion     397.0924
-Schwarz criterion    402.7329   Hannan-Quinn         399.3837
-rho                  0.860968   Durbin-Watson        0.272654
-
+Mean dependent var   62.72528
+R-squared            0.995489
+Durbin-Watson        0.272654
 ```
 
-### Step 2: Extract Residuals
+```{admonition} Observation
+The regression appears extremely strong.
 
-Save residuals:
+But high $R^2$ alone does not prove a meaningful relationship.
+```
+
+## Step 3: Extract the Residuals
+
+Save the residuals:
 
 ```gretl
 series uhat = $uhat
 ```
 
-```{figure} figs/ch20/gretl_1.png
-:name: fig-residual
-:width: 70%
-:align: center
-
-Residual
+```markdown
+[GRETL Screenshot Placeholder: Residual series]
 ```
 
-### Step 3: Test Residual Stationarity
+```{admonition} Key Step
+The residuals contain the estimated deviations from long-run equilibrium.
+```
 
-Perform an ADF test:
+## Step 4: Test Residual Stationarity
 
-#### Menu
+We now test whether the residuals are stationary.
 
-Select `uhat`
+This is the crucial step.
 
-`Variable → Unit root tests → Augmented Dickey-Fuller test`
 
-#### Command
+## Menu
+
+Select `uhat`.
+
+Then:
+
+`Variable → Unit root tests → Augmented Dickey-Fuller`
+
+## Gretl Command
 
 ```gretl
 adf 1 uhat
 ```
 
+## Example Output
+
 ```gretl
-[Augmented Dickey-Fuller test for uhat
-testing down from 25 lags, criterion AIC
-sample size 123
+Augmented Dickey-Fuller test for uhat
 unit-root null hypothesis: a = 1
 
-  test with constant 
-  including 0 lags of (1-L)uhat
-  model: (1-L)y = b0 + (a-1)*y(-1) + e
-  estimated value of (a - 1): -0.139029
-  test statistic: tau_c(1) = -3.03875
-  asymptotic p-value 0.03145
-  1st-order autocorrelation coeff. for e: -0.007
-
-  with constant and trend 
-  including 0 lags of (1-L)uhat
-  model: (1-L)y = b0 + b1*t + (a-1)*y(-1) + e
-  estimated value of (a - 1): -0.138869
-  test statistic: tau_ct(1) = -3.01769
-  asymptotic p-value 0.1272
-  1st-order autocorrelation coeff. for e: -0.008
+test statistic: tau_c(1) = -3.03875
+asymptotic p-value 0.03145
 ```
 
-## 20.6 Hypotheses
+---
 
-$$
-H_0: \text{Residuals have a unit root (no cointegration)}
-$$
+# 20.6 Hypotheses
 
-$$
-H_1: \text{Residuals are stationary (cointegration)}
-$$
+We test:
+
+```{math}
+:enumerated: false
+H_0:
+\text{Residuals contain a unit root}
+```
+
+against:
+
+```{math}
+:enumerated: false
+H_1:
+\text{Residuals are stationary}
+```
 
 ```{admonition} Decision Rule
-- Reject $H_0$ → residuals stationary → cointegration  
-- Fail to reject $H_0$ → spurious regression  
+- Reject $H_0$ → residuals stationary → cointegration
+- Fail to reject $H_0$ → no cointegration
 ```
 
-## 20.7 Interpretation
+---
+
+# 20.7 Interpretation
 
 If residuals are stationary:
 
-* deviations from equilibrium are temporary
-* variables move together in the long run
-
+- deviations from equilibrium are temporary
+- variables move together in the long run
+- the regression is not spurious
 
 ```{admonition} Key Insight
 Cointegration restores meaning to regressions involving nonstationary variables.
 ```
 
-## 20.8 Important Caveats
+---
+
+# 20.8 Why Residual Stationarity Matters
+
+Suppose:
+
+```{math}
+:enumerated: false
+e_t
+=
+y_t
+-
+\beta x_t
+```
+
+is stationary.
+
+Then although:
+
+- $x_t$ may drift
+- $y_t$ may drift
+
+their deviations from equilibrium remain bounded.
+
+```{admonition} Big Picture
+Cointegration means that the variables share a common long-run stochastic trend.
+```
+
+---
+
+# 20.9 Important Caveats
+
+The Engle–Granger procedure has several limitations.
 
 ```{admonition} Important
-The Engle–Granger method:
+The Engle–Granger approach:
 
-- assumes a single cointegrating relationship  
-- depends on which variable is treated as dependent  
+- assumes a single cointegrating relationship
+- depends on which variable is treated as dependent
+- requires variables to be $I(1)$
 ```
 
-## 20.9 Two Approaches to Cointegration
+In multivariate systems, more advanced methods may be preferable.
 
-So far, we have used the **Engle–Granger approach**, which is based on testing whether residuals are stationary.
+---
 
-An alternative approach is based on **dynamic models**, using ARDL.
+# 20.10 Cointegration and Dynamic Models
 
-```{admonition} Two Approaches to Cointegration
-- **Residual-based approach**: Engle–Granger  
-- **Model-based approach**: ARDL bounds test  
+Cointegration naturally connects to the ARDL framework from Chapter 18.
 
-Both aim to detect long-run relationships, but they use different strategies.
+Recall the ARDL model:
+
+```{math}
+:enumerated: false
+y_t
+=
+\alpha
++
+\phi y_{t-1}
++
+\beta_0 x_t
++
+\beta_1 x_{t-1}
++
+u_t
 ```
 
-## 20.10 Cointegration via ARDL (Bounds Testing)
+This model contains both:
 
-While the Engle–Granger method is intuitive, it has an important limitation:
+- short-run dynamics
+- long-run structure
 
-* it requires all variables to be $I(1)$
+```{admonition} Key Connection
+ARDL models can be used to test for long-run relationships between variables.
+```
 
-In practice, some variables may be $I(0)$ and others $I(1)$.
+---
+
+# 20.11 Cointegration via ARDL (Bounds Testing)
+
+The ARDL bounds approach provides an alternative to Engle–Granger.
+
+An important advantage is flexibility.
 
 ```{admonition} Advantage
-The ARDL bounds approach can be used when variables are a **mixture of $I(0)$ and $I(1)$**.
+The ARDL bounds approach allows variables to be a mixture of:
+
+- $I(0)$
+- $I(1)$
 ```
 
-### 20.10.1 From ARDL to ECM
+as long as none are $I(2)$.
+
+---
+
+# 20.12 From ARDL to ECM
 
 Consider:
 
-$$
-y_t = \alpha + \phi y_{t-1} + \beta_0 x_t + \beta_1 x_{t-1} + u_t
-$$
+```{math}
+:enumerated: false
+y_t
+=
+\alpha
++
+\phi y_{t-1}
++
+\beta_0 x_t
++
+\beta_1 x_{t-1}
++
+u_t
+```
 
 This can be rewritten as:
 
-$$
-\Delta y_t = \gamma \Delta x_t + \lambda_1 y_{t-1} + \lambda_2 x_{t-1} + u_t
-$$
-
-```{admonition} Key Insight
-A long-run relationship exists if the lagged level terms are jointly significant.
+```{math}
+:enumerated: false
+\Delta y_t
+=
+\gamma \Delta x_t
++
+\lambda_1 y_{t-1}
++
+\lambda_2 x_{t-1}
++
+u_t
 ```
 
-### 20.10.2 The Bounds Test
+```{admonition} Key Insight
+Cointegration exists if the lagged level terms are jointly significant.
+```
+
+---
+
+# 20.13 The Bounds Test
 
 We test:
 
-$$
-H_0: \lambda_1 = \lambda_2 = 0
-$$
-
-```{admonition} Interpretation
-- $H_0$ → no cointegration  
-- reject $H_0$ → cointegration exists  
+```{math}
+:enumerated: false
+H_0:
+\lambda_1
+=
+\lambda_2
+=
+0
 ```
 
-### 20.10.3 Decision Rule
+against:
 
-| F-statistic   | Conclusion       |
-| ------------- | ---------------- |
-| < lower bound | No cointegration |
-| > upper bound | Cointegration    |
-| In between    | Inconclusive     |
-
-```{admonition} Key Insight
-The bounds test avoids requiring knowledge of the exact integration order.
+```{math}
+:enumerated: false
+H_1:
+\text{At least one coefficient is nonzero}
 ```
 
-### 20.10.4 Implementation in Gretl
+## Decision Rule
 
+| F-statistic | Conclusion |
+|---|---|
+| below lower bound | no cointegration |
+| above upper bound | cointegration |
+| between bounds | inconclusive |
+
+```{admonition} Key Idea
+The bounds test avoids requiring exact knowledge of the integration order of the variables.
+```
 
 ---
 
-#### Step 1: Estimate ARDL Model
+# 20.14 Implementing ARDL Bounds Testing in GRETL
 
-#### Menu
+## Step 1: Estimate an ARDL Model
 
-Model → Time series → ARDL
+### Menu
 
-* Select dependent variable ($y$)
-* Select regressors ($x$)
-* Choose lag lengths
+`Model → Time series → ARDL`
 
----
+Choose:
 
-```markdown id="ardl_setup_placeholder"
+- dependent variable
+- regressors
+- lag lengths
+
+```markdown
 [GRETL Screenshot Placeholder: ARDL specification window]
 ```
 
----
+## Step 2: Perform Bounds Test
 
-#### Step 2: Perform Bounds Test
+From the ARDL output window:
 
-In the ARDL output window:
+- select bounds test option
 
-* select option for **Bounds test for cointegration**
-
----
-
-```markdown id="ardl_bounds_output_placeholder"
+```markdown
 [GRETL Screenshot Placeholder: Bounds test output]
 ```
 
----
+## Example Command
 
-#### Command (example)
-
-```gretl id="ardl_cmd"
+```gretl
 ardl 2 2 y x
 ```
 
 Then:
 
-```gretl id="bounds_cmd"
+```gretl
 ecm
 ```
 
-(or use GUI for bounds test output)
-
 ---
 
-### 20.11.6 Interpreting GRETL Output
+# 20.15 Comparing Engle–Granger and ARDL
 
-Focus on:
+| Feature | Engle–Granger | ARDL Bounds |
+|---|---|---|
+| Requires all variables $I(1)$ | Yes | No |
+| Residual-based | Yes | No |
+| Dynamic model based | No | Yes |
+| Allows mixed $I(0)/I(1)$ variables | No | Yes |
 
-* F-statistic
-* critical value bounds
-
----
-
-```{admonition} Interpretation Rule
-- If F-statistic > upper bound → cointegration  
-- If F-statistic < lower bound → no cointegration  
-- Otherwise → inconclusive  
+```{admonition} Two Approaches
+- Engle–Granger focuses on residual stationarity.
+- ARDL bounds testing focuses on long-run information embedded in a dynamic model.
 ```
 
 ---
 
-### 20.11.7 Important Conditions
+# 20.16 Common Mistakes
 
-```{admonition} Important
+```{admonition} Common Mistakes
 :class: warning
 
-The ARDL bounds test requires:
+**1. Ignoring integration order**  
+Variables should not be $I(2)$.
 
-- variables are not $I(2)$  
-- correct model specification  
-- appropriate lag selection  
+**2. Assuming high $R^2$ implies cointegration**  
+Residual stationarity is the key diagnostic.
+
+**3. Forgetting lag selection**  
+Dynamic misspecification affects cointegration tests.
+
+**4. Confusing correlation with equilibrium**  
+Cointegration implies a stable long-run relationship, not merely correlation.
+
+**5. Ignoring economic theory**  
+Cointegration tests should be guided by economic reasoning.
 ```
 
 ---
 
-### 20.11.8 Comparison with Engle–Granger
+# 20.17 Looking Ahead
 
-| Feature                          | Engle–Granger | ARDL Bounds |
-| -------------------------------- | ------------- | ----------- |
-| Requires all variables $I(1)$    | Yes           | No          |
-| Based on residual stationarity   | Yes           | No          |
-| Uses dynamic model               | No            | Yes         |
-| Handles mixed integration orders | No            | Yes         |
+Cointegration tells us that a long-run equilibrium relationship exists.
 
----
+But how do variables adjust when they deviate from equilibrium?
 
-```{admonition} Two Approaches to Cointegration
-- **Residual-based approach**: Engle–Granger  
-- **Model-based approach**: ARDL bounds test  
+This leads naturally to the **Error Correction Model (ECM)**.
 
-Both aim to detect long-run relationships, but they use different strategies.
+
+# Key Takeaways
+
+```{admonition} Summary
+- Cointegration allows meaningful relationships between nonstationary variables.
+- Cointegrated variables share a long-run equilibrium relationship.
+- Residual stationarity distinguishes cointegration from spurious regression.
+- Engle–Granger provides a residual-based approach.
+- ARDL bounds testing provides a dynamic-model-based approach.
 ```
 
 ---
 
-### 20.10.5 Summary of ARDL Approach
+# Appendix 20A — The ARDL Bounds Test (Conceptual Overview)
 
-```{admonition} Key Takeaways
-- ARDL allows testing for cointegration within a dynamic model  
-- works with mixed $I(0)/I(1)$ variables  
-- complements the Engle–Granger approach  
-```
+This appendix provides a simplified explanation of the ARDL bounds approach.
 
 ---
 
-## 20.11 Summary
+# A.1 Starting Point
 
-```{admonition} Key Takeaways
-- Cointegration allows meaningful relationships between nonstationary variables  
-- The key diagnostic is **residual stationarity**  
-- Engle–Granger and ARDL provide complementary approaches  
-- Cointegration implies a long-run equilibrium  
-```
-
----
-
-## Looking Ahead
-
-Cointegration tells us that a long-run relationship exists.
-
-In the next chapter, we show how this relationship governs **short-run adjustments** through the **Error Correction Model (ECM)**.
-
----
-
-## Appendix 20A — The ARDL Bounds Test (Conceptual Overview)
-
-This appendix provides a simplified explanation of the ARDL bounds test for cointegration.
-
-### A.1 Starting Point
-
-Consider the ECM representation:
+Consider:
 
 ```{math}
 :enumerated: false
-\Delta y_t = \gamma \Delta x_t + \lambda_1 y_{t-1} + \lambda_2 x_{t-1} + u_t
+\Delta y_t
+=
+\gamma \Delta x_t
++
+\lambda_1 y_{t-1}
++
+\lambda_2 x_{t-1}
++
+u_t
 ```
 
-### A.2 The Key Question
+---
 
-We want to know:
+# A.2 The Key Question
 
-> Do the level terms matter?
+Do the lagged level terms matter?
 
-### A.3 Hypothesis
+That is:
 
 ```{math}
 :enumerated: false
-H_0: \lambda_1 = \lambda_2 = 0
+H_0:
+\lambda_1
+=
+\lambda_2
+=
+0
 ```
 
-```{math}
-:enumerated: false
-H_1: \text{At least one is nonzero}
-```
+---
 
-```{admonition} Interpretation
-- If both coefficients are zero → no long-run relationship  
-- If at least one is nonzero → cointegration exists  
-````
+# A.3 Interpretation
 
-### A.4 Why Two Critical Values?
+If both coefficients are zero:
 
-The test statistic depends on whether variables are:
+- no long-run relationship exists
 
-* stationary ($I(0)$)
-* nonstationary ($I(1)$)
+If at least one coefficient is nonzero:
 
-Since we may not know this exactly, the bounds test provides:
-
-* a **lower bound** (all variables $I(0)$)
-* an **upper bound** (all variables $I(1)$)
-
-### A.5 Decision Rule
-
-* Below lower bound → no cointegration
-* Above upper bound → cointegration
-* Between bounds → inconclusive
+- long-run equilibrium exists
 
 ```{admonition} Key Insight
-The bounds test allows inference **without knowing the exact integration order** of variables.
+Cointegration means that lagged levels help explain current changes.
 ```
 
-### A.6 Intuition
+---
 
-* If lagged levels do not matter → no long-run link
-* If they matter → system has equilibrium structure
+# A.4 Why Two Critical Values?
+
+The asymptotic distribution depends on whether variables are:
+
+- stationary ($I(0)$)
+- nonstationary ($I(1)$)
+
+The bounds approach therefore provides:
+
+- lower critical values
+- upper critical values
+
+---
+
+# A.5 Decision Rule
+
+- Below lower bound → no cointegration
+- Above upper bound → cointegration
+- Between bounds → inconclusive
 
 ```{admonition} Big Picture
-The ARDL bounds test checks whether **long-run information is embedded in the dynamic model**.
+The bounds test allows inference without requiring exact knowledge of the integration order of the variables.
 ```

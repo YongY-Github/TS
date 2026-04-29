@@ -4,178 +4,325 @@ kernelspec:
   display_name: Python (jb2-env)
 ---
 
-# Chapter 19 - Predictive Causality (Granger Causality)
+# Chapter 19 — Predictive Causality (Granger Causality)
 
-In the previous chapter, we introduced **dynamic models (ARDL)** and emphasized the importance of capturing temporal dependence.
+In the previous chapter, we introduced **dynamic regression models** and emphasized the importance of lagged relationships.
 
-In this chapter, we ask a natural question:
+We now ask a natural question:
 
-> **Does one variable help predict another?**
+```{admonition} Central Question
+Does one variable help predict another?
+```
 
-This idea is formalized using **Granger causality**.
+This idea is formalized through **Granger causality**.
+
+Despite the name, Granger causality is not about deep philosophical or structural causality. It is about **predictive content**.
+
+---
 
 ## Learning Objectives
 
 By the end of this chapter, you should be able to:
 
-- understand the idea of predictive (Granger) causality  
-- distinguish Granger causality from true causality  
-- implement Granger causality tests in GRETL  
-- interpret test results carefully  
-- understand limitations and common pitfalls  
+- explain the idea of Granger causality
+- distinguish predictive causality from true causality
+- understand restricted and unrestricted models
+- interpret the F-test for Granger causality
+- choose lag length carefully
+- implement Granger causality tests in Gretl
+- understand common limitations and pitfalls
 
 ---
 
-## 19.1 What Is Granger Causality?
+# 19.1 What Is Granger Causality?
 
-Suppose we are interested in whether a variable $x_t$ helps predict another variable $y_t$.
+Suppose we want to know whether $x_t$ helps predict $y_t$.
 
-We say that:
+We say that $x_t$ **Granger-causes** $y_t$ if past values of $x_t$ help forecast $y_t$ after controlling for past values of $y_t$.
 
 ```{admonition} Definition: Granger Causality
-Variable $x_t$ **Granger-causes** $y_t$ if past values of $x_t$ help predict $y_t$, beyond what is possible using only past values of $y_t$.
-````
-
-### A Simple Comparison
-
-We compare two models:
-
-### Model 1 (restricted)
-
-$$
-y_t = \alpha + \sum_{i=1}^{p} \phi_i y_{t-i} + e_t
-$$
-
-### Model 2 (unrestricted)
-
-$$
-y_t = \alpha + \sum_{i=1}^{p} \phi_i y_{t-i} + \sum_{j=1}^{q} \beta_j x_{t-j} + u_t
-$$
-
-By the F-test:
-
-$$
-F = \frac{(SSR_R - SSR_U) / q}{SSR_U / (n - k - 1)}
-$$
-
-where 
-
-* $SSR_R$ is the sum of square residuals for the restricted model
-* $SSR_U$ is the sum of square residuals for the unrestricted model
-
-```{admonition} Key Idea
-If including lagged values of $x_t$ improves prediction of $y_t$, then $x_t$ Granger-causes $y_t$.
+Variable $x_t$ Granger-causes $y_t$ if lagged values of $x_t$ contain useful predictive information for $y_t$ beyond the information already contained in lagged values of $y_t$.
 ```
 
 ---
 
-## 19.2 Intuition
+# 19.2 Prediction, Not True Causation
 
-Granger causality is about **information and prediction**, not true causality.
+Granger causality is about forecasting.
+
+It asks:
+
+> Do past values of $x_t$ improve prediction of $y_t$?
+
+It does **not** automatically answer:
+
+> Does $x_t$ structurally or economically cause $y_t$?
 
 ```{admonition} Important
-Granger causality does **not** mean that $x_t$ truly causes $y_t$ in a structural or economic sense.
+Granger causality does **not** prove true causality.
 
-It only means that $x_t$ contains useful predictive information about $y_t$.
+It only shows that one variable contains useful predictive information about another variable.
 ```
 
-### Example (Economic Intuition)
+## Examples
 
-* Interest rates → inflation
-* Income → consumption
-* Money supply → output
+We might ask:
 
-In each case, we ask:
+- Do interest rates help predict inflation?
+- Does income help predict consumption?
+- Does money supply help predict output?
+- Do exchange rates help predict exports?
 
-👉 Do past values of one variable help forecast another?
+In each case, the question is predictive:
 
-## 19.3 Hypothesis Testing Framework
-
-We test:
-
-$$
-H_0: \beta_1 = \beta_2 = \cdots = \beta_q = 0
-$$
-
-$$
-H_1: \text{At least one } \beta_j \neq 0
-$$
+```{admonition} Key Question
+Do past values of one variable improve forecasts of another?
+```
 
 ---
+
+# 19.3 Restricted and Unrestricted Models
+
+To test whether $x_t$ Granger-causes $y_t$, we compare two models.
+
+## Restricted Model
+
+The restricted model uses only past values of $y_t$:
+
+```{math}
+:enumerated: false
+y_t
+=
+\alpha
++
+\sum_{i=1}^{p}\phi_i y_{t-i}
++
+u_t
+```
+
+This model assumes that past values of $x_t$ do **not** help predict $y_t$.
+
+## Unrestricted Model
+
+The unrestricted model includes both past values of $y_t$ and past values of $x_t$:
+
+```{math}
+:enumerated: false
+y_t
+=
+\alpha
++
+\sum_{i=1}^{p}\phi_i y_{t-i}
++
+\sum_{j=1}^{q}\beta_j x_{t-j}
++
+u_t
+```
+
+```{admonition} Key Idea
+If adding lagged values of $x_t$ improves prediction of $y_t$, then $x_t$ Granger-causes $y_t$.
+```
+
+---
+
+# 19.4 Hypothesis Testing Framework
+
+The null hypothesis is that lagged values of $x_t$ do not help predict $y_t$:
+
+```{math}
+:enumerated: false
+H_0:
+\beta_1
+=
+\beta_2
+=
+\cdots
+=
+\beta_q
+=
+0
+```
+
+The alternative is:
+
+```{math}
+:enumerated: false
+H_1:
+\text{at least one } \beta_j \neq 0
+```
 
 ```{admonition} Interpretation
-- Fail to reject $H_0$ → no Granger causality  
-- Reject $H_0$ → evidence of Granger causality  
+- Fail to reject $H_0$ → no evidence that $x_t$ Granger-causes $y_t$
+- Reject $H_0$ → evidence that $x_t$ Granger-causes $y_t$
 ```
 
 ---
 
-## 19.4 Implementation in GRETL
+# 19.5 The F-Test Intuition
+
+The Granger causality test compares:
+
+- the restricted model
+- the unrestricted model
+
+If the unrestricted model fits much better, then lagged values of $x_t$ add useful predictive information.
+
+The F-statistic is:
+
+```{math}
+:enumerated: false
+F
+=
+\frac{(SSR_R - SSR_U)/q}{SSR_U/(T-k)}
+```
+
+where:
+
+- $SSR_R$ is the sum of squared residuals from the restricted model
+- $SSR_U$ is the sum of squared residuals from the unrestricted model
+- $q$ is the number of restrictions
+- $T$ is the number of observations
+- $k$ is the number of parameters in the unrestricted model
+
+```{admonition} Intuition
+If removing lagged $x_t$ variables makes the model much worse, then those lagged variables contain useful predictive information.
+```
+
+---
+
+# 19.6 Possible Outcomes
+
+Granger causality can run in one direction, both directions, or neither direction.
+
+| Result | Interpretation |
+|---|---|
+| $x \rightarrow y$ | $x$ helps predict $y$ |
+| $y \rightarrow x$ | $y$ helps predict $x$ |
+| both directions | feedback relationship |
+| neither direction | no predictive relationship |
+
+```{admonition} Important
+A feedback relationship does not necessarily mean simultaneous causation. It means both variables contain useful lagged predictive information about each other.
+```
+
+---
+
+# 19.7 Lag Length Matters
+
+Lag selection is crucial.
+
+Too few lags may omit important dynamics.
+
+Too many lags may reduce degrees of freedom and make the test less precise.
+
+```{admonition} Practical Advice
+- Too few lags → omitted dynamics
+- Too many lags → loss of degrees of freedom
+```
+
+In practice, lag length can be guided by:
+
+- AIC
+- BIC
+- HQC
+- residual diagnostics
+- economic reasoning
+
+---
+
+# 19.8 Stationarity Matters
+
+Granger causality tests are usually applied to stationary series.
+
+```{admonition} Important
+If variables are nonstationary, Granger causality tests can produce misleading results.
+```
+
+If variables are $I(1)$, common options include:
+
+- difference the variables
+- test for cointegration
+- use an error correction framework if cointegration exists
+
+```{admonition} Connection
+Spurious regression arises when nonstationary variables are used carelessly in levels.
+
+Granger causality tests can suffer from similar problems if stationarity is ignored.
+```
+
+---
+
+# 19.9 Economic Interpretation
+
+Even when Granger causality is detected, we should interpret the result carefully.
+
+It does not necessarily imply:
+
+- policy effectiveness
+- a structural mechanism
+- true economic causality
+
+```{admonition} Big Picture
+Granger causality is best viewed as a tool for forecasting and temporal ordering, not as proof of structural causation.
+```
+
+---
+
+# 19.10 Gretl Example: Interest Rates and Inflation
+
+We now implement a Granger causality test in GRETL using the `jgm-data` dataset. This follows the example in your notes. :contentReference[oaicite:0]{index=0}
+
+We ask:
+
+> Do short-term interest rates help predict CPI inflation?
+
+## Step 1: Load the Data
 
 ### Menu
 
-#### Step 1: Estimate the Model
+`File → Open data → Sample file...`
 
-`File → Open data → Sample file...` and select `jgm-data` data from the `Gretl` database.
+Select `jgm-data` from the GRETL database.
 
-* Select variables:
+We use:
 
 ```gretl
-pi_c     Inflation rate based on the CPI
-r_s      Short term iterest rate
+pi_c     inflation rate based on the CPI
+r_s      short-term interest rate
 ```
 
-#### Step 2: Restricted model AR(p)
+# 19.11 Restricted Model
+
+The restricted model predicts inflation using only its own past values.
+
+In your notes, lag selection suggests an AR(1) model for `pi_c`.
+
+## Menu
 
 `Model → Univariate time series → ARIMA lag selection`
 
-Dependent variable `pi_c`  and try AR = 5:
+Dependent variable:
 
 ```gretl
-Function evaluations: 23
-Evaluations of gradient: 10
-
-Model 1: ARMA, using observations 1952-1994 (T = 43)
-Estimated using AS 197 (exact ML)
-Dependent variable: pi_c
-Standard errors based on Hessian
-
-             coefficient   std. error      z       p-value 
-  ---------------------------------------------------------
-  const       3.82979       1.40057      2.734    0.0062    ***
-  phi_1       1.08168       0.162053     6.675    2.47e-011 ***
-  phi_2      −0.253378      0.246877    −1.026    0.3047   
-  phi_3       0.0181131     0.166423     0.1088   0.9133   
-
-Mean dependent var   4.246077   S.D. dependent var   3.195937
-Mean of innovations  0.014738   S.D. of innovations  1.494649
-R-squared            0.776339   Adjusted R-squared   0.765156
-Log-likelihood      −79.07128   Akaike criterion     168.1426
-Schwarz criterion    176.9486   Hannan-Quinn         171.3899
-
-                        Real  Imaginary    Modulus  Frequency
-  -----------------------------------------------------------
-  AR
-    Root  1           1.2659     0.0000     1.2659     0.0000
-    Root  2           6.3614    -1.7735     6.6040    -0.0433
-    Root  3           6.3614     1.7735     6.6040     0.0433
-  -----------------------------------------------------------
+pi_c
 ```
 
-The above suggest one lag, i.e. AR(1).
+Try a maximum AR lag of 5.
 
-Estimate this AR(1)
+Example output suggests that one lag is sufficient.
+
+Then estimate:
 
 `Model → Univariate time series → ARIMA`
 
-```gretl
-Function evaluations: 23
-Evaluations of gradient: 10
+with AR order 1.
 
+## Restricted Model Output
+
+```gretl
 Model 2: ARMA, using observations 1952-1994 (T = 43)
 Estimated using AS 197 (exact ML)
 Dependent variable: pi_c
-Standard errors based on Hessian
 
              coefficient   std. error     z       p-value 
   --------------------------------------------------------
@@ -187,30 +334,41 @@ Mean of innovations  0.034572   S.D. of innovations  1.532847
 R-squared            0.764867   Adjusted R-squared   0.764867
 Log-likelihood      −80.10105   Akaike criterion     166.2021
 Schwarz criterion    171.4857   Hannan-Quinn         168.1505
-
-                        Real  Imaginary    Modulus  Frequency
-  -----------------------------------------------------------
-  AR
-    Root  1           1.1447     0.0000     1.1447     0.0000
-  -----------------------------------------------------------
 ```
 
-Note your SSR:
+Save the error sum of squares:
 
-`Save → Error sum of squares` as scalar = 101.033673577098
+`Save → Error sum of squares`
 
-#### Step 3: Unrestricted model
+In the example:
+
+```{math}
+:enumerated: false
+SSR_R = 101.0337
+```
+
+# 19.12 Unrestricted Model
+
+The unrestricted model includes lagged interest rates.
+
+We use two lags of `r_s`, based on lag selection.
+
+## Lag Selection
+
+### Menu
 
 `Model → Multivariate time series → VAR lag selection`
 
-Dependent variable `pi_c`  and `r_s` as exogenous variable and maximum lag = 5:
+Use:
+
+- dependent variable: `pi_c`
+- predictor: `r_s`
+- maximum lag: 5
+
+Example output:
 
 ```gretl
 VAR system, maximum lag order 5
-
-The asterisks below indicate the best (that is, minimized) values
-of the respective information criteria, AIC = Akaike criterion,
-BIC = Schwarz Bayesian criterion and HQC = Hannan-Quinn criterion.
 
 lags        loglik    p(LR)       AIC          BIC          HQC
 
@@ -221,23 +379,28 @@ lags        loglik    p(LR)       AIC          BIC          HQC
    5     -65.76616  0.97785    3.829798     4.131458     3.937126 
 ```
 
-AIC (BIC and HQC) suggest 2 lags is optimum.
+The information criteria suggest two lags.-
+
+## Estimate the Unrestricted Model
+
+### Menu
 
 `Model → Univariate time series → ARIMA`
 
-* Dependent: `pi_c`
-* Regressors: `r_s(-1) r_s(-2)`
+Use:
 
-Use `lags...` in the model box (for regressors) and set AR = 1.
+- dependent variable: `pi_c`
+- AR order: 1
+- regressors: `r_s(-1) r_s(-2)`
+
+Use the `lags...` icon in the model box to create lagged regressors.
+
+## Output
 
 ```gretl
-Function evaluations: 23
-Evaluations of gradient: 10
-
 Model 3: ARMAX, using observations 1954-1994 (T = 41)
 Estimated using AS 197 (exact ML)
 Dependent variable: pi_c
-Standard errors based on Hessian
 
              coefficient   std. error     z       p-value 
   --------------------------------------------------------
@@ -251,54 +414,81 @@ Mean of innovations  0.076028   S.D. of innovations  1.288293
 R-squared            0.829694   Adjusted R-squared   0.820731
 Log-likelihood      −69.33345   Akaike criterion     148.6669
 Schwarz criterion    157.2348   Hannan-Quinn         151.7868
-
-                        Real  Imaginary    Modulus  Frequency
-  -----------------------------------------------------------
-  AR
-    Root  1           1.1279     0.0000     1.1279     0.0000
-  -----------------------------------------------------------
 ```
 
-Note your SSR for the unrestricted model:
+Save the unrestricted error sum of squares.
 
-`Save → Error sum of squares` as scalar = 68.0476155829897
-
-#### Step 4: Perform Granger Causality Test
-
-So we now have:
-
-SSR unrestricted and SSR restricted, which you can place into the formula for F-test:
+In the example:
 
 ```{math}
 :enumerated: false
-F = \frac{(SSR_R - SSR_U) / q}{SSR_U / (n - k - 1)} = \frac{(101.03-68.05)/2}{101.03/(41-3-1)} = 6.04
+SSR_U = 68.0476
 ```
 
-At 0.05 level of significance, the critical value is F(2,37) = 3.25192.
+---
 
-So we reject the null and coclude that `r_s` or short term interst rates **granger causes** `pi_c` or CPI inflation rates.
+# 19.13 Manual F-Test
 
-#### VAR alternative
+We now compute:
 
-An alternative is to invoke the VAR command in Gretl:
+```{math}
+:enumerated: false
+F
+=
+\frac{(SSR_R - SSR_U)/q}{SSR_U/(T-k)}
+```
 
-`Model → Multivariate time series → Vector Autoregression` then select **lag order = 2**  and place both `pi_c` and `r_c` as endogenous variables.
+Using:
 
-#### Command
+- $SSR_R = 101.0337$
+- $SSR_U = 68.0476$
+- $q = 2$
+- $T = 41$
+- $k = 4$
+
+we get:
+
+```{math}
+:enumerated: false
+F
+=
+\frac{(101.0337 - 68.0476)/2}{68.0476/(41-4)}
+=
+8.97
+```
+
+```{admonition} Interpretation
+The F-statistic is large, so we reject the null hypothesis.
+
+Short-term interest rates appear to Granger-cause CPI inflation in this example.
+```
+
+---
+
+# 19.14 VAR Alternative in Gretl
+
+A more direct way is to estimate a VAR and use GRETL’s built-in tests.
+
+## Menu
+
+`Model → Multivariate time series → Vector Autoregression`
+
+Choose:
+
+- lag order: 2
+- endogenous variables: `pi_c` and `r_s`
+
+## Command
 
 ```gretl
-var 2 pi_c r_c
+var 2 pi_c r_s
 ```
+
+Example output:
 
 ```gretl
 VAR system, lag order 2
 OLS estimates, observations 1954-1994 (T = 41)
-Log-likelihood = -142.63358
-Determinant of covariance matrix = 3.6037735
-AIC = 7.4455
-BIC = 7.8635
-HQC = 7.5977
-Portmanteau test: LB(10) = 30.8463, df = 32 [0.5248]
 
 Equation 1: pi_c
 
@@ -310,255 +500,230 @@ Equation 1: pi_c
   r_s_1       0.255695      0.134001     1.908    0.0644   *
   r_s_2      −0.401963      0.123225    −3.262    0.0024   ***
 
-Mean dependent var   4.415833   S.D. dependent var   3.153664
-Sum squared resid    63.26925   S.E. of regression   1.325699
-R-squared            0.840962   Adjusted R-squared   0.823291
-F(4, 36)             47.59014   P-value(F)           6.84e-14
-rho                  0.121414   Durbin-Watson        1.734941
-
 F-tests of zero restrictions:
 
 All lags of pi_c             F(2, 36) =   43.758 [0.0000]
 All lags of r_s              F(2, 36) =   5.6225 [0.0075]
 All vars, lag 2              F(2, 36) =   6.1167 [0.0052]
-
-Equation 2: r_s
-
-... <output cut>
 ```
 
-Note here that the `All lags of r_s` is `F(2, 36) =   5.6225 [0.0075]`: Same concludion - Reject the null!
+The line:
 
-## 19.5 Interpreting Results
-
-The output provides an F-test (or Wald test).
-
-```{admonition} Example Interpretation
-If the p-value is less than 0.05:
-
-→ Reject $H_0$  
-→ Conclude that $x_t$ Granger-causes $y_t$
+```gretl
+All lags of r_s              F(2, 36) =   5.6225 [0.0075]
 ```
 
-### Possible Outcomes
+tests whether lagged values of `r_s` help predict `pi_c`.
 
-| Result            | Interpretation             |
-| ----------------- | -------------------------- |
-| $x \rightarrow y$ | $x$ helps predict $y$      |
-| $y \rightarrow x$ | reverse causality          |
-| both              | feedback relationship      |
-| neither           | no predictive relationship |
+Since the p-value is small, we reject the null.
 
-## 19.6 Choice of Lag Length
-
-Lag selection is crucial.
-
-```{admonition} Practical Advice
-- Too few lags → omitted dynamics  
-- Too many lags → loss of degrees of freedom  
+```{admonition} Conclusion
+In this example, short-term interest rates Granger-cause CPI inflation.
 ```
 
-### In GRETL
+---
 
-`Model → Univariate time series → ARIMA lag selection`
-
-OR
-
-`Model → Multivariate time series → VAR lag selection`
-
-## 19.7 Stationarity Matters
-
-Granger causality tests require **stationary data**.
-
-```{admonition} Important
-If variables are nonstationary, Granger causality tests can produce misleading results.
-```
-
-### What to Do
-
-* If variables are $I(1)$ → difference them
-* or move to cointegration framework (next chapter)
-
-```{admonition} Connection to Previous Chapter
-Spurious regression arises when nonstationary variables are used in levels.
-
-Granger causality can suffer from similar issues if stationarity is ignored.
-```
-
-## 19.8 Common Pitfalls
+# 19.15 Common Mistakes
 
 ```{admonition} Common Mistakes
 :class: warning
 
-**1. Confusing correlation with causation**  
-Granger causality is not true causality.
+**1. Confusing predictive causality with true causality**  
+Granger causality does not prove structural causality.
 
 **2. Ignoring stationarity**  
-Nonstationary data can produce false results.
+Nonstationary variables can produce misleading Granger tests.
 
-**3. Incorrect lag length**  
-Results depend heavily on lag choice.
+**3. Choosing lag length mechanically**  
+Lag choice should reflect diagnostics and economic reasoning.
 
-**4. Omitted variables**  
-Missing variables can distort conclusions.
+**4. Omitting relevant variables**  
+A third variable may drive both series.
 
-**5. Small sample size**  
-Tests may lack power.
+**5. Overinterpreting small samples**  
+Granger tests can have low power in small samples.
 ```
-
-## 19.9 Economic Interpretation
-
-Even when Granger causality is detected:
-
-* it does **not** imply policy effectiveness
-* it does **not** reveal mechanisms
-* it does **not** establish structural relationships
-
-```{admonition} Big Picture
-Granger causality is best viewed as a **tool for forecasting and temporal ordering**, not as proof of economic causation.
-```
-
-## 19.10 Summary
-
-```{admonition} Key Takeaways
-- Granger causality tests predictive relationships  
-- it is based on lagged information  
-- it requires stationarity  
-- it does not imply true causation  
-```
-
-## Looking Ahead
-
-Granger causality focuses on predictive relationships in stationary data.
-
-However, many economic time series are nonstationary.
-
-In the next chapter, we introduce **cointegration**, which allows us to study **long-run relationships between nonstationary variables**.
 
 ---
 
-## Appendix 19A — Testing Linear Restrictions in Regression
+# 19.16 Looking Ahead
 
-In this appendix, we explain how to test whether certain coefficients in a regression model are equal to zero.
+Granger causality focuses on predictive relationships, usually in stationary data.
 
-This framework is widely used in econometrics and underlies tests such as the **Granger causality test**.
+However, many economic time series are nonstationary.
 
-### A.1 The Basic Idea
+In the next chapter, we introduce **cointegration**, which allows us to study meaningful long-run relationships between nonstationary variables.
 
-Suppose we estimate a regression model:
+# Key Takeaways
+
+```{admonition} Summary
+- Granger causality is about prediction, not true causation.
+- $x_t$ Granger-causes $y_t$ if lagged $x_t$ improves forecasts of $y_t$.
+- The test compares restricted and unrestricted models.
+- Lag length matters.
+- Stationarity matters.
+- GRETL can implement Granger tests directly using VAR models.
+```
+
+---
+
+# Appendix 19A — Testing Linear Restrictions in Regression
+
+This appendix explains the general idea behind tests such as the Granger causality test.
+
+---
+
+## A.1 The Basic Idea
+
+Suppose we estimate:
 
 ```{math}
 :enumerated: false
-y_t = \alpha + \beta_1 x_{1t} + \beta_2 x_{2t} + \cdots + \beta_k x_{kt} + u_t
+y_t
+=
+\alpha
++
+\beta_1 x_{1t}
++
+\beta_2 x_{2t}
++
+\cdots
++
+\beta_k x_{kt}
++
+u_t
 ```
 
-We may be interested in testing whether some of these variables matter.
+We may want to test whether some variables matter jointly.
 
-### A.2 A Joint Hypothesis
+---
 
-For example, we might test:
+# A.2 A Joint Hypothesis
+
+For example:
 
 ```{math}
 :enumerated: false
-H_0: \beta_2 = \beta_3 = 0
+H_0:
+\beta_2
+=
+\beta_3
+=
+0
 ```
 
-This means that variables $x_{2t}$ and $x_{3t}$ have **no effect** on $y_t$.
+This means that $x_{2t}$ and $x_{3t}$ have no effect on $y_t$ after controlling for the other variables.
 
 ```{admonition} Key Idea
-Testing multiple coefficients at once is called a **test of joint (linear) restrictions**.
+Testing multiple coefficients at once is called a test of **joint restrictions**.
 ```
 
-### A.3 Restricted vs Unrestricted Models
+---
 
-To test this hypothesis, we compare two models:
+# A.3 Restricted and Unrestricted Models
 
-#### Unrestricted model (U)
-
-Includes all variables:
+The unrestricted model includes all variables:
 
 ```{math}
 :enumerated: false
-y_t = \alpha + \beta_1 x_{1t} + \beta_2 x_{2t} + \beta_3 x_{3t} + u_t
+y_t
+=
+\alpha
++
+\beta_1 x_{1t}
++
+\beta_2 x_{2t}
++
+\beta_3 x_{3t}
++
+u_t
 ```
 
-#### Restricted model (R)
-
-Imposes the restrictions:
+The restricted model imposes the null hypothesis:
 
 ```{math}
 :enumerated: false
-y_t = \alpha + \beta_1 x_{1t} + u_t
+y_t
+=
+\alpha
++
+\beta_1 x_{1t}
++
+u_t
 ```
 
 ```{admonition} Intuition
-The restricted model removes variables that are assumed to have no effect under $H_0$.
+The restricted model removes variables that are assumed to have no effect under the null hypothesis.
 ```
 
-### A.4 Comparing the Models
+---
 
-We now ask:
+# A.4 Comparing the Models
 
-> Does removing these variables make the model significantly worse?
+We compare the sum of squared residuals:
 
-To answer this, we compare the **sum of squared residuals (SSR)**:
+- $SSR_U$ from the unrestricted model
+- $SSR_R$ from the restricted model
 
-* $SSR_U$ → from the unrestricted model
-* $SSR_R$ → from the restricted model
+If the restricted model fits much worse, then the excluded variables are probably important.
 
 ```{admonition} Key Insight
-If the restricted model fits much worse (higher SSR), then the excluded variables are important.
+If removing variables greatly increases the residual sum of squares, those variables add useful explanatory power.
 ```
 
-### A.5 The F-Test
+---
+
+# A.5 The F-Test
 
 The test statistic is:
 
 ```{math}
 :enumerated: false
-F = \frac{(SSR_R - SSR_U)/q}{SSR_U/(T - k - 1)}
+F
+=
+\frac{(SSR_R - SSR_U)/q}{SSR_U/(T-k)}
 ```
 
 where:
 
-* $q$ = number of restrictions
-* $T$ = number of observations
-* $k$ = number of regressors in the unrestricted model
+- $q$ is the number of restrictions
+- $T$ is the number of observations
+- $k$ is the number of parameters in the unrestricted model
 
 ```{admonition} Interpretation
-- Large $F$ → reject $H_0$ → variables matter  
-- Small $F$ → fail to reject $H_0$ → variables do not add explanatory power  
+- Large $F$ → reject $H_0$
+- Small $F$ → fail to reject $H_0$
 ```
 
-### A.6 Connection to Granger Causality
+---
 
-In Chapter 19, we used this framework to test:
+# A.6 Connection to Granger Causality
+
+In Granger causality testing, the null is:
 
 ```{math}
 :enumerated: false
-H_0: \text{lagged values of } x_t \text{ do not affect } y_t
+H_0:
+\text{lagged values of } x_t \text{ do not help predict } y_t
 ```
 
-This is simply a test that:
-
-* several lag coefficients are jointly equal to zero
+This is simply a joint test that several lag coefficients are equal to zero.
 
 ```{admonition} Big Picture
-Granger causality is an application of a general idea:
+Granger causality is an application of a general regression idea:
 
-→ testing whether a group of variables improves the model.
+testing whether a group of variables improves the model.
 ```
 
-### A.7 Intuition in Words
+---
 
-The logic of the test is simple:
+# A.7 Intuition in Words
 
-* If the excluded variables truly do not matter
-  → removing them should not change the model much
+The logic is simple:
 
-* If they do matter
-  → removing them worsens the fit significantly
+- if excluded variables do not matter, removing them should not change the model much
+- if excluded variables do matter, removing them worsens the fit
 
 ```{admonition} Final Insight
-Tests of linear restrictions provide a systematic way to determine whether additional variables contribute meaningful information.
+Tests of joint restrictions provide a systematic way to decide whether additional variables contribute useful information.
 ```

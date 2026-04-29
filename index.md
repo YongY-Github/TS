@@ -155,6 +155,8 @@ Each chapter is designed by:
 
 ### Chapter 26 — GARCH Models
 
+<!--
+
 Kindly note that this is work-in-progress. Any comments on typos, errors, etc is much apprecaited.
 
 Click below to see available chapters/sections so far ...

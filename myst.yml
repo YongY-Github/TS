@@ -12,6 +12,13 @@ project:
 
 toc:
   - file: index.md
+  - file: ch7.md
+  - file: ch8.md
+  - file: ch9.md
+  - file: ch10.md
+  - file: ch11.md
+  - file: ch12.md
+  - file: ch13.md
   - file: ch17.md
   - file: ch18.md
   - file: ch19.md
