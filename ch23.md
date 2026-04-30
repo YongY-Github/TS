@@ -403,9 +403,6 @@ plt.close()   # replace with plt.show()
 
 ![IRF](figs/ch23/irf.png)
 
-
----
-
 ```{admonition} Observation
 Impulse responses typically decay gradually through time.
 ```
