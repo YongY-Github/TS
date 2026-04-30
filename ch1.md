@@ -439,7 +439,6 @@ We now download and plot real financial data using Python.
 ```{code-cell} python
 # !pip install yfinance
 
-import pandas as pd
 import matplotlib.pyplot as plt
 import yfinance as yf
 
@@ -450,7 +449,7 @@ sp500 = yf.download("^GSPC", start="2018-01-01", auto_adjust=False)
 # print(data.columns)
 
 # Plot the adjusted close price
-sp500["Adj Close", "^GSPC"].plot(figsize=(10,4))
+sp500["Adj Close"].plot(figsize=(10,4))
 
 plt.title("S&P 500 Adjusted Closing Price")
 plt.xlabel("Date")
@@ -460,7 +459,7 @@ plt.savefig("figs/ch1/sp500.png", dpi=300, bbox_inches="tight")
 plt.close()   # replace with plt.show()
 ```
 
-![NFLX](figs/ch1/sp500.png)
+![sp500](figs/ch1/sp500.png)
 
 You can also try:
 
