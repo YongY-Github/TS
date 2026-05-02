@@ -288,7 +288,6 @@ plt.close()   # replace with plt.show()
 
 ![MACD](figs/ch6_/MACD.png)
 
-
 ---
 
 ```{admonition} Interpretation
@@ -349,8 +348,11 @@ plt.legend()
 plt.title("Relative Strength Index (RSI)")
 plt.xlabel("Date")
 
-plt.show()
+plt.savefig("figs/ch6_/rsi.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![RSI](figs/ch6_/rsi.png)
 
 ---
 
@@ -373,18 +375,18 @@ RSI summarizes recent gains and losses into a bounded momentum indicator.
 Bollinger Bands combine smoothing and volatility.
 
 ```{code-cell} python
-ma20 = prices.rolling(20).mean()
+ma50 = prices.rolling(50).mean()
 
-std20 = prices.rolling(20).std()
+std50 = prices.rolling(50).std()
 
-upper = ma20 + 2 * std20
+upper = ma50 + 2 * std50
 
-lower = ma20 - 2 * std20
+lower = ma50 - 2 * std50
 
 plt.figure(figsize=(10,5))
 
 plt.plot(prices, label="SET Index")
-plt.plot(ma20, label="20-Day MA")
+plt.plot(ma50, label="50-Day MA")
 plt.plot(upper, label="Upper Band")
 plt.plot(lower, label="Lower Band")
 
@@ -394,8 +396,12 @@ plt.title("Bollinger Bands")
 plt.xlabel("Date")
 plt.ylabel("Index Level")
 
-plt.show()
+plt.savefig("figs/ch6_/BB.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![Bollinger Bands](figs/ch6_/BB.png)
+
 
 ---
 
@@ -441,8 +447,11 @@ plt.title("Buy-and-Hold vs Moving Average Strategy")
 plt.ylabel("Cumulative Growth")
 plt.xlabel("Date")
 
-plt.show()
+plt.savefig("figs/ch6_/backtest.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![Backtest](figs/ch6_/backtest.png)
 
 ---
 

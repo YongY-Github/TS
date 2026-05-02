@@ -78,8 +78,12 @@ plt.title("Thai SET Index")
 plt.xlabel("Date")
 plt.ylabel("Index Level")
 
-plt.show()
+plt.savefig("figs/ch10_/set.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![SET](figs/ch10_/set.png)
+
 
 ---
 
@@ -114,8 +118,12 @@ plt.title("Thai SET Index Log Returns")
 plt.xlabel("Date")
 plt.ylabel("Log Return (%)")
 
-plt.show()
+plt.savefig("figs/ch10_/rtn.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![Returns](figs/ch10_/rtn.png)
+
 
 ---
 
@@ -147,8 +155,12 @@ plot_acf(
 
 plt.title("ACF of SET Index Level")
 
-plt.show()
+plt.savefig("figs/ch10_/acf.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![ACF](figs/ch10_/acf.png)
+
 
 ---
 
@@ -176,8 +188,11 @@ plot_acf(
 
 plt.title("ACF of SET Index Returns")
 
-plt.show()
+plt.savefig("figs/ch10_/acf_rtn.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![RSI](figs/ch10_/acf_rtn.png)
 
 ---
 
@@ -210,8 +225,12 @@ plot_pacf(
 
 plt.title("PACF of SET Index Returns")
 
-plt.show()
+plt.savefig("figs/ch10_/pacf_rtn.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![RSI](figs/ch10_/pacf_rtn.png)
+
 
 ---
 
@@ -236,6 +255,17 @@ adf_price = adfuller(
 
 print("ADF Statistic:", adf_price[0])
 print("p-value:", adf_price[1])
+```
+
+``` verbatim
+ADF Statistic: -2.477312904652193
+p-value: 0.1210923683245807
+```
+
+For raw/unfiltered results, which provides the critical values:
+
+```{code-cell} python
+adfuller(prices.dropna())
 ```
 
 ---
@@ -267,6 +297,11 @@ print("ADF Statistic:", adf_returns[0])
 print("p-value:", adf_returns[1])
 ```
 
+``` verbatim
+ADF Statistic: -10.62170495177763
+p-value: 5.494107461809279e-19
+```
+
 ---
 
 ## Questions
@@ -296,8 +331,11 @@ plt.title("First Difference of SET Index")
 plt.xlabel("Date")
 plt.ylabel("Change in Index Level")
 
-plt.show()
+plt.savefig("figs/ch10_/fd.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![First difference](figs/ch10_/fd.png)
 
 ---
 
@@ -321,6 +359,19 @@ comparison = pd.DataFrame({
 })
 
 comparison.describe()
+```
+
+``` verbatim
+|       | Level       | First Difference | Log Return  |
+|-------|-------------|------------------|-------------|
+| count | 2015.000000 | 2014.000000      | 2014.000000 |
+| mean  | 1504.308084 | -0.141430        | -0.008666   |
+| std   | 173.351414  | 13.984090        | 1.015393    |
+| min   | 1024.459961 | -134.979980      | -11.428184  |
+| 25%   | 1367.034973 | -7.194977        | -0.482559   |
+| 50%   | 1549.010010 | 0.205078         | 0.012854    |
+| 75%   | 1636.134949 | 7.457550         | 0.484997    |
+| max   | 1838.959961 | 83.050049        | 7.653075    |
 ```
 
 ---
@@ -359,8 +410,11 @@ plt.legend()
 
 plt.title("Rolling Mean and Volatility of SET Returns")
 
-plt.show()
+plt.savefig("figs/ch10_/rolling.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![Rolling Mean and Volatility](figs/ch10_/rolling.png)
 
 ---
 
@@ -404,8 +458,11 @@ plt.plot(x)
 
 plt.title("Simulated Stationary AR(1) Process")
 
-plt.show()
+plt.savefig("figs/ch10_/AR_1.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![AR 1](figs/ch10_/AR_1.png)
 
 ---
 
@@ -434,8 +491,11 @@ plt.plot(rw)
 
 plt.title("Simulated Random Walk")
 
-plt.show()
+plt.savefig("figs/ch10_/rw.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![AR 1](figs/ch10_/rw.png)
 
 ---
 
