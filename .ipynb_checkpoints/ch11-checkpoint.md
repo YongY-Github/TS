@@ -820,6 +820,27 @@ Stationarity means shocks eventually die out rather than explode.
 
 ---
 
+# 11.19 Estimating an AR Model in Python
+
+Let's estimate a simple AR(2) model (which was simulated above, $x$).
+
+# Estimate AR model
+
+```{code-cell} python
+from statsmodels.tsa.ar_model import AutoReg
+
+model = AutoReg(
+    x,
+    lags=2
+)
+
+results = model.fit()
+
+print(results.summary())
+```
+
+---
+
 # 11.19 Estimation in Gretl
 
 ## Menu

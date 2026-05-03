@@ -1,6 +1,7 @@
 ---
 kernelspec:
   name: jb2-env
+  display_name: Python (jb2-env)
 ---
 
 # Chapter 6 — Trading Indicators as Filters

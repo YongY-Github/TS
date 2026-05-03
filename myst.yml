@@ -29,6 +29,7 @@ toc:
   - file: ch12.md
   - file: ch13.md
   - file: ch14.md
+  - file: ch14_.md
   - file: ch15.md
   - file: ch16.md
   - file: ch17.md
@@ -36,11 +37,13 @@ toc:
   - file: ch19.md
   - file: ch20.md
   - file: ch21.md
+  - file: ch21_.md
   - file: ch22.md
   - file: ch23.md
   - file: ch24.md
   - file: ch25.md
   - file: ch26.md
+  - file: ch26_.md
   
 exports:
   - format: pdf
