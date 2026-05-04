@@ -200,7 +200,7 @@ plt.title("Simulated White Noise")
 plt.xlabel("Time")
 plt.ylabel("$w_t$")
 
-plt.savefig("figs/ch7/wn.png", dpi=300, bbox_inches="tight")
+# plt.savefig("figs/ch8/wn.png", dpi=300, bbox_inches="tight")
 plt.close()   # replace with plt.show()
 ```
 
@@ -239,7 +239,7 @@ plt.title("Simulated Random Walk")
 plt.xlabel("Time")
 plt.ylabel("$x_t$")
 
-plt.savefig("figs/ch7/rw.png", dpi=300, bbox_inches="tight")
+# plt.savefig("figs/ch7/rw.png", dpi=300, bbox_inches="tight")
 plt.close()   # replace with plt.show()
 ```
 

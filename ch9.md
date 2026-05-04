@@ -103,8 +103,11 @@ wn = np.random.normal(0, 1, 300)
 plt.figure(figsize=(10,4))
 plt.plot(wn)
 plt.title("White Noise")
-plt.show()
+plt.savefig("figs/ch9/wn.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![White Noise](figs/ch9/wn.png)
 
 ## ACF and PACF
 
@@ -119,9 +122,11 @@ ax[0].set_title("ACF (White Noise)")
 plot_pacf(wn, lags=30, ax=ax[1], method="ywm")
 ax[1].set_title("PACF (White Noise)")
 
-plt.tight_layout()
-plt.show()
+plt.savefig("figs/ch9/wn_acf_pacf.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![ACF PACF](figs/ch9/wn_acf_pacf.png)
 
 ```{admonition} Observation
 White noise shows no structure:
@@ -147,8 +152,12 @@ x = np.cumsum(w)
 plt.figure(figsize=(10,4))
 plt.plot(x)
 plt.title("Random Walk")
-plt.show()
+
+plt.savefig("figs/ch9/rw.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![Random Walk](figs/ch9/rw.png)
 
 ## ACF and PACF
 
@@ -164,8 +173,13 @@ plot_pacf(x, lags=40, ax=ax[1], method="ywm")
 ax[1].set_title("PACF (Random Walk)")
 
 plt.tight_layout()
-plt.show()
+
+plt.savefig("figs/ch9/rw_acf_pacf.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![ACF PACF](figs/ch9/rw_acf_pacf.png)
+
 
 ```{admonition} Key Insight
 Persistent series show:
@@ -252,8 +266,12 @@ plot_pacf(wn, lags=30, ax=ax[1,1], method="ywm")
 ax[1,1].set_title("PACF (White Noise)")
 
 plt.tight_layout()
-plt.show()
+
+plt.savefig("figs/ch9/acf_pacf_.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![ACF PACF](figs/ch9/acf_pacf_.png)
 
 ```{admonition} Observation
 

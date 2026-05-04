@@ -161,8 +161,12 @@ for i, phi in enumerate(phis):
     ax[i].set_title(f"AR(1), phi={phi}")
 
 plt.tight_layout()
-plt.show()
+
+plt.savefig("figs/ch10/persistence.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![Persistence](figs/ch10/persistence.png)
 
 ```{admonition} Observation
 As $\phi \to 1$, persistence increases dramatically.
@@ -204,8 +208,13 @@ ACF decays geometrically.
 from statsmodels.graphics.tsaplots import plot_acf
 
 plot_acf(x, lags=30)
-plt.show()
+
+plt.savefig("figs/ch10/acf.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![ACF](figs/ch10/acf.png)
+
 
 ```{admonition} Observation
 ACF tails off gradually.
@@ -257,7 +266,7 @@ AR(2) allows:
 np.random.seed(123)
 
 phi1, phi2 = 1.0, -0.6
-n = 400
+n = 1000
 
 w = np.random.normal(size=n)
 x = np.zeros(n)
@@ -267,12 +276,17 @@ for t in range(2,n):
 
 plt.plot(x)
 plt.title("AR(2)")
-plt.show()
+
+plt.savefig("figs/ch10/ar2.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![AR2](figs/ch10/ar2.png)
+
 
 ---
 
-# 11.13 ACF and PACF (AR(2))
+# 11.13 ACF and PACF for AR(2)
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -281,8 +295,13 @@ from statsmodels.graphics.tsaplots import plot_pacf
 
 plot_acf(x, lags=30)
 plot_pacf(x, lags=30)
-plt.show()
+
+plt.savefig("figs/ch11/ar2_acf_pacf.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![AR2 acf pacf](figs/ch11/ar2_acf_pacf.png)
+
 
 ```{admonition} Identification Rule
 AR(2):
@@ -318,25 +337,25 @@ print(res.summary())
 ```verbatim
                             AutoReg Model Results                             
 ==============================================================================
-Dep. Variable:                      y   No. Observations:                  400
-Model:                     AutoReg(2)   Log Likelihood                -561.672
-Method:               Conditional MLE   S.D. of innovations              0.992
-Date:                Mon, 04 May 2026   AIC                           1131.344
-Time:                        16:18:21   BIC                           1147.289
-Sample:                             2   HQIC                          1137.660
-                                  400                                         
+Dep. Variable:                      y   No. Observations:                 1000
+Model:                     AutoReg(2)   Log Likelihood               -1416.520
+Method:               Conditional MLE   S.D. of innovations              1.000
+Date:                Mon, 04 May 2026   AIC                           2841.040
+Time:                        21:40:24   BIC                           2860.663
+Sample:                             2   HQIC                          2848.499
+                                 1000                                         
 ==============================================================================
                  coef    std err          z      P>|z|      [0.025      0.975]
 ------------------------------------------------------------------------------
-const         -0.0539      0.050     -1.080      0.280      -0.152       0.044
-y.L1           0.9981      0.041     24.486      0.000       0.918       1.078
-y.L2          -0.5828      0.041    -14.288      0.000      -0.663      -0.503
+const         -0.0386      0.032     -1.218      0.223      -0.101       0.024
+y.L1           1.0000      0.026     38.890      0.000       0.950       1.050
+y.L2          -0.5850      0.026    -22.746      0.000      -0.635      -0.535
                                     Roots                                    
 =============================================================================
                   Real          Imaginary           Modulus         Frequency
 -----------------------------------------------------------------------------
-AR.1            0.8563           -0.9913j            1.3099           -0.1366
-AR.2            0.8563           +0.9913j            1.3099            0.1366
+AR.1            0.8547           -0.9894j            1.3074           -0.1366
+AR.2            0.8547           +0.9894j            1.3074            0.1366
 -----------------------------------------------------------------------------
 ```
 
@@ -354,10 +373,11 @@ lb
 ```
 
 ``` verbatim
-| lb_stat | lb_pvalue |
-|---------|-----------|
-| 10      | 0.902793  |
-| 20      | 0.173947  |
+|  | lb_stat   | lb_pvalue |
+|---------|------------|-----------|
+| 10      | 6.476702   | 0.773750  |
+| 20      | 18.268325  | 0.569737  |
+
 ```
 
 ```{admonition} Goal

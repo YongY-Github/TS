@@ -146,8 +146,11 @@ for i, theta in enumerate(theta_values):
     ax[i].set_title(rf"MA(1), $\theta={theta}$")
 
 plt.tight_layout()
-plt.show()
+plt.savefig("figs/ch12/ma1.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![MA1](figs/ch12/ma1.png)
 
 ```{admonition} Observation
 Different values of $\theta$ produce distinct dependence patterns.
@@ -213,12 +216,31 @@ The ACF of MA(1) cuts off after lag 1.
 from statsmodels.graphics.tsaplots import plot_acf
 
 plot_acf(x, lags=20)
-plt.show()
+
+plt.savefig("figs/ch12/acf.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![ACF](figs/ch12/acf.png)
 
 ---
 
 # 12.10 Partial Autocorrelation (PACF)
+
+
+```{code-cell} python
+:tags: [hide-input]
+
+from statsmodels.graphics.tsaplots import plot_pacf
+
+plot_pacf(x, lags=20)
+
+plt.savefig("figs/ch12/pacf.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
+```
+
+![PACF](figs/ch12/pacf.png)
+
 
 ```{admonition} Fundamental Result
 
@@ -311,6 +333,30 @@ res = model.fit()
 print(res.summary())
 ```
 
+``` verbatim
+                               SARIMAX Results                                
+==============================================================================
+Dep. Variable:                      y   No. Observations:                  400
+Model:                 ARIMA(0, 0, 1)   Log Likelihood                -565.364
+Date:                Mon, 04 May 2026   AIC                           1136.727
+Time:                        21:54:51   BIC                           1148.702
+Sample:                             0   HQIC                          1141.469
+                                - 400                                         
+Covariance Type:                  opg                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+const         -0.0099      0.010     -0.954      0.340      -0.030       0.010
+ma.L1         -0.7942      0.032    -24.900      0.000      -0.857      -0.732
+sigma2         0.9865      0.070     14.130      0.000       0.850       1.123
+===================================================================================
+Ljung-Box (L1) (Q):                   0.06   Jarque-Bera (JB):                 0.29
+Prob(Q):                              0.80   Prob(JB):                         0.86
+Heteroskedasticity (H):               0.69   Skew:                             0.07
+Prob(H) (two-sided):                  0.03   Kurtosis:                         3.00
+===================================================================================
+```
+
 ---
 
 # 12.16 Diagnostics
@@ -321,6 +367,14 @@ print(res.summary())
 from statsmodels.stats.diagnostic import acorr_ljungbox
 
 acorr_ljungbox(res.resid, lags=[10,20], return_df=True)
+```
+
+``` verbatim
+| |  lb_stat   | lb_pvalue |
+|---------|------------|-----------|
+| 10      | 4.539711   | 0.919734  |
+| 20      | 23.589777  | 0.260771  |
+
 ```
 
 ```{admonition} Goal
