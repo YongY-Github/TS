@@ -843,7 +843,274 @@ of financial time series.
 - VECMs are widely used in macroeconomics and finance.
 ```
 
+# Concept Check
+
+### Basic
+
+1. What is a Vector Error Correction Model (VECM)?
+
+2. How does a VECM differ from a standard VAR model?
+
+3. When should a VECM be used instead of a VAR?
+
 ---
+
+### Intuition
+
+4. Why is differencing alone not sufficient when variables are cointegrated?
+
+5. What is the economic meaning of cointegration in a multivariate system?
+
+6. Explain the “rubber band” analogy in the context of VECM.
+
+---
+
+### Structure
+
+7. What are the two main components of a VECM?
+
+8. What does the term $\Pi Y_{t-1}$ represent?
+
+9. What do the $\Gamma_i$ terms capture?
+
+---
+
+### α and β
+
+10. What does the matrix $\beta$ represent?
+
+11. What does the matrix $\alpha$ represent?
+
+12. Why is the decomposition $\Pi = \alpha \beta'$ important?
+
+---
+
+### Challenge
+
+13. Why is it not enough to estimate a VAR in differences when variables are cointegrated?
+
+---
+
+# Interpretation & Practice
+
+1. A system shows strong cointegration.
+
+- What does this imply about long-run relationships?
+
+---
+
+2. The cointegration rank is zero.
+
+- What does this imply?
+
+---
+
+3. The cointegration rank is one.
+
+- What does this imply?
+
+---
+
+4. Adjustment coefficients are large in magnitude.
+
+- What does this suggest?
+
+---
+
+5. Adjustment coefficients are close to zero.
+
+- What does this imply?
+
+---
+
+### Error Correction
+
+6. The error correction term is significant in one equation but not the other.
+
+- What does this imply?
+
+---
+
+7. A variable does not respond to disequilibrium.
+
+- What might this suggest?
+
+---
+
+### Economic Interpretation
+
+8. CPI and money supply are cointegrated.
+
+- What does this imply about long-run behavior?
+
+9. You estimate a system with:
+
+- CPI  
+- money supply  
+- GDP  
+
+You find:
+
+- cointegration rank = 1  
+- CPI adjusts strongly  
+- money supply adjusts weakly  
+
+---
+
+- What does this suggest about economic dynamics?
+- Which variable leads the system?
+- Which variable follows?
+
+---
+
+### Challenge
+
+9. Why is VECM considered a “restricted VAR”?
+
+---
+
+# Numerical Practice
+
+### Cointegration Logic
+
+1. Suppose:
+
+- $x_t \sim I(1)$  
+- $y_t \sim I(1)$  
+- one cointegrating vector exists  
+
+---
+
+- What does this imply?
+
+---
+
+### Rank Interpretation
+
+2. Suppose a system of 3 variables has:
+
+- cointegration rank = 2  
+
+---
+
+- How many long-run relationships exist?
+
+---
+
+### Adjustment Coefficients
+
+3. Suppose:
+
+```{math}
+:enumerated: false
+\alpha =
+\begin{pmatrix}
+-0.3 \\
+0.0
+\end{pmatrix}
+```
+
+---
+
+- Which variable adjusts to equilibrium?
+- Which does not?
+
+---
+
+### Interpretation
+
+4. Suppose:
+
+```{math}
+:enumerated: false
+\beta' Y_{t-1} = y_{t-1} - 2x_{t-1}
+```
+---
+
+- What does this represent?
+
+---
+
+### Short vs Long Run
+
+5. Why is it important to include both:
+
+- $\Delta Y_t$ terms  
+- and $\Pi Y_{t-1}$ terms?
+
+---
+
+### Diagnostics
+
+6. Suppose cointegration is ignored and a VAR in differences is estimated.
+
+- What information is lost?
+
+---
+
+### Challenge
+
+7. Suppose cointegration rank is incorrectly specified.
+
+- What problems might arise?
+
+---
+
+# Johansen Test Interpretation
+
+1. What does the Johansen test estimate?
+
+2. What is the difference between:
+
+- trace test  
+- maximum eigenvalue test  
+
+---
+
+### Interpretation
+
+3. Suppose the test suggests rank = 1.
+
+- What does this imply?
+
+---
+
+4. Suppose test statistics are small.
+
+- What does this suggest?
+
+---
+
+### Challenge
+
+5. Why is determining the correct cointegration rank important?
+
+---
+
+# IRF & Forecasting in VECM
+
+1. How do impulse responses differ in VECM vs VAR?
+
+2. Why do long-run relationships affect IRFs?
+
+---
+
+### Interpretation
+
+3. A shock causes variables to deviate, then gradually return.
+
+- What does this reflect?
+
+---
+
+4. Why might VECM forecasts outperform differenced VAR forecasts?
+
+---
+
+### Challenge
+
+5. Why is long-run information valuable in forecasting?
+
 
 # Appendix 24A — Relationship Between VAR and VECM
 
@@ -900,4 +1167,3 @@ Cointegration formalizes the idea that:
 ```{admonition} Key Insight
 Economic forces create long-run constraints even when short-run fluctuations are substantial.
 ```
-````

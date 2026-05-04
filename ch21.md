@@ -500,6 +500,8 @@ In the next part of the book, we move to multivariate systems:
 
 where multiple variables interact dynamically over time.
 
+---
+
 # Key Takeaways
 
 ```{admonition} Summary

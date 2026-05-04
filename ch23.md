@@ -706,6 +706,234 @@ within a unified multivariate framework.
 - Structural interpretation requires identifying assumptions.
 ```
 
+# Concept Check
+
+## Basic
+
+1. What is an impulse response function (IRF)?
+
+2. What does a “shock” represent in a VAR model?
+
+3. Why are IRFs used instead of directly interpreting VAR coefficients?
+
+---
+
+## Intuition
+
+4. Explain the “stone in water” analogy for impulse responses.
+
+5. Why do economic shocks often have effects over multiple periods?
+
+6. What does it mean for a shock to “propagate” through a system?
+
+---
+
+## Dynamics
+
+7. What is the difference between:
+
+   - contemporaneous effects  
+   - lagged effects  
+
+8. Why do impulse responses often decay over time?
+
+---
+
+## Challenge
+
+9. What does it mean if an impulse response does not decay?
+
+---
+
+# Interpretation & Practice
+
+1. An IRF shows:
+
+- a positive initial response  
+- gradual decay to zero  
+
+   - What does this imply?
+
+2. An IRF shows a negative response after a positive shock.
+
+   - What does this suggest about the relationship?
+
+3. An IRF oscillates before stabilizing.
+
+   - What might this indicate?
+
+4. An IRF is close to zero at all horizons.
+
+   - What does this imply?
+
+---
+
+## Persistence
+
+5. A shock has effects that persist for many periods.
+
+   - What does this suggest about the system?
+
+6. A shock disappears quickly.
+
+   - What does this imply?
+
+---
+
+## Confidence Bands
+
+7. Confidence intervals are wide.
+
+   - What does this imply?
+
+8. Confidence bands include zero.
+
+   - What does this suggest?
+
+---
+
+## Challenge
+
+9. Why should IRFs always be interpreted together with confidence intervals?
+
+---
+
+# Orthogonalization & Identification
+
+1. Why are VAR shocks often correlated?
+
+2. What is orthogonalization?
+
+3. What does Cholesky decomposition do?
+
+---
+
+## Ordering
+
+4. Why does variable ordering matter?
+
+5. What assumption is made when a variable is ordered first?
+
+6. What assumption is made when a variable is ordered last?
+
+---
+
+## Interpretation
+
+7. Why are IRFs not automatically causal?
+
+---
+
+## Challenge
+
+8. How can different ordering assumptions change conclusions?
+
+---
+
+# Numerical & Graph Interpretation
+
+## Interpreting an Impulse Response Function
+
+1. Consider the following impulse response function:
+
+```{code-cell} python
+:tags: [hide-input]
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+horizon = np.arange(10)
+
+# stylized IRF: rise → peak → decay
+irf = [0.0, 0.5, 0.9, 1.2, 1.0, 0.7, 0.4, 0.2, 0.1, 0.0]
+
+plt.figure(figsize=(8,4))
+plt.plot(horizon, irf, marker='o')
+
+plt.axhline(0, linestyle='--', linewidth=1)
+
+plt.title("Stylized Impulse Response Function")
+plt.xlabel("Horizon")
+plt.ylabel("Response")
+
+plt.tight_layout()
+
+plt.savefig("figs/ch23/irf_Q.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
+```
+
+![IRF](figs/ch23/irf_Q.png)
+
+
+---
+
+- Describe the pattern of the impulse response.
+- At what period does the response peak?
+- Does the effect persist or disappear quickly?
+- What does this suggest about the dynamic impact of the shock?
+
+---
+
+```{admonition} Hint
+Focus on:
+- timing of the peak  
+- persistence  
+- speed of decay  
+```
+
+---
+
+## Reading an IRF
+
+2. Suppose an IRF shows:
+
+- initial increase  
+- peak after 3 periods  
+- slow decline  
+
+---
+
+- What does this suggest?
+
+---
+
+## Cumulative Effects
+
+3. Why might we use cumulative impulse responses?
+
+4. Suppose cumulative IRF increases steadily.
+
+- What does this imply?
+
+---
+
+## Stability
+
+5. Suppose IRFs grow larger over time.
+
+- What does this imply?
+
+---
+
+## Comparison
+
+6. Two IRFs:
+
+- one decays quickly  
+- one decays slowly  
+
+---
+
+- Which system is more persistent?
+
+---
+
+## Challenge
+
+7. Suppose a shock produces different responses depending on ordering.
+
+- What does this suggest?
+
 ---
 
 # Appendix 23A — Orthogonalized vs Generalized IRFs

@@ -845,6 +845,196 @@ We will then extend these ideas to VECMs for cointegrated systems.
 - Structural interpretation requires identifying assumptions.
 ```
 
+# Concept Check
+
+## Basic
+
+1. What is a VAR model?
+
+2. How does a VAR differ from a univariate AR model?
+
+3. What does it mean for all variables in a VAR to be endogenous?
+
+---
+
+## Intuition
+
+4. Why are multivariate models important in economics?
+
+5. What type of interactions can VAR models capture?
+
+6. Why is it unrealistic to model macroeconomic variables in isolation?
+
+---
+
+## Structure
+
+7. In a VAR(1), what variables appear on the right-hand side?
+
+8. What does VAR($p$) mean?
+
+9. Why does the number of parameters increase quickly in VAR models?
+
+---
+
+## Stationarity
+
+10. Why is stationarity important in VAR models?
+
+11. What are the consequences of estimating a VAR with nonstationary data?
+
+---
+
+## Challenge
+
+12. Why are VAR coefficients often difficult to interpret directly?
+
+---
+
+# Interpretation & Practice
+
+1. A VAR model shows that:
+
+- inflation depends on past interest rates  
+- interest rates depend on past inflation  
+
+   - What type of relationship does this suggest?
+
+---
+
+2. A VAR is estimated with too few lags.
+
+   - What might happen?
+
+---
+
+3. A VAR is estimated with too many lags.
+
+   - What problem might arise?
+
+---
+
+4. A model includes multiple variables with strong feedback.
+
+   - Why might a VAR be appropriate?
+
+---
+
+## Lag Selection
+
+5. AIC suggests 5 lags, BIC suggests 2 lags.
+
+   - Why might these differ?
+   - Which might you prefer?
+
+---
+
+## Stationarity
+
+6. Variables appear to be nonstationary.
+
+   - What should you do before estimating a VAR?
+
+---
+
+# Numerical Practice
+
+## VAR Interpretation
+
+1. Consider a VAR(1):
+
+```{math}
+:enumerated: false
+y_t = 0.5y_{t-1} + 0.3x_{t-1}
+```
+
+```{math}
+:enumerated: false
+x_t = 0.2y_{t-1} + 0.6x_{t-1}
+```
+
+- Does $y_t$ depend on past $x_t$?
+- Does $x_t$ depend on past $y_t$?
+
+---
+
+## Lag Structure
+
+2. Suppose you increase lag length from 1 to 4.
+
+- What happens to:
+  - number of parameters?
+  - estimation complexity?
+
+---
+
+## Information Criteria
+
+3. Suppose:
+
+| Lag | AIC | BIC |
+|----|----:|----:|
+| 1  | -4.5 | -4.4 |
+| 2  | -4.8 | -4.6 |
+| 3  | -4.9 | -4.5 |
+
+- Which lag is chosen by AIC?
+- Which by BIC?
+
+---
+
+## Interpretation
+
+4. Suppose a variable responds strongly to its own lag.
+
+- What does this suggest?
+
+---
+
+## Diagnostics
+
+5. Residuals show autocorrelation.
+
+- What does this imply?
+- What should be done?
+
+---
+
+## Challenge
+
+6. Suppose a VAR includes 5 variables and 4 lags.
+
+- Why might this be problematic?
+
+---
+
+## Interpretation
+
+7. A coefficient on lagged inflation is positive and significant.
+
+   - What does this imply?
+   - Why might interpretation still be limited?
+
+---
+
+## Challenge
+
+8. Why should VAR results be interpreted using IRFs rather than raw coefficients?
+
+9. Forecasting with VAR
+
+- Why might VAR models outperform univariate models?
+- What makes VAR forecasts dynamic?
+
+---
+
+## Interpretation
+
+Forecasts depend on previous forecasts.
+
+- Why?
+- Why might VAR forecasts still perform poorly in practice?
+
 ---
 
 # Appendix 22A — Why VARs Became Influential

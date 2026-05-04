@@ -758,6 +758,295 @@ The next chapter introduces:
 - GARCH models extend ARCH by modeling volatility persistence directly.
 ```
 
+# Concept Check
+
+## Basic
+
+1. What is volatility?
+
+2. What is the difference between:
+
+   - mean  
+   - variance  
+
+3. What does homoskedasticity mean?
+
+4. What does heteroskedasticity mean?
+
+---
+
+## Intuition
+
+5. What is volatility clustering?
+
+6. Why do financial returns often display clustering in volatility?
+
+7. Why do large shocks tend to be followed by large shocks?
+
+8. Why is volatility easier to “see” than to model?
+
+---
+
+## ARCH Structure
+
+9. What is the key idea behind an ARCH model?
+
+10. What does the equation
+
+```{math}
+:enumerated: false
+h_t = \alpha_0 + \alpha_1 e_{t-1}^2
+```
+
+represent?
+
+11. Why are squared residuals used?
+
+12. Suppose volatility spikes after a large shock.
+
+- What does this suggest?
+
+---
+
+## Interpretation
+
+13. What does a large value of $\alpha_1$ imply?
+
+14. What does it mean if $\alpha_1 = 0$?
+
+---
+
+## Challenge
+
+15. Can volatility be predictable even if returns are not?
+16. You analyze stock returns and find:
+
+- no autocorrelation in returns  
+- strong autocorrelation in squared returns  
+
+---
+
+- What does this imply?
+- Why might an ARCH model be appropriate?
+
+---
+
+# Interpretation & Practice
+
+1. A return series shows:
+
+- periods of calm  
+- followed by periods of turbulence  
+
+   - What does this suggest?
+
+2. Residuals show no autocorrelation, but squared residuals do.
+
+   - What does this imply?
+
+3. A model assumes constant variance, but volatility clearly changes.
+
+   - What problem arises?
+
+4. An ARCH model is estimated and $\alpha_1$ is significant.
+
+   - What does this indicate?
+
+---
+
+## Economic Interpretation
+
+5. A financial crisis leads to large return shocks.
+
+   - What does the ARCH model predict for future volatility?
+
+6. A period of calm persists.
+
+   - What does the model predict?
+
+---
+
+## Challenge
+
+7. Why might volatility clustering be important for risk management?
+
+---
+
+# Numerical Practice
+
+## Squared Shocks
+
+1. Suppose shocks are:
+
+```{math}
+:enumerated: false
+2, -3, 1
+```
+
+- Compute squared shocks.
+
+---
+
+## ARCH Equation
+
+2. Suppose:
+
+```{math}
+:enumerated: false
+h_t = 1 + 0.5 e_{t-1}^2
+```
+
+and:
+
+```{math}
+:enumerated: false
+e_{t-1} = 2
+```
+
+- Compute $h_t$.
+
+---
+
+3. Suppose:
+
+```{math}
+:enumerated: false
+e_{t-1} = -2
+```
+
+- Compute $h_t$ again.
+- What do you observe?
+
+---
+
+## Interpretation
+
+4. Suppose $\alpha_1 = 0.8$.
+
+- What does this imply about volatility persistence?
+
+---
+
+5. Suppose $\alpha_1 = 0.1$.
+
+- How does this differ?
+
+---
+
+## Stability
+
+6. What happens if $\alpha_1 \ge 1$?
+
+---
+
+## Challenge
+
+7. Suppose:
+
+- small shocks yesterday  
+- small variance today  
+
+- What does the model predict for tomorrow?
+
+---
+
+# ARCH Testing
+
+1. What is the purpose of the ARCH LM test?
+
+2. What is the null hypothesis?
+
+---
+
+## Interpretation
+
+3. Suppose:
+
+- LM statistic = 45  
+- p-value = 0.000  
+
+- What is your conclusion?
+
+4. Suppose:
+
+- p-value = 0.40  
+
+- What does this imply?
+
+---
+
+## Conceptual
+
+5. Why does the ARCH test use squared residuals?
+
+---
+
+### Challenge
+
+6. Why is autocorrelation in squared residuals important?
+
+---
+
+# Graph Interpretation
+
+### Volatility Clustering
+
+Consider the following simulated return series:
+
+```{code-cell} python
+:tags: [hide-input]
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+np.random.seed(123)
+
+T = 300
+alpha0 = 1
+alpha1 = 0.8
+
+e = np.zeros(T)
+h = np.zeros(T)
+
+z = np.random.normal(size=T)
+
+h[0] = alpha0
+
+for t in range(1, T):
+    h[t] = alpha0 + alpha1 * e[t-1]**2
+    e[t] = np.sqrt(h[t]) * z[t]
+
+plt.figure(figsize=(10,4))
+plt.plot(e)
+plt.title("Simulated ARCH(1) Returns")
+plt.axhline(0, linestyle='--', linewidth=1)
+plt.tight_layout()
+
+plt.savefig("figs/ch25/rtn_Q.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
+```
+
+![Rtn](figs/ch25/rtn_Q.png)
+
+---
+
+1. What feature of financial data does this illustrate?
+
+2. Identify periods of:
+
+   - high volatility  
+   - low volatility  
+
+3. Why is this inconsistent with constant variance?
+
+4. Why might a standard regression model fail to capture this behavior?
+
+---
+
+```{admonition} Hint
+Focus on clustering of large and small movements, not the direction.
+```
+
 ---
 
 # Appendix 25A — ARCH(1) Stability Condition

@@ -91,6 +91,16 @@ However, this can become cumbersome.
 GARCH models capture persistence more efficiently by including lagged volatility terms.
 ```
 
+````{admonition} The Big Idea
+
+```text
+ARCH → reacts to shocks  
+GARCH → remembers volatility itself
+```
+
+GARCH models explain why volatility remains elevated long after the original shock.
+````
+
 ---
 
 # 26.2 The GARCH(1,1) Model
@@ -671,6 +681,240 @@ More advanced models extend the GARCH framework further.
 - GARCH(1,1) is one of the most widely used volatility models in finance.
 ```
 
+# Concept Check
+
+## Basic
+
+1. What is a GARCH model?
+
+2. How does GARCH differ from ARCH?
+
+3. What does the variance equation represent?
+
+---
+
+## Intuition
+
+4. What does it mean to say “volatility has memory”?
+
+5. Why do financial markets exhibit persistent volatility?
+
+6. Why is it unrealistic to assume constant variance?
+
+---
+
+## Structure
+
+7. In the GARCH(1,1) model:
+
+   - what does $\alpha$ represent?  
+   - what does $\beta$ represent?  
+
+8. Why are both components needed?
+
+---
+
+## Persistence
+
+9. What does the quantity $\alpha + \beta$ measure?
+
+10. What does it mean if $\alpha + \beta$ is close to 1?
+
+---
+
+## Long-Run Behavior
+
+11. What is the long-run variance?
+
+12. Why does volatility revert toward a long-run level?
+
+---
+
+## Challenge
+
+13. Can volatility be highly persistent even if shocks are short-lived?
+
+---
+
+# Interpretation & Practice
+
+1. A GARCH model estimates:
+
+- $\alpha = 0.1$  
+- $\beta = 0.85$  
+
+   - What does this imply about persistence?
+
+2. A large shock occurs in the market.
+
+- What does the GARCH model predict for future volatility?
+
+3. Volatility declines slowly after a crisis.
+
+- What does this suggest about $\beta$?
+
+4. $\alpha$ is large but $\beta$ is small.
+
+- What does this imply?
+
+5. $\beta$ is large but $\alpha$ is small.
+
+- What does this imply?
+
+---
+
+## Mean Reversion
+
+6. Why does volatility eventually return to a long-run level?
+
+---
+
+## Economic Interpretation
+
+7. Why is volatility persistence important for risk management?
+
+---
+
+## Challenge
+
+8. Why might a GARCH model produce fat tails even with normal shocks?
+
+9. Why might negative returns increase volatility more than positive returns?
+What real-world behavior does this reflect? 
+
+---
+
+# Numerical Practice
+
+## GARCH Equation
+
+1. Suppose:
+
+```{math}
+:enumerated: false
+h_t = 0.1 + 0.2 e_{t-1}^2 + 0.7 h_{t-1}
+```
+
+and:
+
+- $e_{t-1} = 2$  
+- $h_{t-1} = 1$  
+
+---
+
+- Compute $h_t$.
+
+---
+
+## Persistence
+
+2. Compute:
+
+```{math}
+:enumerated: false
+\alpha + \beta
+```
+
+- What does this imply?
+
+---
+
+## Long-Run Variance
+
+3. Suppose:
+
+```{math}
+:enumerated: false
+\omega = 0.1, \quad \alpha = 0.2, \quad \beta = 0.7
+```
+
+- Compute long-run variance:
+
+```{math}
+:enumerated: false
+\frac{\omega}{1 - \alpha - \beta}
+```
+
+---
+
+## Interpretation
+
+4. If $\alpha + \beta = 0.98$:
+
+- what does this imply?
+
+---
+
+## Stability
+
+5. What happens if:
+
+```{math}
+:enumerated: false
+\alpha + \beta \ge 1
+```
+
+---
+
+## Forecasting
+
+6. Why do volatility forecasts converge to long-run variance?
+
+---
+
+## Challenge
+
+7. Suppose volatility is very persistent.
+
+- What does this imply about risk forecasting?
+
+8. You estimate a GARCH(1,1) model for stock returns and find:
+
+- $\alpha = 0.15$  
+- $\beta = 0.80$  
+
+---
+
+- Is volatility persistent?  
+- How quickly does it decay?  
+- What does this imply for risk management?
+
+---
+
+# Graph Interpretation
+
+Consider a GARCH volatility plot showing:
+
+- large spikes during crises  
+- slow decline afterward  
+
+---
+
+1. What does this suggest about volatility persistence?
+
+2. Why does volatility not drop immediately?
+
+3. What does this imply about $\beta$?
+
+---
+
+## Comparison
+
+4. Compare two series:
+
+- one where volatility drops quickly  
+- one where volatility persists  
+
+---
+
+- Which has higher $\alpha + \beta$?
+
+---
+
+## Challenge
+
+5. Why is volatility easier to observe than to predict precisely?
+
 ---
 
 # Appendix 26A — Stability Condition for GARCH(1,1)
@@ -744,3 +988,140 @@ This additional persistence greatly improves empirical realism.
 ```{admonition} Key Insight
 GARCH models treat volatility as a dynamic evolving process rather than a short-lived reaction to shocks.
 ```
+
+---
+
+# Appendix 26C — Extensions of GARCH Models
+
+Standard GARCH models assume that positive and negative shocks have the same effect on volatility.
+
+In financial markets, this is often unrealistic.
+
+```{admonition} Observation
+Negative shocks often increase volatility more than positive shocks.
+```
+
+This phenomenon is known as the **leverage effect**.
+
+---
+
+## C.1 Why Extensions Are Needed
+
+Empirical evidence shows:
+
+- stock market declines → sharp increase in volatility  
+- stock market increases → smaller effect  
+
+Standard GARCH cannot capture this asymmetry.
+
+---
+
+## C.2 GJR-GARCH Model
+
+The GJR-GARCH model introduces asymmetry:
+
+```{math}
+:enumerated: false
+h_t
+=
+\omega
++
+\alpha e_{t-1}^2
++
+\gamma e_{t-1}^2 I(e_{t-1}<0)
++
+\beta h_{t-1}
+```
+
+where:
+
+- $I(e_{t-1}<0)$ is an indicator for negative shocks  
+
+---
+
+```{admonition} Interpretation
+If $\gamma > 0$, negative shocks increase volatility more than positive shocks.
+```
+
+---
+
+## C.3 EGARCH Model
+
+The EGARCH model uses a logarithmic specification:
+
+```{math}
+:enumerated: false
+\log h_t
+=
+\omega
++
+\beta \log h_{t-1}
++
+\alpha \frac{e_{t-1}}{\sqrt{h_{t-1}}}
++
+\gamma \left|\frac{e_{t-1}}{\sqrt{h_{t-1}}}\right|
+```
+
+---
+
+```{admonition} Advantages
+- captures asymmetry  
+- ensures positive variance automatically  
+- models nonlinear effects
+```
+
+---
+
+## C.4 T-GARCH (Threshold GARCH)
+
+T-GARCH models also capture asymmetric responses:
+
+- volatility behaves differently depending on shock size or sign  
+
+---
+
+## C.5 Key Takeaways
+
+```{admonition} Big Picture
+
+Standard GARCH:
+→ symmetric response  
+
+Extended models:
+→ asymmetric response  
+
+```
+
+---
+
+## C.6 Practical Insight
+
+```{admonition} Practical Advice
+
+In many financial applications:
+
+- GARCH(1,1) works well as a baseline  
+- extensions improve realism when asymmetry matters  
+```
+
+---
+
+## C.7 When to Use Extensions
+
+Consider extensions when:
+
+- markets show strong crash behavior  
+- negative shocks dominate volatility  
+- risk management is critical  
+
+---
+
+## C.8 Looking Ahead
+
+Advanced volatility models are widely used in:
+
+- option pricing  
+- portfolio risk  
+- stress testing  
+
+Understanding asymmetry is essential for realistic financial modeling.
