@@ -34,6 +34,8 @@ We study:
 
 The emphasis throughout is intuition-first and applications-oriented.
 
+All these methods answer the same question: how do we separate signal from noise?
+
 ---
 
 ## Learning Objectives
@@ -275,6 +277,26 @@ where:
 Exponential smoothing gradually discounts older information.
 ```
 
+## Alternative Form (Error-Correction View)
+
+The updating equation can also be written as:
+
+```{math}
+:enumerated: false
+\hat x_{t+1}
+=
+\hat x_t + \alpha(x_t - \hat x_t)
+```
+
+```{admonition} Interpretation
+The new estimate equals the old estimate plus a fraction of the prediction error.
+
+- If the forecast is too low, it is adjusted upward.
+- If the forecast is too high, it is adjusted downward.
+
+The parameter $\alpha$ controls how quickly the model reacts to new information.
+```
+
 ---
 
 # 5.9 Interpreting the Smoothing Parameter
@@ -499,12 +521,78 @@ plt.close()   # replace with plt.show()
 
 # 5.17 Splines
 
-Splines approximate a series using connected polynomial segments.
+Splines provide a flexible way to model smooth trends in a time series.
 
-They provide flexible smooth curves while avoiding excessive instability.
+Instead of fitting a single curve to the entire dataset, splines divide the data into segments and fit simple curves to each part.
 
 ```{admonition} Definition
 Splines are piecewise polynomial functions joined smoothly at specific points called knots.
+```
+
+---
+
+## Intuition
+
+A spline works like a flexible ruler:
+
+- it bends to follow the data,
+- but remains smooth,
+- and avoids sharp, unrealistic jumps.
+
+---
+
+## Why Not Use One Polynomial?
+
+Fitting a single high-degree polynomial can lead to:
+
+- extreme oscillations,
+- poor behavior at the edges,
+- overfitting.
+
+Splines solve this by:
+
+- breaking the data into smaller regions,
+- fitting simpler curves locally,
+- ensuring smooth transitions between them.
+
+---
+
+## Role of Knots
+
+Knots determine where the curve can change shape.
+
+- **Few knots** → smoother curve (high bias)
+- **Many knots** → more flexible curve (higher variance)
+
+```{admonition} Key Idea
+The number and placement of knots control the flexibility of the spline.
+```
+
+---
+
+## Comparison with Other Methods
+
+| Method                  | Idea                          | Strength                  | Weakness                  |
+|------------------------|-------------------------------|---------------------------|---------------------------|
+| Moving Average         | Simple averaging              | Easy, intuitive           | Can lag                   |
+| Exponential Smoothing  | Weighted average              | Responsive                | Still global              |
+| LOESS                  | Local regression              | Very flexible             | Computationally heavier   |
+| Splines                | Piecewise smooth polynomials  | Controlled flexibility    | Requires choosing knots   |
+
+---
+
+## When Are Splines Useful?
+
+Splines are useful when:
+
+- the trend changes over time,
+- the data are nonlinear,
+- you want smooth but flexible fits.
+
+---
+
+```{admonition} Practical Insight
+Splines strike a balance between rigidity (global models) and overfitting (highly flexible models).
 ```
 
 ---
@@ -775,8 +863,6 @@ We will examine:
 - RSI,
 - Bollinger Bands.
 
----
-
 # Key Takeaways
 
 ```{admonition} Summary
@@ -789,6 +875,191 @@ We will examine:
 - All smoothing methods involve a bias–variance trade-off.
 - Many trading indicators are fundamentally smoothing devices.
 ```
+
+# Concept Check
+
+### Basic
+
+1. What is smoothing in time series analysis?
+
+2. What is the goal of trend estimation?
+
+3. What is the difference between signal and noise?
+
+---
+
+### Intuition
+
+4. Why do we smooth time series data before analyzing it?
+
+5. What is the key idea behind exponential smoothing?
+
+6. Why might recent observations be more informative than older ones?
+
+---
+
+### Intermediate
+
+7. What is the difference between:
+
+   - moving average  
+   - exponential smoothing  
+   - LOESS  
+
+8. What role do knots play in spline methods?
+
+9. What is the purpose of the HP filter?
+
+---
+
+### Finance Connection
+
+10. What are adjusted prices?
+
+11. Why are adjusted prices important in financial time series?
+
+---
+
+### Challenge
+
+12. What is the bias–variance trade-off?
+
+   - What happens if a model is too smooth?
+   - What happens if a model is too flexible?
+
+---
+
+# Interpretation & Practice
+
+1. A heavily smoothed series looks very stable.
+
+   - What is the advantage?
+   - What information might be lost?
+
+---
+
+2. A lightly smoothed series fluctuates a lot.
+
+   - What problem does this create?
+   - What type of noise might remain?
+
+---
+
+3. A LOESS curve follows the data closely.
+
+   - When is this useful?
+   - When might it lead to overfitting?
+
+---
+
+4. A spline model uses many knots.
+
+   - What happens to flexibility?
+   - What is the risk?
+
+---
+
+5. The HP filter separates a series into trend and cycle.
+
+   - What does the “cycle” represent?
+   - Why might this be useful in macroeconomics?
+
+---
+
+### Finance Interpretation
+
+6. A stock price shows a sudden drop due to a dividend payment.
+
+   - What happens to the raw price?
+   - Why do adjusted prices correct for this?
+
+---
+
+7. A trader uses a very smooth trend estimate.
+
+   - What type of strategy is this suited for?
+   - Why might it miss short-term signals?
+
+---
+
+### Challenge
+
+8. A model fits historical data very closely but performs poorly in forecasting.
+
+   - What problem is this?
+   - How is it related to the bias–variance trade-off?
+
+---
+
+# Numerical Practice
+
+### Exponential Smoothing (Applied)
+
+Consider the following data:
+
+| Week | Sales | Forecast |
+|------|------|----------|
+| 1    | 39   | 39       |
+| 2    | 44   | 39       |
+| 3    | 40   | 40       |
+| 4    | 45   | 40       |
+| 5    | 38   | 41       |
+| 6    | 43   | 40.4     |
+| 7    | 39   | 40.92    |
+
+The smoothing parameter is:
+
+```{math}
+:enumerated: false
+\alpha = 0.2
+```
+
+1. Verify the forecast for Week 3 using:
+
+```{math}
+:enumerated: false
+F_{t+1} = \alpha A_t + (1-\alpha) F_t
+```
+
+2. Compute the forecast for Week 7.
+
+3. Why does the forecast change more slowly than the actual data?
+
+4. What would happen if:
+
+- α = 0.8 instead of 0.2?
+
+---
+
+### Comparison Thinking
+
+5. Suppose you apply:
+
+- moving average  
+- exponential smoothing  
+- LOESS  
+
+to the same dataset.
+
+- Which method is likely to be most flexible?
+- Which method is easiest to compute?
+- Which method is most responsive to recent changes?
+
+---
+
+### Challenge
+
+6. Suppose a model is extremely smooth and misses turning points.
+
+- What type of error is this?
+- How does this relate to bias?
+
+---
+
+7. Suppose a model follows every fluctuation in the data.
+
+- What type of problem is this?
+- How does this relate to variance?
 
 ---
 
@@ -829,7 +1100,49 @@ Forecasting methods must use only information available at the time forecasts ar
 
 ---
 
-# Appendix 5B — Why Smoothing Can Distort Turning Points
+# Appendix 5B — Why “Exponential” Smoothing?
+
+The name “exponential smoothing” comes from the fact that older observations receive exponentially decreasing weights.
+
+Starting from:
+
+```{math}
+:enumerated: false
+\hat x_{t+1} = \alpha x_t + (1-\alpha)\hat x_t
+```
+
+we can substitute recursively:
+
+```{math}
+:enumerated: false
+\hat x_t = \alpha x_{t-1} + (1-\alpha)\hat x_{t-1}
+```
+
+Continuing this process yields:
+
+```{math}
+:enumerated: false
+\hat x_{t+1}
+=
+\alpha x_t
++
+\alpha(1-\alpha)x_{t-1}
++
+\alpha(1-\alpha)^2 x_{t-2}
++
+\cdots
+```
+
+```{admonition} Key Insight
+The weights decline geometrically:
+
+- recent observations receive higher weight,
+- older observations receive exponentially smaller weight.
+```
+
+---
+
+# Appendix 5C — Why Smoothing Can Distort Turning Points
 
 Heavy smoothing reduces noise but may delay detection of:
 

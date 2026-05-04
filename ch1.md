@@ -679,6 +679,8 @@ We will study:
 - volatility
 - stylized facts of financial data
 
+---
+
 # Key Takeaways
 
 ```{admonition} Summary
@@ -690,4 +692,95 @@ We will study:
 - Visualization is a critical first step in time series analysis.
 - Modern finance and AI rely heavily on time-dependent data.
 ```
-````
+
+# Concept Check
+
+### Basic
+
+1. What is a time series?
+
+2. Give two examples of time series in economics.
+
+3. Give two examples of time series in finance.
+
+---
+
+### Intuition
+
+4. How is a time series different from cross-sectional data?
+
+5. Why does the order of observations matter in time series data?
+
+6. Why might past values help predict future values?
+
+---
+
+### Intermediate
+
+7. What is meant by “dependence over time”?
+
+8. Why might ignoring time structure lead to incorrect conclusions?
+
+9. Why are time series especially important for forecasting?
+
+---
+
+### Challenge
+
+10. Suppose two time series both show an upward trend over time.
+
+    - Does this necessarily mean they are related?
+    - Why or why not?
+
+---
+
+# Interpretation & Practice
+
+1. Consider a time series of monthly inflation rates.
+
+   - What does each observation represent?
+   - What does the time index represent?
+
+---
+
+2. You are given a plot of a stock price that steadily increases over time.
+
+   - What feature of the data stands out?
+   - Why might this be important for analysis?
+
+---
+
+3. Suppose GDP increases every year for 20 years.
+
+   - What kind of pattern does this suggest?
+   - Why might this create problems for simple regression analysis?
+
+---
+
+4. A student says:
+
+   “We can treat time series data just like any other dataset.”
+
+   - Do you agree or disagree?
+   - Give one reason to support your answer.
+
+---
+
+5. Consider two variables:
+
+   - global GDP
+   - global energy consumption
+
+   Both increase over time.
+
+   - Would you expect a strong correlation?
+   - Does this necessarily imply a meaningful relationship?
+
+---
+
+### Challenge
+
+6. Suppose you observe a time series where shocks seem to persist over time.
+
+   - What might this imply about the underlying process?
+   - How might this affect forecasting?

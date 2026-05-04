@@ -24,8 +24,11 @@ Stationarity plays a central role in:
 - autocorrelation analysis
 - regression with time series data
 
-Many classical time series methods assume stationarity in one form or another.
+```{admonition} Key Idea
+Most time series methods assume stationarity.
 
+If this assumption is violated, results can be misleading.
+```
 ---
 
 ## Learning Objectives
@@ -41,7 +44,7 @@ By the end of this chapter, you should be able to:
 
 ---
 
-## 8.1 Why Does Stationarity Matter?
+# 8.1 Why Does Stationarity Matter?
 
 Suppose we use historical data to forecast the future.
 
@@ -51,7 +54,7 @@ This only makes sense if the underlying probabilistic structure remains reasonab
 If the statistical behavior of a series changes continuously over time, then past data may provide little guidance about the future.
 ```
 
-### Examples
+## Examples
 
 A stationary series might exhibit:
 
@@ -72,7 +75,7 @@ Many statistical methods rely on the assumption that the underlying process is s
 
 ---
 
-## 8.2 Strict Stationarity
+# 8.2 Strict Stationarity
 
 We begin with the most general definition.
 
@@ -98,7 +101,7 @@ for all:
 Strict stationarity means that the probabilistic behavior of the process is unchanged by shifts in time.
 ```
 
-### Example
+## Example
 
 If we look at:
 
@@ -109,7 +112,7 @@ their joint distributions should be identical under strict stationarity.
 
 ---
 
-## 8.3 Weak Stationarity
+# 8.3 Weak Stationarity
 
 In practice, strict stationarity is often stronger than necessary.
 
@@ -131,11 +134,11 @@ Unless otherwise stated, “stationary” usually means weakly stationary.
 
 ---
 
-## 8.4 Mean and Variance Stability
+# 8.4 Mean and Variance Stability
 
 A stationary process has stable first and second moments.
 
-### Constant Mean
+## Constant Mean
 
 $$
 E[X_t] = \mu
@@ -143,7 +146,7 @@ $$
 
 does not depend on time.
 
-### Constant Variance
+## Constant Variance
 
 $$
 Var(X_t) = \sigma^2
@@ -151,7 +154,7 @@ $$
 
 does not change over time.
 
-### Stable Covariance Structure
+## Stable Covariance Structure
 
 The covariance:
 
@@ -167,7 +170,7 @@ In stationary processes, dependence depends on “distance through time,” not 
 
 ---
 
-## 8.5 White Noise Revisited
+# 8.5 White Noise Revisited
 
 Recall white noise from Chapter 7.
 
@@ -179,7 +182,7 @@ White noise satisfies:
 
 Thus white noise is stationary.
 
-### Simulating White Noise
+## Simulating White Noise
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -210,7 +213,7 @@ The series fluctuates around a stable mean with roughly constant variability.
 
 ---
 
-## 8.7 Random Walks Revisited
+# 8.7 Random Walks Revisited
 
 Now consider the random walk:
 
@@ -220,7 +223,7 @@ $$
 
 where $w_t$ is white noise.
 
-### Simulating a Random Walk
+## Simulating a Random Walk
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -248,7 +251,7 @@ The random walk drifts over time and does not fluctuate around a stable mean.
 
 ---
 
-## 8.9 Why Random Walks Are Nonstationary
+# 8.9 Why Random Walks Are Nonstationary
 
 A random walk violates stationarity because:
 
@@ -256,7 +259,7 @@ A random walk violates stationarity because:
 - variance grows continuously
 - no stable long-run mean exists
 
-### Variance of a Random Walk
+## Variance of a Random Walk
 
 Recall:
 
@@ -280,7 +283,7 @@ This violates weak stationarity.
 
 ---
 
-## 8.10 Stationary vs Nonstationary Series
+# 8.10 Stationary vs Nonstationary Series
 
 | Feature | Stationary | Nonstationary |
 |---|---|---|
@@ -291,11 +294,11 @@ This violates weak stationarity.
 
 ---
 
-## 8.11 Trend Stationary vs Difference Stationary
+# 8.11 Trend Stationary vs Difference Stationary
 
 Not all nonstationary series behave in the same way.
 
-### Trend-Stationary Processes
+## Trend-Stationary Processes
 
 Some series fluctuate around a deterministic trend:
 
@@ -307,7 +310,7 @@ where $u_t$ is stationary.
 
 Removing the trend leaves a stationary process.
 
-### Difference-Stationary Processes
+## Difference-Stationary Processes
 
 Other series become stationary only after differencing.
 
@@ -319,7 +322,7 @@ Understanding whether a series is trend-stationary or difference-stationary is c
 
 ---
 
-## 8.12 Why Stationarity Matters for Forecasting
+# 8.12 Why Stationarity Matters for Forecasting
 
 Forecasting relies heavily on stable patterns.
 
@@ -339,7 +342,7 @@ Many forecasting methods assume that the future behaves statistically like the p
 
 ---
 
-## 8.13 Why Stationarity Matters for Regression
+# 8.13 Why Stationarity Matters for Regression
 
 Nonstationary variables can create misleading statistical relationships.
 
@@ -355,7 +358,7 @@ We study this in detail later in latter chapters.
 
 ---
 
-## 8.14 Looking Ahead
+# 8.14 Looking Ahead
 
 In this chapter, we introduced the idea of stationarity and saw how random walks violate it.
 
@@ -367,7 +370,7 @@ In the next chapter, we study:
 
 which help us understand dependence structures in stationary time series.
 
-## Key Takeaways
+# Key Takeaways
 
 ```{admonition} Summary
 - Stationarity means statistical stability over time
@@ -376,3 +379,208 @@ which help us understand dependence structures in stationary time series.
 - Random walks are nonstationary
 - Stationarity is fundamental for forecasting and inference
 ```
+
+# Concept Check
+
+## Basic
+
+1. What is stationarity?
+
+2. What does it mean for the mean of a series to be constant?
+
+3. What does it mean for the variance to be constant?
+
+---
+
+## Intuition
+
+4. Why is stationarity important in time series analysis?
+
+5. What happens if a series is not stationary?
+
+6. Why are many financial price series not stationary?
+
+---
+
+## Intermediate
+
+7. What is the difference between:
+
+   - a stationary series  
+   - a nonstationary series  
+
+8. What is mean reversion?
+
+9. Why does a random walk violate stationarity?
+
+---
+
+## Finance Insight
+
+10. Why are returns often more stationary than prices?
+
+11. Why is stationarity important for forecasting models?
+
+---
+
+## Challenge
+
+12. Suppose a series shows an upward trend but stable fluctuations around that trend.
+
+   - Is this series stationary?
+   - What transformation might help?
+
+---
+
+# Interpretation & Practice
+
+1. A time series fluctuates around a constant level with no visible trend.
+
+   - Is this likely stationary?
+   - Why?
+
+---
+
+2. A time series shows a steady upward trend.
+
+   - What does this suggest about stationarity?
+   - Why might this cause problems for modeling?
+
+---
+
+3. A series has increasing variability over time.
+
+   - What assumption of stationarity is violated?
+   - Why does this matter?
+
+---
+
+4. A random walk is plotted.
+
+   - Why does it appear to “wander” without returning to a fixed level?
+   - What does this imply about persistence?
+
+---
+
+5. A differenced series appears to fluctuate around zero.
+
+   - What does this suggest about stationarity?
+   - Why is differencing useful?
+
+---
+
+## Finance Interpretation
+
+6. A stock price series shows a strong upward trend.
+
+   - Why is this likely nonstationary?
+   - Why are returns preferred for modeling?
+
+---
+
+7. A return series appears stable over time.
+
+   - What does this suggest about stationarity?
+   - Why is this useful in practice?
+
+---
+
+## Challenge
+
+8. A model is estimated using nonstationary data.
+
+   - What kind of misleading results might occur?
+   - Why is this dangerous?
+
+---
+
+# Numerical Practice
+
+## Identifying Stationarity
+
+1. Consider the following series:
+
+   **Series A**:  
+   2, −1, 1, −2, 0, 1, −1  
+
+   **Series B**:  
+   10, 12, 15, 18, 22, 27, 33  
+
+---
+
+- Which series appears stationary?
+- Which appears nonstationary?
+- Why?
+
+---
+
+## Mean and Variance
+
+2. Suppose a series behaves as follows:
+
+- First half: values fluctuate around 10  
+- Second half: values fluctuate around 20  
+
+---
+
+- Is the mean constant?
+- Is the series stationary?
+
+---
+
+3. Suppose a series shows:
+
+- small fluctuations early  
+- large fluctuations later  
+
+---
+
+- What property of stationarity is violated?
+
+---
+
+## Differencing
+
+4. Consider the series:
+
+   100, 102, 105, 109, 114  
+
+---
+
+- Compute the first differences  
+- Does the differenced series appear more stable?
+
+---
+
+5. Suppose a random walk is defined as:
+
+```{math}
+:enumerated: false
+x_t = x_{t-1} + w_t
+```
+
+---
+
+- What would the differenced series look like?
+- Why is this important?
+
+---
+
+## Challenge
+
+6. Suppose a series has:
+
+- constant mean  
+- constant variance  
+- but strong dependence over time  
+
+---
+
+- Can it still be stationary?
+- Why?
+
+---
+
+7. Suppose you incorrectly treat a nonstationary series as stationary.
+
+- What type of errors might arise in modeling?

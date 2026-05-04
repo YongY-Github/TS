@@ -17,39 +17,41 @@ We are now ready to build formal stochastic models for stationary time series.
 
 One of the most important and widely used classes of models is the **autoregressive (AR)** model.
 
-AR models capture a simple but powerful idea:
-
 ```{admonition} Central Idea
 The present is often related to the recent past.
 ```
-
-This idea may sound simple, but it is extremely powerful.
 
 Many economic and financial variables adjust gradually rather than instantaneously. Inflation, unemployment, interest rates, exchange rates, and GDP growth all tend to exhibit inertia or persistence.
 
 Autoregressive models capture this gradual adjustment process mathematically.
 
+```{admonition} Big Picture
+AR models provide a structured way to model persistence:
+
+- weak persistence → small $\phi$
+- strong persistence → $\phi$ close to 1
+
+They form the foundation for modern time series analysis.
+```
+
 ---
 
-## Learning Objectives
+# Learning Objectives
 
 By the end of this chapter, you should be able to:
 
 - understand the logic of autoregressive models
 - define AR($p$) processes
-- derive the mean and variance of AR(1)
-- understand stationarity conditions
 - interpret persistence
-- derive the autocovariance structure of AR models
-- understand the Yule–Walker equations
-- interpret the ACF and PACF of AR models
+- understand stationarity conditions
+- interpret ACF and PACF patterns
+- simulate AR models
 - estimate simple AR models
+- perform basic diagnostics
 
 ---
 
 # 11.1 The Basic Idea
-
-Suppose today's value depends partly on yesterday's value.
 
 A simple model is:
 
@@ -60,16 +62,14 @@ x_t = \phi x_{t-1} + w_t
 
 where:
 
-- $x_t$ is the current value
-- $\phi$ measures persistence
-- $w_t$ is white noise
+- $x_t$ is the current value  
+- $\phi$ measures persistence  
+- $w_t$ is white noise  
 
 ```{admonition} Intuition
-The AR(1) model says that the current value partly “inherits” information from the previous period.
-
-- If $\phi$ is close to zero, the past matters little.
-- If $\phi$ is large and positive, shocks fade away slowly.
-- If $\phi$ is negative, the series tends to oscillate.
+- If $\phi$ is close to zero → little dependence  
+- If $\phi$ is large → strong persistence  
+- If $\phi$ is negative → oscillation  
 ```
 
 ---
@@ -77,78 +77,23 @@ The AR(1) model says that the current value partly “inherits” information fr
 # 11.2 The AR(1) Model
 
 ```{admonition} Definition
-An autoregressive process of order 1, denoted AR(1), is:
+An AR(1) process is:
 
 $$
 x_t = \phi x_{t-1} + \mu + w_t
 $$
-
-where:
-
-- $w_t \sim wn(0,\sigma_w^2)$
-- $\mu$ is a constant
-- $\phi$ measures persistence
 ```
 
-## Mean of AR(1)
-
-Assume stationarity and let:
+## Mean
 
 ```{math}
 :enumerated: false
-E[x_t] = m
-```
-
-Taking expectations:
-
-```{math}
-:enumerated: false
-m = \phi m + \mu
-```
-
-Hence:
-
-```{math}
-:enumerated: false
-m = \frac{\mu}{1-\phi}
-```
-
-provided:
-
-```{math}
-:enumerated: false
-\phi \neq 1
-```
-
-```{admonition} Key Result
-For a stationary AR(1):
-
-$$
-E[x_t]
-=
-\frac{\mu}{1-\phi}
-$$
+E[x_t] = \frac{\mu}{1-\phi}
 ```
 
 ---
 
 # 11.3 Mean-Centered Form
-
-Define:
-
-```{math}
-:enumerated: false
-y_t = x_t - m
-```
-
-Then:
-
-```{math}
-:enumerated: false
-y_t = \phi y_{t-1} + w_t
-```
-
-So we can usually work with the simpler mean-zero form:
 
 ```{math}
 :enumerated: false
@@ -157,133 +102,42 @@ x_t = \phi x_{t-1} + w_t
 
 ---
 
-# 11.4 Recursive Representation
+# 11.4 Recursive Representation (Key Insight)
 
-To understand the dynamics of the AR(1) model more deeply, it is useful to repeatedly substitute lagged values into the equation itself.
-
-This reveals how current observations depend on the entire history of past shocks.
-
-Substitute repeatedly:
+By repeated substitution:
 
 ```{math}
 :enumerated: false
-x_t = \phi(\phi x_{t-2} + w_{t-1}) + w_t
-```
-
-giving:
-
-```{math}
-:enumerated: false
-x_t
-=
-\phi^2 x_{t-2}
-+
-\phi w_{t-1}
-+
-w_t
-```
-
-Continuing recursively:
-
-```{math}
-:enumerated: false
-x_t
-=
-\phi^k x_{t-k}
-+
-\sum_{j=0}^{k-1} \phi^j w_{t-j}
-```
-
-If:
-
-```{math}
-:enumerated: false
-|\phi| < 1
-```
-
-then:
-
-```{math}
-:enumerated: false
-\phi^k x_{t-k} \to 0
-```
-
-and therefore:
-
-```{math}
-:enumerated: false
-x_t
-=
-\sum_{j=0}^{\infty} \phi^j w_{t-j}
+x_t = \sum_{j=0}^{\infty} \phi^j w_{t-j}
 ```
 
 ```{admonition} Key Insight
-A stationary AR(1) process can be written as an infinite weighted sum of past shocks.
+An AR(1) is an infinite weighted sum of past shocks, with geometrically declining weights.
 ```
-
-This representation is extremely important.
-
-It shows that an AR(1) process is built from:
-
-- current shocks,
-- recent shocks,
-- and increasingly distant past shocks,
-
-with weights that decline geometrically over time.
 
 ---
 
-# 11.5 Stationarity Condition
+# 11.5 Stationarity
 
-```{admonition} Stationarity Condition
-An AR(1) process is stationary if:
+```{admonition} Condition
+Stationary if:
 
 $$
 |\phi| < 1
 $$
 ```
-
-## Why?
-
-If:
-
-```{math}
-:enumerated: false
-|\phi| < 1
-```
-
-then:
-
-- effects of shocks decay over time
-- variance remains finite
-- the process fluctuates around a stable mean
 
 ```{admonition} Intuition
-Stationarity requires that shocks eventually lose their influence.
-
-If shocks never fade away, the series “remembers” disturbances forever and the variance grows without bound.
-```
-
-## What Happens if $\phi = 1$?
-
-Then:
-
-```{math}
-:enumerated: false
-x_t = x_{t-1} + w_t
-```
-
-which is a random walk.
-
-```{admonition} Important
-The random walk is NOT stationary.
+Shocks must fade over time for the series to remain stable.
 ```
 
 ---
 
-# 11.6 Simulating AR(1) Processes
+# 11.6 Simulation
 
 ```{code-cell} python
+:tags: [hide-input]
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -303,550 +157,172 @@ for i, phi in enumerate(phis):
     for t in range(1,n):
         x[t] = phi*x[t-1] + w[t]
 
-    ax[i].plot(x, lw=1)
-    ax[i].set_title(rf"AR(1): $\phi={phi}$")
+    ax[i].plot(x)
+    ax[i].set_title(f"AR(1), phi={phi}")
 
 plt.tight_layout()
-
-plt.savefig("figs/ch11/AR1.png", dpi=300, bbox_inches="tight")
-plt.close()   # replace with plt.show()
+plt.show()
 ```
-
-![AR 1](figs/ch11/AR1.png)
-
 
 ```{admonition} Observation
-As $\phi$ approaches 1, persistence becomes increasingly strong.
+As $\phi \to 1$, persistence increases dramatically.
 ```
 
 ---
 
-# 11.7 Variance of AR(1)
-
-Starting from:
+# 11.7 Variance
 
 ```{math}
 :enumerated: false
-x_t = \phi x_{t-1} + w_t
+Var(x_t) = \frac{\sigma_w^2}{1-\phi^2}
 ```
 
-take variances:
-
-```{math}
-:enumerated: false
-Var(x_t)
-=
-\phi^2 Var(x_{t-1})
-+
-\sigma_w^2
-```
-
-Under stationarity:
-
-```{math}
-:enumerated: false
-Var(x_t)
-=
-Var(x_{t-1})
-=
-\gamma(0)
-```
-
-Hence:
-
-```{math}
-:enumerated: false
-\gamma(0)
-=
-\phi^2 \gamma(0)
-+
-\sigma_w^2
-```
-
-Therefore:
-
-```{math}
-:enumerated: false
-\gamma(0)
-=
-\frac{\sigma_w^2}{1-\phi^2}
-```
-
-```{admonition} Result
-For stationary AR(1):
-
-$$
-Var(x_t)
-=
-\frac{\sigma_w^2}{1-\phi^2}
-$$
-```
-
-Notice that as $\phi \to 1$, the denominator approaches zero and the variance becomes very large.
-
-This reflects the increasing persistence of the process.
-
----
-
-# 11.8 Autocovariance Function
-
-Recall:
-
-```{math}
-:enumerated: false
-\gamma(h)
-=
-Cov(x_t,x_{t-h})
-```
-
-Using the AR(1) recursion:
-
-```{math}
-:enumerated: false
-\gamma(h)
-=
-\phi \gamma(h-1)
-```
-
-Repeated substitution gives:
-
-```{math}
-:enumerated: false
-\gamma(h)
-=
-\phi^h \gamma(0)
+```{admonition} Interpretation
+Variance grows rapidly as $\phi$ approaches 1.
 ```
 
 ---
 
-# 11.9 Yule–Walker Equations
-
-The recursive structure of autoregressive models implies a set of important relationships between autocovariances and model parameters.
-
-These are called the **Yule–Walker equations**.
-
-For the AR(1) model:
+# 11.8 ACF of AR(1)
 
 ```{math}
 :enumerated: false
-x_t = \phi x_{t-1} + w_t
-```
-
-multiply both sides by $x_{t-h}$ and take expectations:
-
-```{math}
-:enumerated: false
-E[x_t x_{t-h}]
-=
-\phi E[x_{t-1}x_{t-h}]
-+
-E[w_t x_{t-h}]
-```
-
-Since white noise is uncorrelated with past values:
-
-```{math}
-:enumerated: false
-E[w_t x_{t-h}] = 0
-\quad \text{for } h \geq 1
-```
-
-Therefore:
-
-```{math}
-:enumerated: false
-\gamma(h)
-=
-\phi \gamma(h-1)
-```
-
-Dividing by $\gamma(0)$ gives:
-
-```{math}
-:enumerated: false
-\rho(h)
-=
-\phi \rho(h-1)
-```
-
-```{admonition} Key Insight
-The Yule–Walker equations connect the autocorrelation structure directly to the model parameters.
-```
-
----
-
-# 11.10 Autocorrelation Function (ACF)
-
-Since:
-
-```{math}
-:enumerated: false
-\rho(h)
-=
-\frac{\gamma(h)}{\gamma(0)}
-```
-
-we obtain:
-
-```{math}
-:enumerated: false
-\rho(h)
-=
-\phi^h
+\rho(h) = \phi^h
 ```
 
 ```{admonition} Key Result
-The ACF of AR(1) decays geometrically.
+ACF decays geometrically.
 ```
-
-## Interpretation
-
-### If $0<\phi<1$
-
-- smooth positive decay
-- persistent behavior
-
-### If $\phi$ close to 1
-
-- slow decay
-- strong persistence
-
-### If $-1<\phi<0$
-
-- oscillating autocorrelation
-- alternating signs
 
 ---
 
-# 11.11 Simulated ACF
+# 11.9 Simulated ACF
 
 ```{code-cell} python
+:tags: [hide-input]
+
 from statsmodels.graphics.tsaplots import plot_acf
 
-np.random.seed(123)
-
-phi = 0.8
-n = 500
-
-w = np.random.normal(size=n)
-
-x = np.zeros(n)
-
-for t in range(1,n):
-    x[t] = phi*x[t-1] + w[t]
-
 plot_acf(x, lags=30)
-
-plt.savefig("figs/ch11/AR1-acf.png", dpi=300, bbox_inches="tight")
-plt.close()   # replace with plt.show()
+plt.show()
 ```
-
-![AR 1 ACF](figs/ch11/AR1-acf.png)
 
 ```{admonition} Observation
-The ACF tails off gradually rather than cutting off sharply.
+ACF tails off gradually.
 ```
 
 ---
 
-# 11.12 The Partial Autocorrelation Function (PACF)
+# 11.10 PACF of AR(1)
 
-Recall:
-
-- ACF measures total correlation
-- PACF measures direct correlation after controlling for intermediate lags
-
-The ACF alone is sometimes insufficient because correlations at long lags may arise indirectly through intermediate lags.
-
-The PACF helps isolate the “direct” dependence at each lag.
-
-```{admonition} Fundamental Result
-For an AR($p$) process:
-
-- ACF tails off
-- PACF cuts off after lag $p$
+```{admonition} Key Insight
+PACF isolates direct effects.
 ```
 
-## AR(1) PACF
-
-For AR(1):
-
-- PACF large at lag 1
-- PACF approximately zero afterward
-
-## Simulated PACF
-
-```{code-cell} python
-from statsmodels.graphics.tsaplots import plot_pacf
-
-plot_pacf(x, lags=30, method='ywm')
-
-plt.savefig("figs/ch11/AR1-pacf.png", dpi=300, bbox_inches="tight")
-plt.close()   # replace with plt.show()
-```
-
-![AR 1 PACF](figs/ch11/AR1-pacf.png)
-
-```{admonition} Identification Rule
+```{admonition} Result
 AR(1):
 
-- ACF tails off
-- PACF cuts off after lag 1
+- PACF large at lag 1  
+- near zero afterward  
 ```
 
-This “cutoff” property makes the PACF extremely useful for identifying autoregressive order in practice.
+```{admonition} Intuition
+Only lag 1 directly affects $x_t$.
+```
 
 ---
 
-# 11.13 The AR(2) Model
-
-We now allow dependence on two lags:
-
-$$
-x_t
-=
-\phi_1 x_{t-1}
-+
-\phi_2 x_{t-2}
-+
-w_t
-$$
-
-Allowing two lags greatly enriches the behavior of the model.
-
-Unlike AR(1), AR(2) processes can generate:
-
-- cyclical movements,
-- oscillations,
-- and damped business-cycle-like behavior.
-
-## Yule–Walker Equations for AR(2)
-
-For AR(2):
+# 11.11 AR(2) Model
 
 ```{math}
 :enumerated: false
-\gamma(h)
-=
-\phi_1 \gamma(h-1)
-+
-\phi_2 \gamma(h-2)
+x_t = \phi_1 x_{t-1} + \phi_2 x_{t-2} + w_t
 ```
 
-for:
+```{admonition} Intuition
+AR(2) allows:
 
-```{math}
-:enumerated: false
-h \geq 1
+- cycles  
+- oscillations  
+- richer dynamics  
 ```
-
-These equations determine the autocorrelation structure of the process.
 
 ---
 
-# 11.14 Simulating AR(2)
+# 11.12 AR(2) Simulation
 
 ```{code-cell} python
+:tags: [hide-input]
+
 np.random.seed(123)
 
+phi1, phi2 = 1.0, -0.6
 n = 400
+
 w = np.random.normal(size=n)
-
-phi1 = 1.0
-phi2 = -0.6
-
 x = np.zeros(n)
 
 for t in range(2,n):
     x[t] = phi1*x[t-1] + phi2*x[t-2] + w[t]
 
-plt.figure(figsize=(10,4))
 plt.plot(x)
-plt.title("AR(2) Process")
-
-plt.savefig("figs/ch11/AR2.png", dpi=300, bbox_inches="tight")
-plt.close()   # replace with plt.show()
-```
-
-![AR 2 PACF](figs/ch11/AR2.png)
-
-
-```{admonition} Observation
-AR(2) models may generate damped cyclical behavior.
+plt.title("AR(2)")
+plt.show()
 ```
 
 ---
 
-# 11.15 ACF and PACF of AR(2)
+# 11.13 ACF and PACF (AR(2))
 
 ```{code-cell} python
+:tags: [hide-input]
+
+from statsmodels.graphics.tsaplots import plot_pacf
+
 plot_acf(x, lags=30)
-plt.savefig("figs/ch11/AR2-acf.png", dpi=300, bbox_inches="tight")
-plt.close()   # replace with plt.show()
-
-plot_pacf(x, lags=30, method='ywm')
-
-plt.savefig("figs/ch11/AR2-pacf.png", dpi=300, bbox_inches="tight")
-plt.close()   # replace with plt.show()
+plot_pacf(x, lags=30)
+plt.show()
 ```
-
-![AR 2 ACF](figs/ch11/AR2-acf.png)
-
-![AR 2 PACF](figs/ch11/AR2-pacf.png)
 
 ```{admonition} Identification Rule
 AR(2):
 
-- ACF tails off
-- PACF cuts off after lag 2
+- ACF tails off  
+- PACF cuts off at lag 2  
 ```
 
 ---
 
-# 11.16 General AR(p) Models
-
-```{admonition} Definition
-An AR($p$) process is:
-
-$$
-x_t
-=
-\phi_1 x_{t-1}
-+
-\phi_2 x_{t-2}
-+
-\cdots
-+
-\phi_p x_{t-p}
-+
-w_t
-$$
-```
-
-## Backshift Representation
-
-As autoregressive models become more complicated, compact notation becomes useful.
-
-Time series analysis therefore often uses the **backshift operator** (or lag operator).
-
-Define:
+# 11.14 General AR(p)
 
 ```{math}
 :enumerated: false
-Bx_t = x_{t-1}
-```
-
-Then:
-
-```{math}
-:enumerated: false
-B^2x_t = x_{t-2}
-```
-
-and more generally:
-
-```{math}
-:enumerated: false
-B^k x_t = x_{t-k}
-```
-
-Using the lag operator:
-
-```{math}
-:enumerated: false
-\phi(B)x_t = w_t
-```
-
-where:
-
-```{math}
-:enumerated: false
-\phi(B)
-=
-1
--
-\phi_1 B
--
-\phi_2 B^2
--
-\cdots
--
-\phi_p B^p
+x_t = \sum_{i=1}^p \phi_i x_{t-i} + w_t
 ```
 
 ---
 
-# 11.17 General Yule–Walker Equations
-
-For an AR($p$) process:
-
-```{math}
-:enumerated: false
-\gamma(h)
-=
-\phi_1 \gamma(h-1)
-+
-\phi_2 \gamma(h-2)
-+
-\cdots
-+
-\phi_p \gamma(h-p)
-```
-
-These equations link:
-
-- model parameters,
-- autocovariances,
-- and autocorrelations.
-
----
-
-# 11.18 Characteristic Roots and Stationarity
-
-The stationarity condition depends on the roots of:
-
-```{math}
-:enumerated: false
-\phi(z)=0
-```
-
-```{admonition} Stationarity Condition
-An AR($p$) process is stationary if all roots lie outside the unit circle.
-```
-
-```{admonition} Intuition
-Stationarity means shocks eventually die out rather than explode.
-```
-
----
-
-# 11.19 Estimating an AR Model in Python
-
-Let's estimate a simple AR(2) model (which was simulated above, $x$).
-
-# Estimate AR model
+# 11.15 Estimation in Python
 
 ```{code-cell} python
+:tags: [hide-input]
+
 from statsmodels.tsa.ar_model import AutoReg
 
-model = AutoReg(
-    x,
-    lags=2
-)
+model = AutoReg(x, lags=2)
+res = model.fit()
 
-results = model.fit()
-
-print(results.summary())
+print(res.summary())
 ```
 
-``` verbatim
+```verbatim
                             AutoReg Model Results                             
 ==============================================================================
 Dep. Variable:                      y   No. Observations:                  400
 Model:                     AutoReg(2)   Log Likelihood                -561.672
 Method:               Conditional MLE   S.D. of innovations              0.992
-Date:                Sun, 03 May 2026   AIC                           1131.344
-Time:                        22:18:57   BIC                           1147.289
+Date:                Mon, 04 May 2026   AIC                           1131.344
+Time:                        16:18:21   BIC                           1147.289
 Sample:                             2   HQIC                          1137.660
                                   400                                         
 ==============================================================================
@@ -864,166 +340,596 @@ AR.2            0.8563           +0.9913j            1.3099            0.1366
 -----------------------------------------------------------------------------
 ```
 
-Notice how close the estimations are with our simulation avove.
-
 ---
 
-# 11.19 Estimation in Gretl
-
-## Menu
-
-```text
-Model → Time Series → ARIMA
-```
-
-## Basic Workflow
-
-1. Plot the series
-2. Check stationarity
-3. Examine ACF/PACF
-4. Choose tentative AR order
-5. Estimate the model
-6. Check residual diagnostics
-
-```markdown
-[GRETL Screenshot Placeholder: AR model estimation dialog]
-```
-
-```markdown
-[GRETL Screenshot Placeholder: AR(1) output]
-```
-
----
-
-# 11.20 Residual Diagnostics
-
-After fitting an AR model, residuals should resemble white noise.
-
-## Residual ACF
+# 11.16 Residual Diagnostics
 
 ```{code-cell} python
-import statsmodels.api as sm
+:tags: [hide-input]
 
-model = sm.tsa.ARIMA(x, order=(2,0,0))
-res = model.fit()
-
-plot_acf(res.resid, lags=20)
-
-plt.savefig("figs/ch11/res-acf.png", dpi=300, bbox_inches="tight")
-plt.close()   # replace with plt.show()
-```
-
-![Residual ACF](figs/ch11/res-acf.png)
-
-## Ljung–Box Test
-
-```{code-cell} python
 from statsmodels.stats.diagnostic import acorr_ljungbox
 
 lb = acorr_ljungbox(res.resid, lags=[10,20], return_df=True)
 lb
 ```
 
-| lag | lb_stat | lb_pvalue |
-|---|---:|---:|
-| 10 | 4.862906 | 0.900146 |
-| 20 | 25.729475 | 0.174934 |
-
-The large p-values suggest that we fail to reject the null hypothesis of no serial correlation.
+``` verbatim
+| lb_stat | lb_pvalue |
+|---------|-----------|
+| 10      | 0.902793  |
+| 20      | 0.173947  |
+```
 
 ```{admonition} Goal
-A good model should leave little remaining autocorrelation in the residuals.
+Residuals should resemble white noise.
 ```
 
 ---
 
-# 11.21 Information Criteria
+# 11.17 Information Criteria
 
-Two commonly used model-selection tools are:
+```{math}
+:enumerated: false
+AIC = -2\log L + 2k
+```
 
-$$
-AIC
-=
--2\log(\hat L)
-+
-2k
-$$
-
-$$
-BIC
-=
--2\log(\hat L)
-+
-k\log n
-$$
-
-```{admonition} Interpretation
-Lower AIC/BIC values generally indicate better models.
+```{math}
+:enumerated: false
+BIC = -2\log L + k\log n
 ```
 
 ---
 
-# 11.22 AR Models in Economics and Finance
+# 11.18 Common Mistakes
 
-AR models appear throughout applied work.
+```{admonition} Warning
 
-Examples include:
-
-- inflation persistence
-- interest-rate smoothing
-- GDP growth dynamics
-- volatility persistence
-- inventory adjustment
-
-```{admonition} Economic Interpretation
-AR models capture gradual adjustment rather than instantaneous change.
+- Ignoring stationarity  
+- Too many lags  
+- Ignoring diagnostics  
+- Confusing persistence with trend  
 ```
 
 ---
 
-# 11.23 Common Mistakes
+# 11.19 Looking Ahead
 
-```{admonition} Common Mistakes
-:class: warning
+Next:
 
-**1. Ignoring stationarity**  
-AR models require stationarity.
-
-**2. Using too many lags**  
-Overparameterization may reduce interpretability.
-
-**3. Blind reliance on ACF/PACF**  
-Use economic reasoning together with statistical tools.
-
-**4. Ignoring residual diagnostics**  
-Residual autocorrelation suggests model misspecification.
-
-**5. Confusing persistence with trend**  
-A highly persistent stationary series is not necessarily nonstationary.
-```
+- MA models  
+- ARMA models  
+- full modeling workflow  
 
 ---
-
-# 11.24 Looking Ahead
-
-In this chapter, we studied autoregressive models, which capture persistence through dependence on past values.
-
-In the next chapter, we study:
-
-- moving average (MA) models
-- dependence through past shocks
-- finite-memory processes
-
-before combining both ideas into ARMA models.
 
 # Key Takeaways
 
 ```{admonition} Summary
-- AR models relate the present to the past
-- AR(1) exhibits geometric persistence
-- Stationarity requires roots outside the unit circle
-- Yule–Walker equations connect AR parameters and autocorrelations
-- ACF tails off for AR processes
-- PACF cuts off after lag $p$
-- AR models are central building blocks in time series analysis
+
+- AR models capture persistence  
+- Stationarity requires $|\phi| < 1$  
+- ACF tails off  
+- PACF cuts off  
+- AR models are foundational  
+```
+
+# Concept Check
+
+## Basic
+
+1. What is an autoregressive (AR) model?
+
+2. What does the parameter $\phi$ represent in an AR(1) model?
+
+3. What is the role of the error term $w_t$?
+
+---
+
+## Intuition
+
+4. What does it mean for a time series to exhibit persistence?
+
+5. How does the value of $\phi$ affect the behavior of the series?
+
+6. What happens when $\phi$ is:
+
+   - close to zero  
+   - close to one  
+   - negative  
+
+---
+
+## Intermediate
+
+7. What is the stationarity condition for an AR(1) model?
+
+8. Why must shocks decay over time in a stationary process?
+
+9. What is the difference between:
+
+   - AR(1)  
+   - AR(2)  
+
+---
+
+## ACF & PACF
+
+10. What pattern does the ACF of an AR(1) process exhibit?
+
+11. What pattern does the PACF of an AR(1) process exhibit?
+
+12. Why does the PACF “cut off” for an AR process?
+
+---
+
+## Finance Insight
+
+13. Why are AR models useful in modeling economic or financial time series?
+
+14. Why is strong persistence sometimes mistaken for a trend?
+
+---
+
+## Challenge
+
+15. Suppose $\phi = 0.98$.
+
+   - Is the process stationary?
+   - How would it behave in practice?
+
+---
+
+# Interpretation & Practice
+
+1. A time series shows gradual adjustment after shocks.
+
+   - What type of model might describe this?
+   - Why?
+
+2. A series appears highly persistent but does not trend upward.
+
+   - What does this suggest about $\phi$?
+   - Is the series likely stationary?
+
+3. ACF decays slowly and smoothly.
+
+   - What type of process might this indicate?
+
+4. PACF shows a large spike at lag 1 and near zero afterward.
+
+   - What model is suggested?
+
+5. ACF shows a wavy, oscillating pattern.
+
+   - What type of model might generate this?
+
+6. After fitting an AR model, residuals still show autocorrelation.
+
+   - What does this imply?
+   - What should you do?
+
+---
+
+## Finance Interpretation
+
+7. A return series shows small but positive autocorrelation.
+
+   - What does this imply about predictability?
+   - Is this consistent with market efficiency?
+
+8. A volatility series shows strong persistence.
+
+   - Why might an AR-type structure be useful?
+
+---
+
+### Challenge
+
+9. A model fits the data well but produces poor forecasts.
+
+   - What might be wrong?
+   - What does this suggest about overfitting?
+
+---
+
+# Numerical Practice
+
+## AR(1) Simulation Logic
+
+1. Consider the AR(1) process:
+
+```{math}
+:enumerated: false
+x_t = 0.5 x_{t-1} + w_t
+```
+
+with:
+
+- $x_0 = 10$
+- $w_t = 2, -1, 3$
+
+---
+
+- Compute $x_1, x_2, x_3$
+
+---
+
+2. Repeat with:
+
+```{math}
+:enumerated: false
+x_t = 0.9 x_{t-1} + w_t
+```
+
+- Compare results  
+- What changes?
+
+---
+
+## Persistence
+
+3. Suppose:
+
+```{math}
+:enumerated: false
+x_t = \phi x_{t-1} + w_t
+```
+
+---
+
+- If $\phi = 0.2$, how quickly do shocks disappear?  
+- If $\phi = 0.9$, how quickly do shocks disappear?
+
+---
+
+### ACF Interpretation
+
+4. Suppose you observe:
+
+- $\rho(1) = 0.8$  
+- $\rho(2) = 0.64$  
+- $\rho(3) = 0.51$  
+
+---
+
+- What pattern is this?
+- What does it suggest about $\phi$?
+
+---
+
+## Model Identification
+
+5. You observe:
+
+- ACF gradually decays  
+- PACF cuts off after lag 2  
+
+---
+
+- What model is suggested?
+
+---
+
+## Estimation Output
+
+6. Suppose an estimated AR(1) model gives:
+
+```{math}
+:enumerated: false
+x_t = 0.85 x_{t-1} + w_t
+```
+
+---
+
+- Is the series highly persistent?
+- Is it stationary?
+- What does this imply for forecasting?
+
+---
+
+### Diagnostics
+
+7. Suppose the residuals from an AR model show:
+
+- significant autocorrelation  
+
+---
+
+- What does this imply?
+- What should you do next?
+
+---
+
+### Challenge
+
+8. Suppose $\phi > 1$.
+
+- What happens to the process?
+- Why is this problematic?
+
+---
+
+9. Suppose you include too many lags in an AR model.
+
+- What is the risk?
+- How can information criteria help?
+
+---
+
+# Appendix 11A — Mathematical Details of AR Models
+
+This appendix provides additional insight into the properties of autoregressive models.
+
+These results are not required for basic understanding, but they help explain *why* AR models behave the way they do.
+
+---
+
+## A.1 Recursive Representation of AR(1)
+
+Consider:
+
+```{math}
+:enumerated: false
+x_t = \phi x_{t-1} + w_t
+```
+
+Substitute repeatedly:
+
+```{math}
+:enumerated: false
+x_t = \phi(\phi x_{t-2} + w_{t-1}) + w_t
+= \phi^2 x_{t-2} + \phi w_{t-1} + w_t
+```
+
+Continuing:
+
+```{math}
+:enumerated: false
+x_t = \sum_{j=0}^{\infty} \phi^j w_{t-j}
+```
+
+```{admonition} Key Insight
+An AR(1) process is an infinite weighted sum of past shocks.
+```
+
+---
+
+## A.2 Stationarity Condition
+
+From the recursive form:
+
+```{math}
+:enumerated: false
+x_t = \sum_{j=0}^{\infty} \phi^j w_{t-j}
+```
+
+For this to converge, we require:
+
+```{math}
+:enumerated: false
+|\phi| < 1
+```
+
+```{admonition} Interpretation
+If $|\phi| \geq 1$, past shocks do not decay, and the process becomes unstable.
+```
+
+---
+
+## A.3 Mean of AR(1)
+
+Consider:
+
+```{math}
+:enumerated: false
+x_t = \phi x_{t-1} + \mu + w_t
+```
+
+Take expectations:
+
+```{math}
+:enumerated: false
+E[x_t] = \phi E[x_{t-1}] + \mu
+```
+
+In equilibrium:
+
+```{math}
+:enumerated: false
+E[x_t] = E[x_{t-1}] = \bar{x}
+```
+
+So:
+
+```{math}
+:enumerated: false
+\bar{x} = \phi \bar{x} + \mu
+```
+
+```{math}
+:enumerated: false
+\bar{x} = \frac{\mu}{1-\phi}
+```
+
+---
+
+## A.4 Variance of AR(1)
+
+From:
+
+```{math}
+:enumerated: false
+x_t = \phi x_{t-1} + w_t
+```
+
+Take variance:
+
+```{math}
+:enumerated: false
+Var(x_t) = \phi^2 Var(x_{t-1}) + \sigma_w^2
+```
+
+In steady state:
+
+```{math}
+:enumerated: false
+Var(x_t) = \sigma_x^2
+```
+
+So:
+
+```{math}
+:enumerated: false
+\sigma_x^2 = \phi^2 \sigma_x^2 + \sigma_w^2
+```
+
+```{math}
+:enumerated: false
+\sigma_x^2 = \frac{\sigma_w^2}{1-\phi^2}
+```
+
+```{admonition} Insight
+Variance increases as $\phi$ approaches 1, reflecting stronger persistence.
+```
+
+---
+
+## A.5 Autocovariance Function
+
+We define:
+
+```{math}
+:enumerated: false
+\gamma(h) = Cov(x_t, x_{t-h})
+```
+
+Multiply the AR(1) equation by $x_{t-h}$:
+
+```{math}
+:enumerated: false
+Cov(x_t, x_{t-h}) = \phi Cov(x_{t-1}, x_{t-h})
+```
+
+Thus:
+
+```{math}
+:enumerated: false
+\gamma(h) = \phi \gamma(h-1)
+```
+
+Iterating:
+
+```{math}
+:enumerated: false
+\gamma(h) = \phi^h \gamma(0)
+```
+
+---
+
+## A.6 Autocorrelation Function
+
+Since:
+
+```{math}
+:enumerated: false
+\rho(h) = \frac{\gamma(h)}{\gamma(0)}
+```
+
+we obtain:
+
+```{math}
+:enumerated: false
+\rho(h) = \phi^h
+```
+
+```{admonition} Key Result
+The ACF of an AR(1) decays geometrically.
+```
+
+---
+
+## A.7 Yule–Walker Equation (AR(1))
+
+At lag 0:
+
+```{math}
+:enumerated: false
+\gamma(0) = \phi^2 \gamma(0) + \sigma_w^2
+```
+
+Rearranging:
+
+```{math}
+:enumerated: false
+\gamma(0) (1 - \phi^2) = \sigma_w^2
+```
+
+This gives the variance result above.
+
+---
+
+## A.8 AR(2): Intuition and Dynamics
+
+Consider:
+
+```{math}
+:enumerated: false
+x_t = \phi_1 x_{t-1} + \phi_2 x_{t-2} + w_t
+```
+
+Unlike AR(1), this process can generate:
+
+- oscillations  
+- cycles  
+- damped fluctuations  
+
+```{admonition} Insight
+The interaction between $\phi_1$ and $\phi_2$ determines whether the series:
+
+- converges smoothly  
+- oscillates  
+- becomes unstable  
+```
+
+---
+
+## A.9 Characteristic Equation
+
+For AR(p):
+
+```{math}
+:enumerated: false
+x_t = \phi_1 x_{t-1} + \cdots + \phi_p x_{t-p} + w_t
+```
+
+We define the characteristic equation:
+
+```{math}
+:enumerated: false
+1 - \phi_1 z - \phi_2 z^2 - \cdots - \phi_p z^p = 0
+```
+
+````{admonition} Stationarity Condition
+All roots must lie outside the unit circle:
+
+```{math}
+:enumerated: false
+|z| > 1
+```
+````
+
+---
+
+## A.10 Why This Matters
+
+```{admonition} Big Picture
+
+These results explain:
+
+- why AR models are stable when $|\phi| < 1$  
+- why persistence creates smooth dynamics  
+- why ACF patterns emerge  
+- why PACF helps identify model order  
+
+Understanding these foundations helps avoid treating AR models as “black boxes.”
 ```

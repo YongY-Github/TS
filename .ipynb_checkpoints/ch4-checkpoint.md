@@ -615,3 +615,194 @@ We will examine:
 - Rolling averages help smooth noisy fluctuations.
 - Structural breaks can dramatically alter time series behavior.
 - Visualization helps guide model selection and forecasting.
+```
+
+# Concept Check
+
+### Basic
+
+1. What is the purpose of plotting a time series?
+
+2. What is a trend?
+
+3. What is a cycle?
+
+---
+
+### Intuition
+
+4. Why is visualization often the first step in time series analysis?
+
+5. How can a plot help detect patterns that summary statistics cannot?
+
+6. What is the difference between signal and noise?
+
+---
+
+### Intermediate
+
+7. What does a moving average do to a time series?
+
+8. Why does smoothing help reveal underlying patterns?
+
+9. What is the trade-off between smoothing and responsiveness?
+
+---
+
+### Challenge
+
+10. Suppose a time series appears smooth after applying a moving average.
+
+   - What information might be lost?
+   - Why might this matter for forecasting or trading?
+
+---
+
+# Interpretation & Practice
+
+1. You observe a time series plot with a steady upward movement.
+
+   - What feature does this suggest?
+   - Why might this create problems for analysis later?
+
+---
+
+2. A time series fluctuates randomly around a constant level.
+
+   - What type of behavior does this suggest?
+   - What might be a suitable model for this?
+
+---
+
+3. A time series shows long periods of calm followed by sudden large movements.
+
+   - What feature of financial data does this illustrate?
+   - Why is this important?
+
+---
+
+4. A smoothed series (moving average) lags behind the original data.
+
+   - Why does this happen?
+   - When might this be a problem?
+
+---
+
+### Challenge
+
+5. Two analysts use different moving averages:
+
+   - Analyst A: 5-day MA  
+   - Analyst B: 50-day MA  
+
+   - Which one reacts faster to new information?
+   - Which one is smoother?
+   - Which one would be better for short-term trading?
+
+---
+
+# Numerical Practice
+
+### Visual Thinking
+
+1. Consider the following simulated time series:
+
+```{code-cell} python
+:tags: [hide-input]
+import numpy as np
+import matplotlib.pyplot as plt
+
+np.random.seed(0)
+
+t = np.arange(100)
+
+trend = 0.1 * t
+noise = np.random.normal(0, 1, 100)
+
+series = trend + noise
+
+plt.plot(series)
+plt.title("Simulated Trend + Noise")
+
+plt.savefig("figs/ch3/Q_trent.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
+```
+
+![Trend](figs/ch3/Q_trent.png)
+
+- What two components can you identify?
+- Which part represents signal? Which part represents noise?
+
+---
+### Smoothing a Stationary Series
+
+2. Simulate a stationary AR(1) series:
+
+```{code-cell} python
+:tags: [hide-input]
+import numpy as np
+import matplotlib.pyplot as plt
+
+np.random.seed(0)
+
+T = 150
+phi = 0.7
+
+e = np.random.normal(0, 1, T)
+
+series = np.zeros(T)
+
+for t in range(1, T):
+    series[t] = phi * series[t-1] + e[t]
+
+plt.plot(series)
+
+plt.title("Simulated Stationary AR(1) Series")
+
+plt.savefig("figs/ch3/Q_ar1.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
+```
+
+![AR1](figs/ch3/Q_ar1.png)
+
+- Does the series have a deterministic trend?
+- Does it still show persistence?
+- How is this different from pure white noise?
+
+---
+
+3. Apply moving averages to the AR(1) series:
+
+```{code-cell} python
+:tags: [hide-input]
+ma_short = np.convolve(series, np.ones(5)/5, mode="valid")
+
+ma_long = np.convolve(series, np.ones(20)/20, mode="valid")
+
+plt.plot(series, alpha=0.3, label="Original AR(1)")
+
+plt.plot(
+    range(4, T),
+    ma_short,
+    label="5-period MA"
+)
+
+plt.plot(
+    range(19, T),
+    ma_long,
+    label="20-period MA"
+)
+
+plt.legend()
+
+plt.title("Smoothing a Stationary AR(1) Series")
+
+plt.savefig("figs/ch3/Q_ar1_ma.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
+```
+
+![AR1](figs/ch3/Q_ar1_ma.png)
+
+- Which moving average is smoother?
+- Which responds faster to changes?
+- What is the danger of smoothing too heavily?

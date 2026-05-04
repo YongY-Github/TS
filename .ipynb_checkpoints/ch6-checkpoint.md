@@ -938,6 +938,159 @@ We now move toward:
 - Overfitting and transaction costs are major practical concerns.
 ```
 
+# Concept Check
+
+### Basic
+
+1. What is a trading indicator?
+
+2. What is the purpose of using indicators in financial markets?
+
+3. What is a moving average crossover?
+
+---
+
+### Intuition
+
+4. Why do traders use rules (e.g., buy/sell signals) instead of raw data?
+
+5. What does it mean for an indicator to “filter” a time series?
+
+6. Why might indicators give different signals on the same data?
+
+---
+
+### Intermediate
+
+7. What is the difference between:
+
+   - trend-following indicators  
+   - momentum indicators  
+
+8. What does the RSI measure?
+
+9. What do Bollinger Bands capture?
+
+---
+
+### Finance Insight
+
+10. Why might simple rules (like moving averages) sometimes work in financial markets?
+
+11. Why might these rules stop working over time?
+
+---
+
+### Challenge
+
+12. Suppose many traders use the same indicator.
+
+   - What might happen to its effectiveness?
+   - Why?
+
+---
+
+# Numerical Practice
+
+### Extracting Trading Signals
+
+Consider the following data:
+
+| t | Price | MA(3) |
+|---|------|-------|
+| 1 | 100  | –     |
+| 2 | 102  | –     |
+| 3 | 101  | 101.0 |
+| 4 | 105  | 102.7 |
+| 5 | 107  | 104.3 |
+| 6 | 104  | 105.3 |
+| 7 | 103  | 104.7 |
+| 8 | 108  | 105.0 |
+
+---
+
+### Moving Average Signal
+
+Rule:
+
+- Buy when Price > MA  
+- Sell when Price < MA  
+
+1. For periods t = 3 to 8:
+
+   - Identify Buy / Sell signals.
+
+2. At which time does the trend appear strongest?
+
+---
+
+### Crossover Strategy
+
+Suppose we also have:
+
+| t | MA(3) | MA(5) |
+|---|-------|-------|
+| 5 | 104.3 | 103.0 |
+| 6 | 105.3 | 103.8 |
+| 7 | 104.7 | 104.2 |
+| 8 | 105.0 | 104.8 |
+
+Rule:
+
+- Buy when MA(3) crosses above MA(5)  
+- Sell when MA(3) crosses below MA(5)  
+
+3. Identify crossover signals.
+
+4. Why might crossover signals lag behind price movements?
+
+---
+
+### RSI Interpretation (Conceptual)
+
+Suppose:
+
+| t | RSI |
+|---|-----|
+| 1 | 30  |
+| 2 | 25  |
+| 3 | 28  |
+| 4 | 40  |
+| 5 | 60  |
+| 6 | 75  |
+| 7 | 80  |
+
+---
+
+Rule:
+
+- Buy when RSI < 30  
+- Sell when RSI > 70  
+
+---
+
+5. Identify Buy / Sell signals.
+
+6. Why might RSI produce false signals in trending markets?
+
+---
+
+### Challenge
+
+7. Suppose a price rises steadily:
+
+   100 → 102 → 104 → 106 → 108  
+
+   - What signals would MA and RSI produce?
+   - Why might both methods struggle in this case?
+
+---
+
+8. Suppose price fluctuates randomly with no trend.
+
+   - What problem might arise when applying trading rules?
+   - What does this suggest about overtrading?
+
 ---
 
 # Appendix 6A — Why Exponential Averages Matter in Trading

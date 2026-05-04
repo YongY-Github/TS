@@ -35,7 +35,7 @@ By the end of this chapter, you should be able to:
 
 ---
 
-## 7.1 What Is a Time Series?
+# 7.1 What Is a Time Series?
 
 ```{admonition} Definition
 A **time series** is a sequence of observations indexed by time.
@@ -73,7 +73,7 @@ For example:
 
 ---
 
-## 7.2 Stochastic Processes
+# 7.2 Stochastic Processes
 
 A time series is usually viewed as a realization of a **stochastic process**.
 
@@ -95,7 +95,7 @@ Time series analysis tries to understand the probabilistic structure generating 
 
 ---
 
-## 7.3 Randomness and Dependence
+# 7.3 Randomness and Dependence
 
 In statistics, we often study random variables independently. In time series analysis, however, the timing of observations matters.
 
@@ -120,7 +120,7 @@ But even highly random processes may still exhibit:
 
 ---
 
-## 7.4 White Noise
+# 7.4 White Noise
 
 The simplest stochastic process is **white noise**.
 
@@ -144,7 +144,7 @@ $$
 w_t \sim wn(0,\sigma_w^2)
 $$
 
-## 7.5 Simulating White Noise
+# 7.5 Simulating White Noise
 
 ```{code-cell} python
 import numpy as np
@@ -172,7 +172,7 @@ White noise fluctuates randomly around zero and shows no systematic pattern over
 
 ---
 
-## 7.6 Gaussian White Noise
+# 7.6 Gaussian White Noise
 
 If white noise is normally distributed, we call it **Gaussian white noise**.
 
@@ -193,7 +193,7 @@ It means:
 
 ---
 
-## 7.7 Covariance and Correlation
+# 7.7 Covariance and Correlation
 
 To study dependence across time, we first review covariance and correlation.
 
@@ -231,7 +231,7 @@ However, independence implies zero correlation.
 
 ---
 
-## 7.8 Dependence Across Time
+# 7.8 Dependence Across Time
 
 In time series analysis, we are interested in relationships such as:
 
@@ -260,7 +260,7 @@ The dependence between a series and its lagged values is called **serial depende
 
 ---
 
-## 7.9 Persistence
+# 7.9 Persistence
 
 Some time series exhibit strong persistence.
 
@@ -282,7 +282,7 @@ In persistent series:
 
 ---
 
-## 7.10 Random Walks
+# 7.10 Random Walks
 
 One of the most important models in time series analysis is the **random walk**.
 
@@ -296,7 +296,7 @@ $$
 where $w_t$ is white noise.
 ```
 
-### Interpretation
+## Interpretation
 
 Each new observation equals:
 
@@ -308,9 +308,15 @@ Each new observation equals:
 Random shocks accumulate over time in a random walk.
 ```
 
+```{admonition} Deep Insight
+A random walk can appear to have trends and patterns, even though it is driven entirely by random shocks.
+
+This makes it easy to mistake randomness for structure.
+```
+
 ---
 
-## 7.11 Simulating a Random Walk
+# 7.11 Simulating a Random Walk
 
 ```{code-cell} python
 np.random.seed(123)
@@ -336,7 +342,7 @@ Unlike white noise, a random walk tends to drift over time and exhibits strong p
 
 ---
 
-## 7.12 White Noise vs Random Walk
+# 7.12 White Noise vs Random Walk
 
 | Feature | White Noise | Random Walk |
 |---|---|---|
@@ -351,7 +357,7 @@ A random walk is generated from white noise shocks, but behaves very differently
 
 ---
 
-## 7.13 Why Random Walks Matter
+# 7.13 Why Random Walks Matter
 
 Random walks play a central role in economics and finance.
 
@@ -361,7 +367,7 @@ Examples include:
 - exchange rates
 - some macroeconomic aggregates
 
-### Financial Interpretation
+## Financial Interpretation
 
 If stock prices follow a random walk:
 
@@ -372,7 +378,7 @@ This idea is closely related to the **efficient market hypothesis**.
 
 ---
 
-## 7.14 Looking Ahead
+# 7.14 Looking Ahead
 
 In this chapter, we introduced:
 
@@ -384,7 +390,7 @@ In this chapter, we introduced:
 
 These ideas naturally lead to the concept of **stationarity**, which we study in the next chapter.
 
-## Key Takeaways
+# Key Takeaways
 
 ```{admonition} Summary
 - Time series observations are ordered through time
@@ -392,3 +398,186 @@ These ideas naturally lead to the concept of **stationarity**, which we study in
 - White noise contains no serial dependence
 - Random walks exhibit strong persistence
 - Random walks arise from accumulated random shocks
+```
+
+# Concept Check
+
+## Basic
+
+1. What is a stochastic process?
+
+2. What is white noise?
+
+3. What is a random walk?
+
+---
+
+## Intuition
+
+4. Why are observations in a time series typically not independent?
+
+5. What does it mean for a series to exhibit persistence?
+
+6. Why is white noise considered unpredictable?
+
+---
+
+## Intermediate
+
+7. What is serial dependence?
+
+8. What is a lag in time series analysis?
+
+9. Why can a random walk look like it has a trend even if it does not?
+
+---
+
+## Finance Insight
+
+10. Why might stock prices behave like a random walk?
+
+11. What does this imply about the ability to predict future prices?
+
+---
+
+## Challenge
+
+12. Suppose a series looks smooth and trending.
+
+   - Does this imply it is predictable?
+   - Why or why not?
+
+---
+
+# Interpretation & Practice
+
+1. Consider a white noise series.
+
+   - What pattern would you expect to see in a plot?
+   - Why is it difficult to forecast?
+
+---
+
+2. Consider a random walk.
+
+   - Why does it appear to drift over time?
+   - What role do past shocks play?
+
+---
+
+3. A series shows strong persistence.
+
+   - What does this imply about the effect of shocks?
+   - How might this affect forecasting?
+
+---
+
+4. A plot shows large swings but no clear pattern.
+
+   - Is this more likely white noise or a random walk?
+   - Why?
+
+---
+
+5. A time series appears to trend upward.
+
+   - What are two possible explanations?
+   - Why must we be careful in interpreting this?
+
+---
+
+## Behavioral Insight
+
+6. A trader believes that an upward trend will continue.
+
+   - What assumption are they making about dependence?
+   - Why might this be misleading?
+
+---
+
+## Challenge
+
+7. Suppose you simulate two series:
+
+   - Series A: white noise  
+   - Series B: random walk  
+
+   - Which one is easier to predict?
+   - Why?
+
+---
+
+# Numerical Practice
+
+## White Noise vs Random Walk
+
+1. Suppose you observe the following values:
+
+   **Series A**:  
+   2, −1, 1, −2, 0, 1  
+
+   **Series B**:  
+   2, 1, 2, 0, 0, 1  
+
+   - Which series looks more like white noise?
+   - Which looks more persistent?
+
+---
+
+## Step-by-Step Random Walk
+
+2. Suppose a random walk is defined as:
+
+\[
+x_t = x_{t-1} + w_t
+\]
+
+with:
+
+- initial value \(x_0 = 100\)
+- shocks \(w_t\): 2, −1, 3, −2  
+
+---
+
+- Compute \(x_1, x_2, x_3, x_4\)
+
+---
+
+3. What do you notice about how shocks affect the series?
+
+---
+
+## Variance Intuition
+
+4. Consider two processes:
+
+- white noise  
+- random walk  
+
+---
+
+- Which one has constant variance over time?
+- Which one becomes more volatile as time increases?
+- Why?
+
+---
+
+## Persistence
+
+5. Suppose a shock of +5 occurs in:
+
+- a white noise process  
+- a random walk  
+
+---
+
+- How long does the effect last in each case?
+
+---
+
+## Challenge
+
+6. Suppose you observe a series that behaves like a random walk.
+
+- Why might differencing the series remove persistence?
+- What do you expect the differenced series to look like?

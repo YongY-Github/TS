@@ -33,6 +33,8 @@ Each chapter is designed by:
 * hypothesis testing (visual + intuitive)
 
 ---
+# Part I Capstone — Working with Financial Data
+---
 
 # 📘 PART II — Seeing Patterns in Time Series
 
@@ -57,6 +59,8 @@ Each chapter is designed by:
 * RSI
 * Bollinger Bands
 
+---
+# Part II Capstone — Seeing Patterns and Trading Signals
 ---
 
 # 📘 PART III — Core Time Series Concepts
@@ -86,6 +90,8 @@ Each chapter is designed by:
 * detrending vs differencing
 
 ---
+# Part III Capstone — Dependence, Stationarity, and Unit Roots
+---
 
 # 📘 PART IV — Linear Time Series Models
 
@@ -104,6 +110,8 @@ Each chapter is designed by:
 * differencing
 * modeling workflow
 
+---
+# Part IV Capstone — Building and Evaluating ARIMA Models
 ---
 
 # 📘 PART V — Forecasting
@@ -138,6 +146,8 @@ Each chapter is designed by:
 ### Chapter 21 — Error Correction Models (ECM)
 
 ---
+# Part VI Capstone — Spurious Regression, Cointegration, and Dynamic Relationships
+---
 
 # 📘 PART VII — Multivariate Models
 
@@ -155,6 +165,9 @@ Each chapter is designed by:
 
 ### Chapter 26 — GARCH Models
 
+---
+# Part VIII Capstone — Forecasting Volatility and Financial Risk
+---
 <!--
 
 Kindly note that this is work-in-progress. Any comments on typos, errors, etc is much apprecaited.

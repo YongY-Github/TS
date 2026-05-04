@@ -6,7 +6,7 @@ kernelspec:
 
 # Chapter 9 — ACF and PACF
 
-In the previous chapters, we introduced dependence, persistence, and stationarity.
+In previous chapters, we introduced dependence, persistence, and stationarity.
 
 We now develop two of the most important tools in time series analysis:
 
@@ -15,456 +15,528 @@ We now develop two of the most important tools in time series analysis:
 
 These tools help us understand:
 
-- dependence across time
-- persistence
-- lag structure
-- model identification
-
-ACF and PACF plots are fundamental in practical time series analysis and are widely used in ARIMA modeling.
+- dependence across time  
+- persistence  
+- lag structure  
+- model identification  
 
 ---
 
-## Learning Objectives
+# Learning Objectives
 
 By the end of this chapter, you should be able to:
 
-- understand autocovariance and autocorrelation
-- interpret ACF plots
-- understand partial autocorrelation
-- interpret PACF plots
-- recognize common dependence patterns
-- distinguish white noise, AR, and MA behavior visually
+- understand autocorrelation and autocovariance  
+- interpret ACF and PACF plots  
+- recognize dependence patterns  
+- distinguish white noise and persistent processes  
+- use ACF/PACF for model identification  
 
 ---
 
-## 9.1 Correlation Across Time
+# 9.1 Correlation Across Time
 
-In ordinary statistics, correlation measures dependence between two variables.
-
-In time series analysis, we instead study dependence between:
-
-- a series today
-- the same series in the past
-
-For example:
-
-```{math}
-:enumerated: false
-Corr(X_t, X_{t-1})
-```
-
-```{math}
-:enumerated: false
-Corr(X_t, X_{t-2})
-```
-
-and more generally:
+In time series analysis, we study relationships such as:
 
 ```{math}
 :enumerated: false
 Corr(X_t, X_{t-h})
 ```
 
-where $h$ is called the **lag**.
+where \(h\) is the **lag**.
 
 ```{admonition} Definition
-The dependence between a time series and its lagged values is called **serial correlation** or **autocorrelation**.
+Autocorrelation measures dependence between a variable and its past values.
 ```
 
 ---
 
-## 9.2 Autocovariance Function
+# 9.2 Autocovariance and ACF
 
 For a weakly stationary process:
 
 ```{math}
-\gamma(h)
-=
-Cov(X_t, X_{t-h})
+:enumerated: false
+\gamma(h) = Cov(X_t, X_{t-h})
 ```
 
-is called the **autocovariance function**.
-
-```{admonition} Important
-Under stationarity, autocovariance depends only on the lag $h$, not on time $t$.
-```
-
-### Lag 0
-
-At lag zero:
+The autocorrelation function (ACF) is:
 
 ```{math}
 :enumerated: false
-\gamma(0)
-=
-Var(X_t)
+\rho(h) = \frac{\gamma(h)}{\gamma(0)}
 ```
 
-### Positive and Negative Covariance
+where \(\gamma(0) = Var(X_t)\).
 
-- Positive autocovariance → observations move together
-- Negative autocovariance → observations move oppositely
-
----
-
-## 9.3 Autocorrelation Function (ACF)
-
-The autocorrelation function standardizes autocovariance.
-
-```{admonition} Definition
-The autocorrelation at lag $h$ is:
-
-$$
-\rho(h)
-=
-\frac{\gamma(h)}{\gamma(0)}
-$$
-```
-
-Thus:
+````{admonition} Key Property
+The autocorrelation satisfies:
 
 ```{math}
 :enumerated: false
 -1 \leq \rho(h) \leq 1
 ```
 
-```{admonition} Intuition
-The ACF measures how strongly the series is related to its own past values.
+````
+
+```{admonition} Key Idea
+The ACF measures how strongly the present relates to the past.
 ```
 
 ---
 
-## 9.4 ACF of White Noise
+# 9.3 White Noise: No Dependence
 
-For white noise:
-
-$$
-\rho(h) = 0
-\quad \text{for } h \neq 0
-$$
-
-because white noise contains no serial dependence.
-
-### Simulating White Noise
+## Simulation
 
 ```{code-cell} python
 :tags: [hide-input]
 
 import numpy as np
 import matplotlib.pyplot as plt
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 
 np.random.seed(10101)
 
-wn = np.random.normal(0, 2, 500)
+wn = np.random.normal(0, 1, 300)
 
 plt.figure(figsize=(10,4))
-plt.plot(wn, lw=1)
-plt.title("Simulated White Noise")
-plt.xlabel("Time")
-plt.ylabel("$w_t$")
-
-plt.savefig("figs/ch7/wn.png", dpi=300, bbox_inches="tight")
-plt.close()   # replace with plt.show()
+plt.plot(wn)
+plt.title("White Noise")
+plt.show()
 ```
 
-![White Noise](figs/ch7/wn.png)
+## ACF and PACF
+
+```{code-cell} python
+:tags: [hide-input]
+
+fig, ax = plt.subplots(1,2, figsize=(10,4))
+
+plot_acf(wn, lags=30, ax=ax[0])
+ax[0].set_title("ACF (White Noise)")
+
+plot_pacf(wn, lags=30, ax=ax[1], method="ywm")
+ax[1].set_title("PACF (White Noise)")
+
+plt.tight_layout()
+plt.show()
+```
+
+```{admonition} Observation
+White noise shows no structure:
+
+- ACF ≈ 0  
+- PACF ≈ 0  
+```
 
 ---
 
-## 9.5 ACF Plot of White Noise
+# 9.4 Persistent Series: Random Walk
 
-```{code-cell} python
-from statsmodels.graphics.tsaplots import plot_acf
-
-plot_acf(wn, lags=30)
-
-plt.savefig("figs/ch9/acf_wn.png", dpi=300, bbox_inches="tight")
-plt.close()   # replace with plt.show()
-```
-
-![ACF White Noise](figs/ch9/acf_wn.png)
-
-```{admonition} Observation
-The ACF of white noise fluctuates randomly around zero with no systematic pattern.
-```
-
-## 9.6 ACF of a Random Walk
-
-Now consider a persistent process such as a random walk.
-
-### Simulating a Random Walk
+## Simulation
 
 ```{code-cell} python
 :tags: [hide-input]
 
 np.random.seed(123)
 
-w = np.random.normal(0, 1, 500)
+w = np.random.normal(0, 1, 300)
 x = np.cumsum(w)
 
 plt.figure(figsize=(10,4))
-plt.plot(x, lw=1)
-plt.title("Simulated Random Walk")
-plt.xlabel("Time")
-plt.ylabel("$x_t$")
-
-plt.savefig("figs/ch7/rw.png", dpi=300, bbox_inches="tight")
-plt.close()   # replace with plt.show()
+plt.plot(x)
+plt.title("Random Walk")
+plt.show()
 ```
 
-![Random Walk](figs/ch7/rw.png)
-
----
-
-## 9.7 ACF of a Random Walk
+## ACF and PACF
 
 ```{code-cell} python
-plot_acf(x, lags=40)
-plt.savefig("figs/ch9/acf_rw.png", dpi=300, bbox_inches="tight")
-plt.close()   # replace with plt.show()
-```
+:tags: [hide-input]
 
-![ACF Random Walk](figs/ch9/acf_rw.png)
+fig, ax = plt.subplots(1,2, figsize=(10,4))
 
+plot_acf(x, lags=40, ax=ax[0])
+ax[0].set_title("ACF (Random Walk)")
 
-```{admonition} Observation
-The autocorrelations decay very slowly, indicating strong persistence.
+plot_pacf(x, lags=40, ax=ax[1], method="ywm")
+ax[1].set_title("PACF (Random Walk)")
+
+plt.tight_layout()
+plt.show()
 ```
 
 ```{admonition} Key Insight
-Persistent series tend to exhibit slowly decaying autocorrelations.
+Persistent series show:
+
+- slowly decaying ACF  
+- strong dependence across time  
+```
+
+```{admonition} Deep Insight
+A random walk can appear to have patterns even though it is driven entirely by random shocks.
+
+This makes it easy to mistake randomness for structure.
 ```
 
 ---
 
-## 9.8 Why Persistence Matters
-
-Strong persistence means:
-
-- shocks remain influential for many periods
-- future values depend strongly on past values
-
-This is common in:
-
-- macroeconomic variables
-- financial prices
-- exchange rates
-
----
-
-## 9.9 Sample ACF
-
-In practice, we estimate autocorrelations from data.
-
-The sample autocorrelation at lag $h$ is:
-
-$$
-\hat{\rho}(h)
-=
-\frac{
-\sum_{t=h+1}^T (x_t-\bar{x})(x_{t-h}-\bar{x})
-}{
-\sum_{t=1}^T (x_t-\bar{x})^2
-}
-$$
-
-```{admonition} Important
-Sample autocorrelations are estimates and therefore subject to sampling variability.
-```
-
----
-
-## 9.10 Interpreting ACF Plots
-
-ACF plots help identify patterns in time series data.
+# 9.5 Interpreting ACF Patterns
 
 ### White Noise
-
-- autocorrelations near zero
-- no visible pattern
+- ACF ≈ 0 at all lags  
 
 ### Persistent Series
-
-- slowly decaying ACF
-- strong dependence
+- ACF decays slowly  
 
 ### Oscillatory Behavior
+- ACF alternates signs  
 
-- alternating positive and negative correlations
-- cyclical structure
+```{admonition} Rule of Thumb
+ACF reveals persistence and dependence patterns.
+```
 
 ---
 
-## 9.11 Partial Autocorrelation
+# 9.6 Partial Autocorrelation (PACF)
 
-The ACF measures total correlation across time.
+The ACF measures total dependence, including indirect effects.
 
-However, some of this correlation may be indirect.
+The PACF isolates **direct dependence**.
 
-### Example
-
-Suppose:
-
-- $X_t$ depends strongly on $X_{t-1}$
-- $X_{t-1}$ depends strongly on $X_{t-2}$
-
-Then:
-
-```{math}
-:enumerated: false
-Corr(X_t,X_{t-2})
+```{admonition} Definition
+The PACF measures the relationship between $X_t$ and $X_{t-h}$, controlling for intermediate lags.
 ```
 
-may arise indirectly through $X_{t-1}$.
+---
+
+# 9.7 ACF vs PACF (Intuition)
 
 ```{admonition} Intuition
-The PACF measures the “direct” relationship between $X_t$ and $X_{t-h}$ after controlling for intermediate lags.
+
+- ACF → total dependence across time  
+- PACF → direct dependence at each lag  
+
+PACF helps identify the true lag structure of a process.
 ```
 
 ---
 
-## 9.12 Partial Autocorrelation Function (PACF)
+# 9.8 Visual Comparison
 
-````{admonition} Definition
-The partial autocorrelation at lag $h$ measures the correlation between:
+```{code-cell} python
+:tags: [hide-input]
+
+np.random.seed(42)
+
+# AR(1)
+phi = 0.7
+ar = np.zeros(300)
+
+for t in range(1, 300):
+    ar[t] = phi * ar[t-1] + np.random.normal()
+
+fig, ax = plt.subplots(2,2, figsize=(10,6))
+
+plot_acf(ar, lags=30, ax=ax[0,0])
+ax[0,0].set_title("ACF (AR(1))")
+
+plot_pacf(ar, lags=30, ax=ax[0,1], method="ywm")
+ax[0,1].set_title("PACF (AR(1))")
+
+plot_acf(wn, lags=30, ax=ax[1,0])
+ax[1,0].set_title("ACF (White Noise)")
+
+plot_pacf(wn, lags=30, ax=ax[1,1], method="ywm")
+ax[1,1].set_title("PACF (White Noise)")
+
+plt.tight_layout()
+plt.show()
+```
+
+```{admonition} Observation
+
+- White noise → no structure  
+- AR(1) →  
+  - ACF decays  
+  - PACF cuts off after lag 1  
+```
+
+---
+
+# 9.9 Model Identification (Rule of Thumb)
+
+| Model | ACF | PACF |
+|------|-----|------|
+| AR(p) | decays | cuts off at p |
+| MA(q) | cuts off at q | decays |
+| ARMA | decays | decays |
+| White noise | none | none |
+
+```{admonition} Preview
+These patterns guide ARIMA model selection.
+```
+
+---
+
+# 9.10 Confidence Bands
+
+ACF/PACF plots include approximate bounds:
 
 ```{math}
 :enumerated: false
-X_t \quad \text{and} \quad X_{t-h}
-```
-
-after removing the effects of intermediate lags.
-````
-
----
-
-## 9.13 PACF of White Noise
-
-For white noise:
-
-- PACF values fluctuate randomly around zero
-- no systematic structure exists
-
-
-## 9.14 PACF Plot of White Noise
-
-```{code-cell} python
-from statsmodels.graphics.tsaplots import plot_pacf
-
-plot_pacf(wn, lags=30, method='ywm')
-
-plt.savefig("figs/ch9/pacf_wn.png", dpi=300, bbox_inches="tight")
-plt.close()   # replace with plt.show()
-```
-
-![PACF](figs/ch9/pacf_wn.png)
-
----
-
-## 9.15 PACF of a Random Walk
-
-```{code-cell} python
-plot_pacf(x, lags=30, method='ywm')
-
-plt.savefig("figs/ch9/pacf_rw.png", dpi=300, bbox_inches="tight")
-plt.close()   # replace with plt.show()
-```
-
-![PACF Random Walk](figs/ch9/pacf_rw.png)
-
-
-```{admonition} Observation
-Persistent series often show large PACF values at small lags.
-```
-
----
-
-## 9.16 Why ACF and PACF Matter
-
-ACF and PACF are essential because they help identify appropriate time series models.
-
-In later chapters, we will see:
-
-| Model | ACF | PACF |
-|---|---|---|
-| AR(p) | gradual decay | cutoff |
-| MA(q) | cutoff | gradual decay |
-| White noise | near zero | near zero |
-
-```{admonition} Preview
-ACF and PACF plots are fundamental tools in ARIMA model identification.
-```
-
----
-
-## 9.17 Confidence Bands
-
-ACF and PACF plots usually include confidence bands.
-
-Approximate bounds are:
-
-$$
 \pm \frac{2}{\sqrt{T}}
-$$
-
-where $T$ is sample size.
+```
 
 ```{admonition} Interpretation
-Spikes outside the confidence bands may indicate statistically significant autocorrelation.
+Spikes outside these bands may indicate significant autocorrelation.
 ```
 
 ```{admonition} Caution
-Individual spikes may occasionally exceed the bounds purely by chance.
+Some spikes may exceed the bounds by chance.
 ```
 
 ---
 
-## 9.18 Economic and Financial Intuition
+# 9.11 Economic and Financial Insight
 
-### Macroeconomic Variables
-
-Variables such as:
-
-- inflation
-- unemployment
-- GDP
-
-often exhibit strong persistence.
-
-### Financial Returns
-
-Daily stock returns often show:
-
-- weak autocorrelation in returns
-- stronger dependence in volatility
+- Macroeconomic variables → persistent  
+- Financial returns → weak autocorrelation  
+- Volatility → highly persistent  
 
 ```{admonition} Important
-Lack of autocorrelation in returns does not imply absence of structure in financial markets.
+Low autocorrelation does not imply absence of structure.
 ```
-
-This becomes important later in ARCH and GARCH models.
 
 ---
 
-## 9.19 Looking Ahead
+# 9.12 Looking Ahead
 
-In this chapter, we introduced the ACF and PACF as tools for understanding dependence across time.
+ACF and PACF help diagnose dependence patterns.
 
-In the next chapter, we study:
+Next, we study:
 
-- unit roots
-- nonstationarity
-- differencing
-- the Augmented Dickey–Fuller (ADF) test
+- unit roots  
+- nonstationarity  
+- differencing  
 
-which help determine whether persistence is temporary or permanent.
+which explain whether persistence is temporary or permanent.
 
-## Key Takeaways
+---
+
+# Key Takeaways
 
 ```{admonition} Summary
-- The ACF measures dependence across lags
-- The PACF measures direct lag relationships
-- White noise exhibits little autocorrelation
-- Persistent series show slowly decaying autocorrelations
-- ACF and PACF are central tools for model identification
+
+- ACF measures dependence across time  
+- PACF isolates direct dependence  
+- White noise shows no structure  
+- Persistent series show slow decay  
+- ACF and PACF are essential tools for model identification  
+```
+
+# Concept Check
+
+### Basic
+
+1. What is autocorrelation?
+
+2. What does the autocorrelation function (ACF) measure?
+
+3. What is a lag?
+
+---
+
+### Intuition
+
+4. Why do we examine correlations across time in a time series?
+
+5. What does a high autocorrelation at lag 1 suggest?
+
+6. What does it mean if autocorrelations decay slowly?
+
+---
+
+### Intermediate
+
+7. What is the difference between:
+
+   - ACF  
+   - PACF  
+
+8. Why is PACF useful in time series analysis?
+
+9. What does it mean if autocorrelations are close to zero at all lags?
+
+---
+
+### Interpretation
+
+10. What pattern would you expect in the ACF of:
+
+   - white noise  
+   - a persistent series  
+
+---
+
+### Challenge
+
+11. Suppose the ACF shows strong values at many lags.
+
+   - What does this suggest about the series?
+   - Why might this indicate nonstationarity?
+
+---
+
+# Interpretation & Practice
+
+1. ACF values are close to zero at all lags.
+
+   - What type of process is this likely?
+   - Why?
+
+2. ACF shows a large value at lag 1, then quickly drops to zero.
+
+   - What does this suggest about dependence?
+   - What type of process might generate this?
+
+3. ACF decays slowly over many lags.
+
+   - What does this indicate?
+   - Why might this suggest nonstationarity?
+
+4. PACF shows a sharp cutoff after lag 1.
+
+   - What does this imply?
+   - Why is this useful for model identification?
+
+5. ACF alternates between positive and negative values.
+
+   - What type of behavior might this indicate?
+   - What does this suggest about the series dynamics?
+
+---
+
+### Finance Interpretation
+
+6. A return series shows very low autocorrelation.
+
+   - What does this imply about predictability?
+   - How does this relate to market efficiency?
+
+7. A volatility series shows strong autocorrelation.
+
+   - What does this suggest?
+   - Why is this important in finance?
+
+---
+
+### Challenge
+
+8. Suppose both ACF and PACF show no clear pattern.
+
+   - What type of process might this be?
+   - Why is model identification difficult in this case?
+
+---
+
+# Numerical Practice
+
+### Identifying Autocorrelation
+
+1. Consider the following series:
+
+   2, 4, 6, 8, 10  
+
+- Does this series show dependence over time?
+- Would you expect high autocorrelation?
+- Why?
+
+---
+
+2. Consider:
+
+   3, −1, 2, −2, 1, 0  
+
+- Does this series appear random?
+- Would you expect autocorrelation to be high or low?
+
+---
+
+### Lag Interpretation
+
+3. Suppose:
+
+```{math}
+:enumerated: false
+Corr(X_t, X_{t-1}) = 0.8
+```
+
+- What does this imply?
+- Is the series highly dependent?
+
+---
+
+4. Suppose:
+
+```{math}
+:enumerated: false
+Corr(X_t, X_{t-1}) \approx 0
+```
+
+- What does this suggest about predictability?
+
+---
+
+### ACF Patterns
+
+5. Match the pattern:
+
+- ACF ≈ 0 for all lags  
+- ACF slowly decays  
+- ACF cuts off quickly  
+
+To the likely process:
+
+- white noise  
+- persistent series  
+- short-memory process  
+
+---
+
+### Challenge
+
+6. Suppose a series has:
+
+- strong autocorrelation at lag 1  
+- weak autocorrelation afterward  
+
+---
+
+- What type of model might describe this?
+- Why?
+
+---
+
+
+---
+
+# Appendix 9A — Understanding PACF
+
+The PACF can be interpreted as the correlation between:
+
+- $X_t$  
+- and $X_{t-h}$
+
+after removing the effect of intermediate lags.
+
+This can be obtained by:
+
+1. Regressing $X_t$ on intermediate lags  
+2. Regressing $X_{t-h}$ on the same variables  
+3. Taking the correlation between residuals  
+
+```{admonition} Insight
+PACF isolates direct dependence at each lag.
 ```

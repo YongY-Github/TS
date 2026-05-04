@@ -6,37 +6,50 @@ kernelspec:
 
 # Chapter 10 — Unit Roots and Differencing
 
-In previous chapters, we introduced:
+In previous chapters, we studied:
 
-- random walks
 - persistence
 - stationarity
 - autocorrelation
 
-We now study one of the most important sources of nonstationarity in time series analysis:
+A central question now arises:
 
-```{admonition} Central Idea
-Some time series contain a **unit root**, meaning that shocks have permanent effects.
+```{admonition} Central Question
+Why do some time series drift indefinitely instead of fluctuating around a stable level?
 ```
 
-Understanding unit roots is fundamental because:
+The answer lies in the concept of a **unit root**.
 
-- many economic and financial time series are highly persistent
-- standard regression methods may fail under nonstationarity
-- forecasting behavior changes dramatically
-- differencing often becomes necessary
+```{admonition} Central Idea
+Some time series contain a unit root, meaning that shocks have permanent effects.
+```
+
+This has major consequences:
+
+- standard regression methods may fail  
+- forecasting becomes difficult  
+- statistical inference can be misleading  
+- transformation (differencing) becomes necessary  
 
 This chapter introduces:
 
-- unit root intuition
-- random walks revisited
-- differencing
-- detrending vs differencing
-- the Augmented Dickey–Fuller (ADF) test
+- unit root intuition  
+- random walks revisited  
+- differencing  
+- detrending vs differencing  
+- the Augmented Dickey–Fuller (ADF) test  
+
+```{admonition} Deep Insight
+Many economic and financial series look predictable because they are persistent.
+
+But persistence is not the same as predictability.
+
+Unit root processes can exhibit strong patterns while remaining fundamentally unpredictable.
+```
 
 ---
 
-## Learning Objectives
+# Learning Objectives
 
 By the end of this chapter, you should be able to:
 
@@ -49,7 +62,7 @@ By the end of this chapter, you should be able to:
 
 ---
 
-## 10.1 Persistence Revisited
+# 10.1 Persistence Revisited
 
 Recall the random walk:
 
@@ -76,7 +89,7 @@ In a random walk, shocks accumulate permanently over time.
 
 ---
 
-## 10.2 Simulating a Random Walk
+# 10.2 Simulating a Random Walk
 
 ````{dropdown} Python Code
 ```{code-cell} python
@@ -107,7 +120,7 @@ The series drifts over time and does not fluctuate around a stable mean.
 
 ---
 
-## 10.3 Why Random Walks Matter
+# 10.3 Why Random Walks Matter
 
 Random walks are central in economics and finance.
 
@@ -125,7 +138,7 @@ The random walk model implies:
 
 ---
 
-## 10.4 The Unit Root Idea
+# 10.4 The Unit Root Idea
 
 The random walk can be rewritten as:
 
@@ -145,9 +158,20 @@ with:
 A process has a **unit root** when the coefficient on the lagged variable equals one.
 ```
 
----
+```{admonition} Big Picture
 
-## 10.5 Why the Unit Root Matters
+Unit root processes behave fundamentally differently from stationary processes:
+
+- shocks do **not fade away**
+- the series does **not return to a stable level**
+- variability grows over time
+
+```text
+Nonstationary → Difference → Stationary → Model
+```
+
+---
+# 10.5 Why the Unit Root Matters
 
 Consider:
 
@@ -155,25 +179,25 @@ $$
 x_t = \phi x_{t-1} + w_t
 $$
 
-### Case 1: $|\phi| < 1$
+## Case 1: $|\phi| < 1$
 
-- shocks gradually disappear
-- process reverts toward its mean
-- process is stationary
+- shocks gradually disappear  
+- the series returns toward a stable mean  
+- the process is stationary  
 
-### Case 2: $\phi = 1$
+## Case 2: $\phi = 1$
 
-- shocks never disappear
-- effects accumulate permanently
-- process becomes nonstationary
+- shocks never disappear  
+- the series accumulates past shocks  
+- the process becomes nonstationary  
 
-```{admonition} Intuition
+```{admonition} Key Insight
 The closer $\phi$ is to 1, the more persistent the series becomes.
 ```
 
 ---
 
-## 10.6 Stationary vs Unit Root Processes
+# 10.6 Stationary vs Unit Root Processes
 
 ### Stationary Process
 
@@ -193,7 +217,7 @@ Unit root processes exhibit a fundamentally different type of persistence from s
 
 ---
 
-## 10.7 Simulating Different Levels of Persistence
+# 10.7 Simulating Different Levels of Persistence
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -241,7 +265,7 @@ As $\phi$ approaches 1, persistence becomes increasingly strong.
 
 ---
 
-## 10.8 Differencing
+# 10.8 Differencing
 
 A common way to remove unit roots is differencing.
 
@@ -255,27 +279,35 @@ $$
 
 ---
 
-## 10.9 Differencing a Random Walk
+# 10.9 Differencing a Random Walk
 
 For a random walk:
 
-$$
+```{math}
+:enumerated: false
 x_t = x_{t-1} + w_t
-$$
+```
 
-taking first differences gives:
+Taking first differences:
 
-$$
-\Delta x_t = w_t
-$$
+```{math}
+:enumerated: false
+\Delta x_t = x_t - x_{t-1} = w_t
+```
 
 ```{admonition} Key Insight
-Differencing converts a random walk into white noise.
+Differencing removes the accumulated effect of past shocks.
+
+A nonstationary process becomes stationary after differencing.
+```
+
+```{admonition} Intuition
+Differencing converts a drifting series into one that fluctuates around a stable mean.
 ```
 
 ---
 
-## 10.10 Simulating Differencing
+# 10.10 Simulating Differencing
 
 ```{code-cell} python
 dx = np.diff(x)
@@ -298,7 +330,7 @@ The differenced series fluctuates around a stable mean and appears stationary.
 
 ---
 
-## 10.11 Integrated Processes
+# 10.11 Integrated Processes
 
 A unit root process is said to be integrated of order one.
 
@@ -309,7 +341,7 @@ A series is:
 - $I(1)$ if first differences are stationary
 ```
 
-### Example
+## Example
 
 | Series | Order |
 |---|---|
@@ -318,11 +350,11 @@ A series is:
 
 ---
 
-## 10.12 Detrending vs Differencing
+# 10.12 Detrending vs Differencing
 
 Nonstationarity may arise for different reasons.
 
-### Deterministic Trend
+## Deterministic Trend
 
 Suppose:
 
@@ -334,7 +366,7 @@ where $u_t$ is stationary.
 
 Removing the trend may produce stationarity.
 
-### Stochastic Trend
+## Stochastic Trend
 
 For a random walk:
 
@@ -352,7 +384,7 @@ Trend-stationary and difference-stationary processes require different treatment
 
 ---
 
-## 10.13 Visual Comparison
+# 10.13 Visual Comparison
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -381,7 +413,7 @@ Trend-stationary series fluctuate around a deterministic trend rather than drift
 
 ---
 
-## 10.14 Why Unit Roots Matter
+# 10.14 Why Unit Roots Matter
 
 Unit roots affect:
 
@@ -402,7 +434,7 @@ This problem becomes central later in:
 
 ---
 
-## 10.15 The Dickey–Fuller Test
+# 10.15 The Dickey–Fuller Test
 
 We now need a way to test for unit roots.
 
@@ -438,7 +470,7 @@ where:
 \theta = \phi - 1
 ```
 
-### Hypotheses
+## Hypotheses
 
 ```{math}
 :enumerated: false
@@ -458,9 +490,22 @@ The Dickey–Fuller test checks whether the series exhibits mean reversion.
 
 ---
 
-## 10.16 Augmented Dickey–Fuller (ADF) Test
+# 10.16 Augmented Dickey–Fuller (ADF) Test
 
 Real-world data often exhibit serial correlation.
+
+```{admonition} Intuition (ADF Test)
+The ADF test asks:
+
+**Does the series tend to return to a stable level?**
+
+- If YES → stationary  
+- If NO → unit root  
+
+In other words:
+
+Is there *mean reversion*, or does the series drift indefinitely?
+```
 
 The Augmented Dickey–Fuller (ADF) test extends the Dickey–Fuller test by including lagged differences:
 
@@ -482,34 +527,43 @@ The additional lagged differences help remove serial correlation from the residu
 
 ---
 
-## 10.17 Interpreting the ADF Test
+# 10.17 Interpreting the ADF Test
 
-### Reject $H_0$
+## Reject $H_0$
 
-- evidence against unit root
-- series likely stationary
+- evidence against a unit root  
+- series likely stationary  
 
+## Fail to Reject $H_0$
 
-### Fail to Reject $H_0$
+- insufficient evidence against a unit root  
+- series may be nonstationary  
 
-- insufficient evidence against unit root
-- series may be nonstationary
+```{admonition} Important
+Failing to reject a unit root does not prove the series is exactly a random walk.
 
-```{admonition} Caution
-Failing to reject a unit root does not prove the process is exactly a random walk.
+It simply means we do not have strong evidence of stationarity.
 ```
 
+```{admonition} Practical Tip
+Always check BOTH:
+
+- the test statistic vs critical values  
+- the p-value  
+
+Small differences can matter in borderline cases.
+```
 ---
 
-## 10.18 ADF Testing in Gretl
+# 10.18 ADF Testing in Gretl
 
-### Menu
+## Menu
 
 ```text
 Variable → Unit root tests → Augmented Dickey-Fuller
 ```
 
-### Typical Steps
+## Typical Steps
 
 1. Choose variable
 2. Include constant and/or trend if appropriate
@@ -526,11 +580,11 @@ Variable → Unit root tests → Augmented Dickey-Fuller
 
 ---
 
-## 10.19 KPSS Test (Optional)
+# 10.19 KPSS Test (Optional)
 
 The KPSS test reverses the hypotheses.
 
-### KPSS Hypotheses
+## KPSS Hypotheses
 
 ```{math}
 :enumerated: false
@@ -553,7 +607,7 @@ to obtain complementary evidence.
 
 ---
 
-## 10.20 Looking Ahead
+# 10.20 Looking Ahead
 
 In this chapter, we introduced:
 
@@ -578,3 +632,266 @@ In the next chapters, we study:
 - Trend-stationary and difference-stationary processes differ fundamentally
 - The ADF test helps detect unit roots
 ```
+
+# Concept Check
+
+### Basic
+
+1. What is a unit root?
+
+2. What does it mean for a time series to be nonstationary?
+
+3. What is a random walk?
+
+---
+
+### Intuition
+
+4. Why do shocks have permanent effects in a unit root process?
+
+5. Why does a random walk not return to a stable level?
+
+6. Why is nonstationarity problematic for modeling?
+
+---
+
+### Intermediate
+
+7. What is the purpose of differencing a time series?
+
+8. What is the difference between:
+
+   - a stationary process  
+   - a unit root process  
+
+9. What is the difference between:
+
+   - deterministic trend  
+   - stochastic trend  
+
+---
+
+### Finance Insight
+
+10. Why are stock prices often modeled as random walks?
+
+11. Why are returns typically stationary?
+
+---
+
+### Challenge
+
+12. Suppose a series becomes stationary after differencing once.
+
+   - What does this imply about the original series?
+
+---
+
+# Interpretation & Practice
+
+1. A time series shows a strong upward trend and does not return to a stable level.
+
+   - What does this suggest?
+   - What might be an appropriate transformation?
+
+---
+
+2. A series appears to “wander” over time.
+
+   - What type of process might this be?
+   - What does this imply about shocks?
+
+---
+
+3. After differencing, a series fluctuates around zero.
+
+   - What does this suggest?
+   - Why is this useful?
+
+---
+
+4. A regression between two trending series shows a strong relationship.
+
+   - Why might this be misleading?
+   - What concept does this illustrate?
+
+---
+
+5. A series has a deterministic upward trend.
+
+   - Would differencing or detrending be more appropriate?
+   - Why?
+
+---
+
+### Finance Interpretation
+
+6. A stock price series is nonstationary.
+
+   - Why is modeling prices directly problematic?
+   - Why are returns preferred?
+
+---
+
+7. A return series appears stable over time.
+
+   - What does this suggest?
+   - Why is this important?
+
+---
+
+### Challenge
+
+8. Suppose you difference a stationary series.
+
+   - What might happen?
+   - Why is over-differencing a problem?
+
+---
+
+# Numerical Practice
+
+### Random Walk and Differencing
+
+1. Suppose a random walk is defined as:
+
+```{math}
+:enumerated: false
+x_t = x_{t-1} + w_t
+```
+
+with:
+
+- $x_0 = 100$
+- shocks: 2, −1, 3, −2  
+
+---
+
+- Compute $x_1, x_2, x_3, x_4$
+
+---
+
+2. Compute the first differences:
+
+```{math}
+:enumerated: false
+\Delta x_t = x_t - x_{t-1}
+```
+
+---
+
+- What do you observe?
+- What does this suggest?
+
+---
+
+### Identifying Nonstationarity
+
+3. Consider the series:
+
+   10, 12, 15, 19, 24  
+
+---
+
+- Does this appear stationary?
+- Compute the first differences  
+- Does the differenced series look more stable?
+
+---
+
+### Trend vs Difference
+
+4. Suppose:
+
+```{math}
+:enumerated: false
+x_t = 5 + 0.5t + u_t
+```
+
+---
+
+- What type of trend is this?
+- Would differencing remove it?
+- What would the differenced series look like?
+
+---
+
+### ADF Interpretation (Applied)
+
+Consider the following output from an Augmented Dickey–Fuller (ADF) test:
+
+```text
+Augmented Dickey-Fuller Test
+
+Test Statistic:   -1.85
+p-value:           0.67
+Lags Used:         2
+Observations:      197
+
+Critical Values:
+  1% level:       -3.46
+  5% level:       -2.88
+ 10% level:       -2.57
+```
+
+1. What is the null hypothesis of the ADF test?
+
+2. Compare the test statistic with the critical values.
+
+   - Is the test statistic more negative than the 5% critical value?
+
+3. Based on the p-value and test statistic:
+
+   - Do you reject the null hypothesis?
+   - What does this imply about the series?
+
+4. What would you do next before modeling this series?
+
+---
+
+### Second Example
+
+Now consider:
+
+```text
+Augmented Dickey-Fuller Test
+
+Test Statistic:   -3.25
+p-value:           0.02
+Lags Used:         1
+Observations:      198
+
+Critical Values:
+  1% level:       -3.46
+  5% level:       -2.88
+ 10% level:       -2.57
+```
+
+5. Do you reject the null hypothesis at the 5% level?
+
+6. What does this imply about stationarity?
+
+7. Why might the test statistic be compared with critical values rather than relying only on the p-value?
+
+---
+
+### Challenge
+
+8. Suppose the test statistic is close to the critical value.
+
+   - Why might conclusions be uncertain?
+   - What additional checks could you perform?
+
+---
+
+9. Suppose you difference a series twice.
+
+- When might this be necessary?
+- What is the risk of doing this unnecessarily?
+
+---
+
+10. Suppose two nonstationary series are regressed on each other.
+
+- Why might the results be misleading?
+- What concept does this relate to?

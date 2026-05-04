@@ -962,6 +962,188 @@ We will study:
 - Python and Yahoo Finance provide easy access to real financial data.
 ```
 
+# Concept Check
+
+### Basic
+
+1. What is the difference between a price and a return?
+
+2. What is a simple return?
+
+3. What is a log return?
+
+---
+
+### Intuition
+
+4. Why are returns often preferred over prices in financial analysis?
+
+5. What does compounding mean in a financial context?
+
+6. Why do investors care about percentage changes rather than absolute changes?
+
+---
+
+### Intermediate
+
+7. How do simple returns and log returns differ in interpretation?
+
+8. Why are log returns often used in time series modeling?
+
+9. What is meant by “stylized facts” of financial returns?
+
+---
+
+### Challenge
+
+10. Suppose a stock price doubles over a year.
+
+   - What is the simple return?
+   - What is the log return?
+   - Why are they different?
+
+---
+
+# Interpretation & Practice
+
+1. Consider the following:
+
+   Price today = 100  
+   Price tomorrow = 105  
+
+   - What is the simple return?
+   - What does this return represent economically?
+
+---
+
+2. A stock increases from 100 to 110, then falls back to 100.
+
+   - What are the simple returns in each period?
+   - What is the total return over the two periods?
+   - What does this illustrate about compounding?
+
+---
+
+3. You observe a time series of stock prices that trends upward over time.
+
+   - What happens to returns when you transform prices into returns?
+   - Why might this be useful?
+
+---
+
+4. A histogram of returns shows:
+
+   - many small values,
+   - a few very large positive and negative values.
+
+   - What feature of financial data does this illustrate?
+   - Why is this important for modeling?
+
+---
+
+5. A time series plot of returns shows periods of calm followed by periods of large fluctuations.
+
+   - What is this phenomenon called?
+   - Why is it important for risk measurement?
+
+---
+
+### Challenge
+
+6. Suppose two assets have the same average return, but one has much higher volatility.
+
+   - Which asset is riskier?
+   - Why might an investor still prefer the lower-volatility asset?
+
+---
+
+# Numerical Practice
+
+### Basic
+
+1. Suppose a stock price moves from 100 to 105.
+
+   - Compute the simple return.
+   - Express your answer as a percentage.
+
+---
+
+2. Suppose a stock price moves from 50 to 55.
+
+   - Compute the simple return.
+   - Is this higher or lower than in Question 1?
+
+---
+
+### Intermediate
+
+3. A stock price evolves as follows:
+
+   | Day | Price |
+   |-----|------|
+   | 0   | 100  |
+   | 1   | 110  |
+   | 2   | 121  |
+
+   - Compute the simple return from Day 0 → Day 1.
+   - Compute the simple return from Day 1 → Day 2.
+   - What do you notice?
+
+---
+
+4. Using the same data:
+
+   - Compute the cumulative return from Day 0 → Day 2.
+   - Verify that it matches compounding.
+
+---
+
+### Log Returns
+
+5. Suppose a stock price moves from 100 to 110.
+
+   - Compute the log return:
+
+   ```{math}
+   :enumerated: false
+   \log\left(\frac{P_t}{P_{t-1}}\right)
+   ```
+
+   - Is it larger or smaller than the simple return?
+
+---
+
+6. A stock moves:
+
+   - 100 → 110 → 100
+
+   - Compute the two simple returns.
+   - Compute the total compounded return.
+   - What do you observe?
+
+---
+
+### Challenge
+
+7. Suppose returns are:
+
+   - Day 1: +10%
+   - Day 2: −10%
+
+   - Compute the final price (starting from 100).
+   - Why is the final value not equal to the initial value?
+
+---
+
+8. Suppose daily log returns are:
+
+   - 0.05
+   - 0.02
+   - −0.01
+
+   - Compute the total log return.
+   - What is the advantage of using log returns here?
+
 ---
 
 # Appendix 2A — A More Technical Look at Log Returns

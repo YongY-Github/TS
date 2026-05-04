@@ -709,3 +709,232 @@ The next chapter introduces:
 - Correlation measures co-movement, not causation.
 - Distinguishing structure from randomness is central in time series analysis.
 ```
+
+# Concept Check
+
+### Basic
+
+1. What is a probability distribution?
+
+2. What does the mean of a distribution represent?
+
+3. What does the standard deviation measure?
+
+---
+
+### Intuition
+
+4. Why is randomness unavoidable in economic and financial data?
+
+5. What does it mean for an event to be “unlikely”?
+
+6. Why do financial returns often exhibit more extreme outcomes than the normal distribution predicts?
+
+---
+
+### Intermediate
+
+7. What is the 68–95–99.7 rule?
+
+8. Why is the normal distribution often used as a benchmark in finance?
+
+9. What is a p-value?
+
+10. Why does a small p-value provide evidence against a null hypothesis?
+
+---
+
+### Challenge
+
+11. A model assumes returns are normally distributed.
+
+   - Why might this assumption underestimate risk?
+   - What type of events become more likely in reality?
+
+---
+
+# Interpretation & Practice
+
+1. A histogram of returns appears roughly bell-shaped but shows a few very large spikes.
+
+   - What does this suggest about the distribution?
+   - Why might the normal model be misleading here?
+
+---
+
+2. Suppose returns are centered around zero but fluctuate widely.
+
+   - What does this imply about risk?
+   - Why might investors still be concerned?
+
+---
+
+3. A risk model predicts that extreme losses are “very unlikely.”
+
+   - What assumption is likely being made?
+   - Why might this be dangerous in practice?
+
+---
+
+4. A hypothesis test produces:
+
+   p-value = 0.04  
+
+   - What is the decision at the 5% level?
+   - What does this imply about the null hypothesis?
+
+---
+
+5. A hypothesis test produces:
+
+   p-value = 0.25  
+
+   - What does this imply?
+   - Why does this NOT prove the null hypothesis is true?
+
+---
+
+### Challenge
+
+6. Suppose a financial model consistently underpredicts large losses.
+
+   - What feature of the data is the model likely missing?
+   - Why is this especially problematic in finance?
+
+---
+
+# Numerical Practice
+
+### Basic
+
+1. Suppose a variable has:
+
+   mean = 100  
+   standard deviation = 15  
+
+   - Using the 68–95–99.7 rule, what range contains about 95% of observations?
+
+---
+
+2. Using the same distribution:
+
+   - Is a value of 130 likely or unlikely?
+   - Roughly what percentage of observations exceed 130?
+
+---
+
+### Intermediate
+
+3. Suppose returns follow a normal distribution with:
+
+   mean = 0  
+   standard deviation = 2  
+
+   - What range contains about 68% of returns?
+   - What range contains about 95% of returns?
+
+---
+
+4. Two assets have:
+
+   | Asset | Mean Return | Standard Deviation |
+   |------|------------|--------------------|
+   | A    | 2%         | 5%                 |
+   | B    | 3%         | 5%                 |
+
+   - Which asset would a risk-neutral investor prefer?
+   - Why?
+
+---
+
+5. Two assets have:
+
+   | Asset | Mean Return | Standard Deviation |
+   |------|------------|--------------------|
+   | C    | 3%         | 4%                 |
+   | D    | 3%         | 8%                 |
+
+   - Which asset is riskier?
+   - Why might an investor prefer Asset C?
+
+---
+
+### Hypothesis Testing
+
+#### 6. Testing Average Return
+
+A trader claims that a strategy generates a **positive average daily return**.
+
+You collect a sample of 25 daily returns with:
+
+- sample mean = 0.8%  
+- sample standard deviation = 2%  
+
+---
+
+- State the null and alternative hypotheses.
+
+- Compute the test statistic:
+
+```{math}
+:enumerated: false
+t = \frac{\bar{r} - 0}{s / \sqrt{n}}
+```
+
+- Using a 5% significance level (critical value ≈ 2), do you reject the null?
+
+- What is your economic conclusion?
+
+---
+
+#### 7. Testing for Zero Mean
+
+An analyst believes that a stock’s average return is zero.
+
+You observe:
+
+- sample mean = 0.3%  
+- sample standard deviation = 1.5%  
+- sample size = 100  
+
+---
+
+- State the null and alternative hypotheses.
+
+- Compute the test statistic.
+
+- Is the result statistically significant at the 5% level?
+
+- Does statistical significance imply the strategy is economically meaningful?
+
+---
+
+#### 8. Volatility Change (Interpretation Focus)
+
+Suppose two periods of returns have:
+
+| Period | Mean Return | Standard Deviation |
+|--------|------------|--------------------|
+| A      | 0.5%       | 1%                 |
+| B      | 0.5%       | 3%                 |
+
+---
+
+- Would you expect more extreme outcomes in Period A or B?
+
+- If a model assumes constant variance, what mistake might it make?
+
+---
+
+#### Challenge
+
+9. A risk model assumes returns are normally distributed with:
+
+- mean = 0  
+- standard deviation = 2  
+
+- Using the 68–95–99.7 rule, what is the approximate probability of a return less than −6?
+
+- If actual data show more such extreme events, what does this imply about the model?
+
+- Why is this important for financial risk management?
