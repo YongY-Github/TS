@@ -65,6 +65,18 @@ If:
 * $e_t > 0$: the model underpredicted
 * $e_t < 0$: the model overpredicted
 
+```{admonition} Big Picture
+Forecast evaluation asks a simple but crucial question:
+
+How far are we from the truth — and why?
+```
+
+Good evaluation distinguishes:
+
+- systematic mistakes (bias)
+- random fluctuations (variance)
+- failure to track movements (covariance)
+
 ---
 
 # 16.2 A Thai Inflation Forecast Example
@@ -280,6 +292,8 @@ RMSE and MAE emphasize different aspects of forecast performance.
 | ------- | -------------------------- |
 | MAE     | Less sensitive             |
 | RMSE    | More sensitive             |
+
+RMSE is more sensitive to large errors because squaring amplifies extreme values.
 
 ## Intuition
 
@@ -887,3 +901,217 @@ We will study:
 - Different evaluation measures may rank forecasts differently.
 ```
 
+# Concept Check
+
+## Basic
+
+1. What is a forecast error?
+
+2. What does it mean if a forecast error is positive?
+
+3. What is bias in forecasting?
+
+---
+
+## Intuition
+
+4. Why can a model with zero bias still perform poorly?
+
+5. Why do we square forecast errors in MSE?
+
+6. Why might large forecast errors be particularly important in practice?
+
+---
+
+## Measures
+
+7. What is the difference between:
+
+   - MSE  
+   - RMSE  
+   - MAE  
+
+8. Why is RMSE often preferred to MSE?
+
+9. What does MAE measure differently from RMSE?
+
+---
+
+## Percentage Errors
+
+10. What is MAPE?
+
+11. Why might MAPE be misleading when values are close to zero?
+
+---
+
+## Theil Measures
+
+12. What is the intuition behind Theil’s $U_1$?
+
+13. What does Theil’s $U_2$ compare?
+
+---
+
+## Challenge
+
+14. Why might different evaluation measures rank forecasts differently?
+
+---
+
+# Interpretation & Practice
+
+1. A model has:
+
+- low bias  
+- very high RMSE  
+
+   - What does this imply?
+
+2. A model has:
+
+- low MAE  
+- high RMSE  
+
+   - What does this suggest about the distribution of errors?
+
+3. Two models produce similar RMSE, but one has lower MAE.
+
+   - What might this indicate?
+
+4. A model performs worse than a naive forecast.
+
+   - What does this imply?
+
+5. Forecast errors are consistently positive.
+
+   - What does this indicate about the model?
+
+## Thai Inflation Example
+
+6. In the example:
+
+- Forecast 2 performs better under RMSE  
+- Forecast 1 performs better under MAE  
+
+   - Why might this happen?
+
+7. Forecast 2 has higher variance proportion.
+
+   - What does this suggest?
+
+---
+
+### Challenge
+
+8. A model has excellent in-sample fit but poor out-of-sample performance.
+
+   - What might be happening?
+
+---
+
+# Numerical Practice
+
+## Forecast Errors
+
+1. Suppose:
+
+- actual: $x_t = 10$
+- forecast: $\hat{x}_t = 8$
+
+- Compute the forecast error.
+
+---
+
+## Bias
+
+2. Suppose forecast errors are:
+
+```{math}
+:enumerated: false
+2, -1, 3, -2
+```
+
+- Compute the bias.
+
+---
+
+## MSE and RMSE
+
+3. Using the same errors:
+
+- Compute MSE  
+- Compute RMSE  
+
+---
+
+## MAE
+
+4. Compute MAE for the same data.
+
+---
+
+## Interpretation
+
+5. Compare RMSE and MAE.
+
+- Which is larger?
+- Why?
+
+---
+
+## MAPE
+
+6. Suppose:
+
+- actual: $x_t = 2$
+- forecast: $\hat{x}_t = 1$
+
+- Compute percentage error.
+
+7. Suppose $x_t = 0.1$.
+
+- Why might MAPE become unreliable?
+
+---
+
+## Model Comparison
+
+8. Suppose:
+
+| Model | RMSE | MAE |
+|------|------|-----|
+| A | 2.5 | 2.0 |
+| B | 2.0 | 2.2 |
+
+- Which is better under RMSE?
+- Which is better under MAE?
+
+---
+
+## Theil’s U2
+
+9. Suppose:
+
+- Model RMSE = 1.5  
+- Naive RMSE = 2.0  
+
+- Compute interpretation of $U_2$.
+
+---
+
+## Challenge
+
+10. Suppose a model minimizes MSE but performs poorly in practice.
+
+- Why might this happen?
+
+11. You are forecasting inflation.
+
+- Model A minimizes RMSE  
+- Model B minimizes MAE  
+
+Which would you choose if:
+
+- large mistakes are very costly?  
+- average accuracy matters more?

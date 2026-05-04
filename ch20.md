@@ -106,6 +106,9 @@ e_t = y_t - \beta x_t \sim I(0)
 
 ```{admonition} Key Insight
 Cointegration means the variables may wander over time, but they do not drift too far apart in the long run.
+
+Individually: variables wander  
+Together: they are tied by an equilibrium
 ```
 
 ---
@@ -113,6 +116,8 @@ Cointegration means the variables may wander over time, but they do not drift to
 # 20.3 Intuition: Long-Run Equilibrium
 
 Even if two variables individually behave like random walks, their difference may remain stable.
+
+Cointegration means that while variables may drift over time, they do not drift arbitrarily far apart.
 
 This suggests that some equilibrium force ties them together.
 
@@ -579,6 +584,215 @@ This leads naturally to the **Error Correction Model (ECM)**.
 - Engle–Granger provides a residual-based approach.
 - ARDL bounds testing provides a dynamic-model-based approach.
 ```
+
+# Concept Check
+
+## Basic
+
+1. What is cointegration?
+
+2. What does it mean for two variables to be $I(1)$?
+
+3. What does it mean for a linear combination of variables to be $I(0)$?
+
+---
+
+## Intuition
+
+4. Why can two nonstationary variables still have a meaningful relationship?
+
+5. What is meant by a long-run equilibrium?
+
+6. Explain the “rubber band” analogy for cointegration.
+
+---
+
+## Spurious vs Cointegration
+
+7. What distinguishes a spurious regression from a cointegrated relationship?
+
+8. Why is a high $R^2$ not sufficient evidence of cointegration?
+
+9. What role do residuals play in diagnosing cointegration?
+
+---
+
+## Engle–Granger Procedure
+
+10. What are the two steps in the Engle–Granger method?
+
+11. What is the null hypothesis in the residual-based test?
+
+12. What does it mean to reject the null hypothesis?
+
+---
+
+## ARDL and Bounds Testing
+
+13. How does the ARDL bounds approach differ from Engle–Granger?
+
+14. What is the key hypothesis tested in the bounds test?
+
+---
+
+## Challenge
+
+15. Can cointegration exist if one variable is $I(0)$ and the other is $I(1)$?
+
+---
+
+# Interpretation & Practice
+
+1. A regression between two variables produces:
+
+- high $R^2$
+- significant coefficients
+- nonstationary residuals  
+
+   - What does this imply?
+
+2. Residuals from a regression are stationary.
+
+   - What does this suggest?
+
+3. Two variables are both $I(1)$, but their difference is stationary.
+
+   - What does this imply?
+
+4. ADF test on residuals gives p-value = 0.02.
+
+   - What is your conclusion?
+
+5. ADF test on residuals gives p-value = 0.60.
+
+   - What is your conclusion?
+
+---
+
+## ARDL Interpretation
+
+6. In an ARDL model, lagged level terms are jointly significant.
+
+   - What does this imply?
+
+7. Bounds test F-statistic is above the upper bound.
+
+   - What is your conclusion?
+
+---
+
+## Economic Interpretation
+
+8. Consumption and income are cointegrated.
+
+   - What does this imply about their relationship?
+
+---
+
+## Challenge
+
+9. A regression is significant in levels but insignificant in differences.
+
+   - What might this suggest?
+
+---
+
+# Numerical Practice
+
+## Residual-Based Logic
+
+1. Suppose:
+
+- $x_t \sim I(1)$  
+- $y_t \sim I(1)$  
+- residuals $\hat{e}_t \sim I(0)$  
+
+---
+
+- What is your conclusion?
+
+---
+
+## ADF Interpretation Table
+
+2. Consider:
+
+| Series | ADF p-value |
+|-------|------------:|
+| $x_t$ | 0.85 |
+| $y_t$ | 0.78 |
+| residuals | 0.03 |
+
+---
+
+- Are $x_t$ and $y_t$ stationary?
+- Are residuals stationary?
+- What does this imply?
+
+---
+
+3. Now consider:
+
+| Series | ADF p-value |
+|-------|------------:|
+| $x_t$ | 0.90 |
+| $y_t$ | 0.88 |
+| residuals | 0.72 |
+
+---
+
+- What is your conclusion?
+
+---
+
+## Engle–Granger
+
+4. Explain why testing residuals is central to the Engle–Granger procedure.
+
+---
+
+## Bounds Test
+
+5. Suppose:
+
+- F-statistic = 6.5  
+- upper bound = 5.0  
+
+---
+
+- What is your conclusion?
+
+---
+
+## Interpretation
+
+6. Suppose cointegration exists.
+
+- What does this imply about long-run behavior?
+
+---
+
+## Challenge
+
+7. Suppose two variables are cointegrated.
+
+- What happens if they deviate from equilibrium?
+- What concept does this lead to?
+
+8. You regress:
+
+- exchange rate  
+- price level  
+
+You find:
+
+- strong relationship  
+- stationary residuals  
+
+---
+
+- What does this imply?
+- Why is this not spurious?
 
 ---
 

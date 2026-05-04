@@ -610,3 +610,208 @@ We will examine:
 - Forecast uncertainty grows with the forecast horizon.
 - Forecasting models should be evaluated out of sample.
 ```
+
+# Concept Check
+
+### Basic
+
+1. What is a forecast?
+
+2. What does it mean for a forecast to be conditional?
+
+3. What is the difference between a fitted value and a forecast?
+
+---
+
+### Intuition
+
+4. Why is forecasting fundamentally uncertain?
+
+5. Why might a model fit past data well but perform poorly in forecasting?
+
+6. Why is out-of-sample evaluation important?
+
+---
+
+### Intermediate
+
+7. What is the difference between:
+
+   - one-step-ahead forecasts  
+   - multi-step-ahead forecasts  
+
+8. What is the difference between:
+
+   - static forecasts  
+   - dynamic forecasts  
+
+9. Why do forecast errors tend to increase as the horizon grows?
+
+---
+
+### Model-Based Forecasting
+
+10. In an AR(1) model, why is the expected value of the future shock set to zero?
+
+11. Why do AR(1) forecasts converge toward the long-run mean?
+
+---
+
+### Challenge
+
+12. Suppose a model produces very stable forecasts.
+
+   - Does this necessarily mean it is accurate?
+
+---
+
+# Interpretation & Practice
+
+1. A model fits historical data extremely well but performs poorly out-of-sample.
+
+   - What might be the issue?
+   - What does this suggest about model evaluation?
+
+2. A forecast for a stationary AR(1) process gradually flattens over time.
+
+   - Why does this happen?
+
+3. A random walk forecast remains constant over time.
+
+   - What does this imply about predictability?
+
+4. A forecast diverges rapidly as the horizon increases.
+
+   - What might this indicate about the underlying model?
+
+5. Dynamic forecasts differ significantly from static forecasts.
+
+   - Why might this happen?
+
+---
+
+### Finance Interpretation
+
+6. A stock price follows a random walk.
+
+   - Why is the best forecast of tomorrow’s price today’s price?
+
+7. A macroeconomic forecast becomes less precise over longer horizons.
+
+   - Why is this expected?
+
+---
+
+### Challenge
+
+8. A model produces very narrow forecast intervals.
+
+   - Why might this be misleading?
+   - What could be wrong with the model?
+
+---
+
+# Numerical Practice
+
+### One-Step Forecast
+
+1. Suppose:
+
+```{math}
+:enumerated: false
+x_t = 0.8 x_{t-1} + w_t
+```
+
+and $x_T = 10$.
+
+- Compute the one-step-ahead forecast $\hat{x}_{T+1}$.
+
+---
+
+### Multi-Step Forecast
+
+2. Using the same model:
+
+- Compute $\hat{x}_{T+2}$  
+- Compute $\hat{x}_{T+3}$  
+
+- What pattern do you observe?
+
+---
+
+### Random Walk
+
+3. Suppose:
+
+```{math}
+:enumerated: false
+x_t = x_{t-1} + w_t
+```
+
+and $x_T = 50$.
+
+- Compute $\hat{x}_{T+1}$  
+- Compute $\hat{x}_{T+5}$  
+
+- What do you observe?
+
+---
+
+### Random Walk with Drift
+
+4. Suppose:
+
+```{math}
+:enumerated: false
+x_t = x_{t-1} + 2 + w_t
+```
+
+and $x_T = 100$.
+
+- Compute $\hat{x}_{T+1}$  
+- Compute $\hat{x}_{T+3}$  
+
+---
+
+### Forecast Error
+
+5. Suppose:
+
+- forecast: $\hat{x}_{T+1} = 20$  
+- actual: $x_{T+1} = 23$  
+
+- Compute the forecast error.
+
+---
+
+### Interpretation
+
+6. Suppose forecast errors are consistently positive.
+
+- What does this imply about the model?
+
+---
+
+### Dynamic Forecasting
+
+7. Suppose a dynamic forecast is used.
+
+- Why might errors accumulate over time?
+
+---
+
+### Challenge
+
+8. Suppose two models produce:
+
+- Model A: very accurate one-step forecasts  
+- Model B: better long-horizon forecasts  
+
+- Which would you choose? Why?
+
+9. You are forecasting monthly sales.
+
+You estimate an AR(1) model and generate forecasts for the next 12 months.
+
+- Why might the 1-month-ahead forecast be reliable?
+- Why might the 12-month-ahead forecast be much less reliable?

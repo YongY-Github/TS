@@ -265,6 +265,14 @@ If the system is stable, the long-run multiplier is:
 \frac{\beta_0 + \beta_1}{1-\phi}
 ```
 
+```{admonition} Intuition
+
+The denominator $(1-\phi)$ reflects persistence.
+
+- If $\phi$ is close to 1 → adjustment is slow → long-run effects are large  
+- If $\phi$ is small → adjustment is fast → long-run effects are smaller
+```
+
 More generally:
 
 ```{math}
@@ -344,6 +352,18 @@ This motivates cointegration and the error correction model.
 ---
 
 # 18.11 Looking Ahead: ECM
+
+```{admonition} The Core Trade-Off
+Levels → risk spurious regression  
+Differences → lose long-run information  
+```
+
+Dynamic models (ARDL) attempt to bridge this gap by modeling:
+
+- short-run changes  
+- long-run relationships  
+
+in a unified framework.
 
 If two variables share a long-run equilibrium relationship, we may want to model both:
 
@@ -721,6 +741,164 @@ This concept is called **cointegration**, which we study later.
 - Dynamic models lead naturally to cointegration and ECM.
 ```
 
+# Concept Check
+
+## Basic
+
+1. What is a dynamic regression model?
+
+2. What is the difference between a static and a dynamic model?
+
+3. What is a distributed lag model?
+
+---
+
+## Intuition
+
+4. Why do many economic relationships adjust gradually rather than instantly?
+
+5. What does it mean for effects to “unfold over time”?
+
+6. Why is including lagged variables important?
+
+---
+
+## ARDL Models
+
+7. What are the two key components of an ARDL model?
+
+8. What does the lagged dependent variable capture?
+
+9. What do lagged explanatory variables capture?
+
+---
+
+## Short-Run vs Long-Run
+
+10. What is the short-run effect in a distributed lag model?
+
+11. What is the long-run multiplier?
+
+12. Why are these two effects different?
+
+---
+
+## Diagnostics
+
+13. What should residuals look like in a well-specified dynamic model?
+
+14. Why is residual autocorrelation a problem?
+
+---
+
+## Challenge
+
+15. Why is differencing alone not sufficient for economic modeling?
+
+---
+
+# Interpretation & Practice
+
+1. A static model shows poor fit, but a dynamic model fits well.
+
+   - What does this suggest?
+
+2. A model includes lagged dependent variables.
+
+   - What type of behavior is being captured?
+
+3. Residuals show strong autocorrelation.
+
+   - What does this imply?
+   - What should you do?
+
+4. A model shows strong short-run effects but weak long-run effects.
+
+   - What might this indicate?
+
+5. A model shows large long-run multiplier.
+
+   - What does this imply about persistence?
+
+---
+
+### Trade-Off Interpretation
+
+6. Differencing removes long-run relationships.
+
+   - Why is this a problem?
+
+7. A levels regression shows strong relationship but residuals are nonstationary.
+
+   - What does this imply?
+
+---
+
+### Challenge
+
+8. Why might ARDL be preferred over simple differencing?
+
+---
+
+# Numerical Practice
+
+### Distributed Lag
+
+1. Suppose:
+
+```{math}
+:enumerated: false
+y_t = 2 + 0.5x_t + 0.3x_{t-1}
+```
+
+- What is the immediate effect?
+- What is the cumulative effect?
+
+---
+
+### ARDL(1,1)
+
+2. Suppose:
+
+```{math}
+:enumerated: false
+y_t = 1 + 0.6y_{t-1} + 0.4x_t + 0.2x_{t-1}
+```
+
+- What is the short-run effect?
+- Compute the long-run multiplier.
+
+---
+
+### Interpretation
+
+3. If $\phi = 0.9$, what does this imply about adjustment speed?
+
+---
+
+### Diagnostics
+
+4. Residual correlogram shows significant spikes.
+
+- What does this imply?
+
+---
+
+### Model Improvement
+
+5. What are two ways to improve a poorly specified ARDL model?
+
+---
+
+### Challenge
+
+6. Suppose:
+
+- levels regression → spurious  
+- differenced regression → no relationship  
+
+- What should you try next?
+
 ---
 
 # Appendix 18A — Dynamic Models and Long-Run Effects
@@ -891,3 +1069,177 @@ ARDL models naturally contain both:
 ```
 
 The ECM representation makes this separation explicit.
+
+---
+
+# Appendix 18B — ARDL Bounds Test for Cointegration
+
+The ARDL framework can also be used to test for **long-run relationships** between variables.
+
+This approach is known as the **ARDL bounds testing procedure** (Pesaran et al.).
+
+---
+
+## B.1 Motivation
+
+Recall the key problem:
+
+- Levels regression → may be spurious  
+- Differenced regression → loses long-run information  
+
+```{admonition} Idea
+We want to test whether a **long-run relationship exists in levels**, even when variables are nonstationary.
+```
+
+---
+
+## B.2 From ARDL to Error Correction Form
+
+Consider an ARDL(1,1):
+
+```{math}
+:enumerated: false
+y_t = \alpha + \phi y_{t-1} + \beta_0 x_t + \beta_1 x_{t-1} + u_t
+```
+
+This can be rewritten as:
+
+```{math}
+:enumerated: false
+\Delta y_t
+=
+\alpha
++
+\beta_0 \Delta x_t
++
+\gamma y_{t-1}
++
+\delta x_{t-1}
++
+u_t
+```
+
+where:
+
+- $\gamma = \phi - 1$
+- $\delta = \beta_0 + \beta_1$
+
+---
+
+```{admonition} Key Insight
+Cointegration implies that the lagged level terms jointly matter.
+```
+
+---
+
+## B.3 The Bounds Test
+
+We test:
+
+```{math}
+:enumerated: false
+H_0: \gamma = 0 \quad \text{and} \quad \delta = 0
+```
+
+```text
+No long-run relationship
+```
+
+against:
+
+```text
+At least one is non-zero → long-run relationship exists
+```
+
+---
+
+## B.4 Decision Rule
+
+The test uses an **F-statistic**.
+
+Compare it with two bounds:
+
+- Lower bound → assumes variables are stationary  
+- Upper bound → assumes variables are nonstationary  
+
+---
+
+```{admonition} Interpretation
+
+- F < lower bound → no cointegration  
+- F > upper bound → cointegration exists  
+- Between bounds → inconclusive  
+```
+
+---
+
+## B.5 Why This Is Useful
+
+```{admonition} Advantages
+
+- Can handle variables that are I(0) or I(1)  
+- Avoids pre-testing issues  
+- Works well in small samples  
+```
+
+---
+
+## B.6 Intuition
+
+```{admonition} Intuition
+
+The test asks:
+
+Do past levels of $y_t$ and $x_t$ jointly influence changes in $y_t$?
+
+If yes → there is a long-run equilibrium relationship.
+```
+
+---
+
+## B.7 Link to ECM
+
+If cointegration is confirmed, we can write:
+
+```{math}
+:enumerated: false
+\Delta y_t
+=
+\beta \Delta x_t
++
+\lambda (y_{t-1} - \theta x_{t-1})
++
+u_t
+```
+
+```{admonition} Big Picture
+
+ARDL → test for cointegration  
+Cointegration → leads to ECM  
+
+```
+
+---
+
+## B.8 Important Caution
+
+```{admonition} Warning
+
+- Variables must not be I(2)  
+- Results depend on lag selection  
+- Inconclusive cases require care  
+```
+
+---
+
+## B.9 Looking Ahead
+
+We will study cointegration formally in Chapter 20.
+
+```{admonition} Preview
+Chapter 20 will explain:
+
+- why cointegration works  
+- how to interpret it  
+- how to estimate long-run relationships properly  
+```

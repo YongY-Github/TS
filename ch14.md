@@ -8,32 +8,32 @@ kernelspec:
 
 In the previous chapters, we studied:
 
-- autoregressive (AR) models
-- moving average (MA) models
-- ARMA models
+- autoregressive (AR) models  
+- moving average (MA) models  
+- ARMA models  
 
-These models assume that the underlying process is stationary.
+These models assume that the underlying process is **stationary**.
 
 However, many economic and financial time series are not stationary.
 
 Examples include:
 
-- stock prices
-- GDP
-- exchange rates
-- price indices
-- money supply
+- stock prices  
+- GDP  
+- exchange rates  
+- price indices  
 
 These series often exhibit:
 
-- trends
-- persistent drift
-- changing variance
-- unit roots
+- trends  
+- persistent drift  
+- unit roots  
 
-To model such series, we extend ARMA models using differencing.
+```{admonition} Central Problem
+How can we model time series that are not stationary?
+```
 
-This leads to the **ARIMA model**.
+The solution is to **transform the data before modeling**.
 
 ```{admonition} Central Idea
 ARIMA models combine:
@@ -112,9 +112,30 @@ which is white noise.
 Differencing converts many nonstationary processes into stationary ones.
 ```
 
+```{admonition} Big Picture
+ARIMA modeling follows a simple but powerful logic:
+
+Nonstationary data  
+→ difference the data  
+→ obtain stationarity  
+→ apply ARMA modeling  
+
+This is the foundation of modern time series analysis.
+```
+
 ---
 
 # 14.3 Integrated Processes
+
+```{admonition} Intuition
+
+An $I(1)$ process behaves like a random walk:
+
+- shocks accumulate over time  
+- the series does not return to a fixed level  
+
+Differencing removes this accumulation and restores stability.
+```
 
 ```{admonition} Definition
 A series is:
@@ -392,6 +413,14 @@ Overdifferencing can create unnecessary noise and distort dynamics.
 Use the smallest amount of differencing necessary to achieve stationarity.
 ```
 
+```{admonition} Key Insight
+
+- Under-differencing → residual nonstationarity  
+- Over-differencing → introduces unnecessary noise  
+
+Goal: difference just enough — no more, no less
+```
+
 ---
 
 # 14.13 ACF and PACF in ARIMA Modeling
@@ -459,8 +488,12 @@ model = sm.tsa.ARIMA(x, order=(1,1,0))
 res = model.fit()
 
 plot_acf(res.resid, lags=20)
-plt.show()
+
+plt.savefig("figs/ch14/acf.png", dpi=300, bbox_inches="tight")
+plt.close()   # replace with plt.show()
 ```
+
+![ACF](figs/ch14/acf.png)
 
 ---
 
@@ -470,6 +503,14 @@ plt.show()
 from statsmodels.stats.diagnostic import acorr_ljungbox
 
 acorr_ljungbox(res.resid, lags=[10,20], return_df=True)
+```
+
+```
+|  | lb_stat   | lb_pvalue |
+|---------|------------|-----------|
+| 10      | 4.729113   | 0.908524  |
+| 20      | 25.169131  | 0.195037  |
+
 ```
 
 ---
@@ -593,4 +634,316 @@ We now move to forecasting and forecast evaluation, where we study:
 - Model identification follows the Box–Jenkins methodology
 - Residual diagnostics are central to ARIMA modeling
 - ARIMA models are widely used for forecasting
+```
+
+# Concept Check
+
+### Basic
+
+1. What is an ARIMA model?
+
+2. What does the “I” in ARIMA represent?
+
+3. What does differencing do to a time series?
+
+---
+
+### Intuition
+
+4. Why are many economic time series nonstationary?
+
+5. Why is it problematic to apply ARMA models to nonstationary data?
+
+6. What is the idea behind transforming data before modeling?
+
+---
+
+### Intermediate
+
+7. What does it mean for a series to be:
+
+   - $I(0)$  
+   - $I(1)$  
+
+8. What is the difference between first and second differencing?
+
+9. Why is most real-world data $I(1)$ rather than $I(2)$?
+
+---
+
+### ARIMA Structure
+
+10. What do $p$, $d$, and $q$ represent in ARIMA($p,d,q$)?
+
+11. What happens after differencing is applied?
+
+---
+
+### Challenge
+
+12. Suppose a series becomes stationary after differencing once.
+
+   - What does this imply?
+
+---
+
+# Interpretation & Practice
+
+1. A time series shows a strong upward trend.
+
+   - What transformation might be needed?
+
+2. After differencing, the series fluctuates around zero.
+
+   - What does this suggest?
+
+3. A series exhibits very slow ACF decay.
+
+   - What does this indicate?
+
+4. After differencing, ACF shows AR-type behavior.
+
+   - What does this suggest?
+
+5. A series still appears nonstationary after differencing once.
+
+   - What might you do next?
+
+---
+
+### Finance Interpretation
+
+6. Stock prices are nonstationary.
+
+   - Why are returns preferred for modeling?
+
+7. A return series appears stationary.
+
+   - Why is this useful?
+
+---
+
+### Challenge
+
+8. A model fits well but uses $d=2$.
+
+   - Why might this be problematic?
+
+---
+
+# Model Selection (AIC & BIC)
+
+1. Suppose you estimate two ARIMA models:
+
+| Model | AIC | BIC |
+|---|---:|---:|
+| ARIMA(1,1,1) | 520 | 540 |
+| ARIMA(2,1,2) | 510 | 560 |
+
+---
+
+- Which model is preferred according to AIC?
+- Which model is preferred according to BIC?
+- Why might these criteria disagree?
+
+---
+
+2. Suppose you estimate:
+
+| Model | AIC | BIC |
+|---|---:|---:|
+| ARIMA(1,1,0) | 600 | 610 |
+| ARIMA(3,1,2) | 590 | 640 |
+
+---
+
+- Which model has better fit?
+- Which model penalizes complexity more?
+- Which would you choose, and why?
+
+---
+
+3. Explain the intuition behind:
+
+```{math}
+:enumerated: false
+AIC = -2\log L + 2k
+```
+
+```{math}
+:enumerated: false
+BIC = -2\log L + k \log n
+```
+
+---
+
+- What does the first term measure?
+- What does the second term penalize?
+
+---
+
+4. Why does BIC typically select simpler models than AIC?
+
+---
+
+### Interpretation
+
+5. A model has very low AIC but performs poorly out-of-sample.
+
+- What might be happening?
+- Why is model validation important?
+
+---
+
+### Challenge
+
+6. Suppose you keep adding lags to improve fit.
+
+- What happens to AIC?
+- What happens to BIC?
+- Why is this important for model selection?
+
+---
+
+# Numerical Practice
+
+### Differencing
+
+1. Given:
+
+```{math}
+:enumerated: false
+x_t = 100, 105, 111, 118
+```
+
+- Compute $\Delta x_t$
+
+---
+
+2. Compute second differences.
+
+---
+
+### Identification
+
+3. Suppose:
+
+- ACF decays slowly  
+- series trends  
+
+- What transformation is needed?
+
+---
+
+4. Suppose after differencing:
+
+- ACF cuts off after lag 1  
+
+- What model is suggested?
+
+---
+
+### Model Structure
+
+5. Interpret:
+
+```{math}
+:enumerated: false
+ARIMA(1,1,1)
+```
+
+- What is being modeled?
+
+---
+
+### Diagnostics
+
+6. Residuals still show autocorrelation.
+
+- What does this imply?
+
+---
+
+### Challenge
+
+7. Suppose you over-difference a series.
+
+- What happens?
+- Why is this problematic?
+
+---
+
+# Appendix 14A — Understanding Differencing and Integration
+
+## A.1 First Difference
+
+```{math}
+:enumerated: false
+\Delta x_t = x_t - x_{t-1}
+```
+
+This removes linear stochastic trends.
+
+---
+
+## A.2 Random Walk Example
+
+```{math}
+:enumerated: false
+x_t = x_{t-1} + w_t
+```
+
+Then:
+
+```{math}
+:enumerated: false
+\Delta x_t = w_t
+```
+
+```{admonition} Insight
+Differencing removes accumulated shocks.
+```
+
+---
+
+## A.3 Second Difference
+
+```{math}
+:enumerated: false
+\Delta^2 x_t = x_t - 2x_{t-1} + x_{t-2}
+```
+
+Used for stronger nonstationarity.
+
+---
+
+## A.4 Why Differencing Works
+
+Nonstationary series accumulate shocks:
+
+```{math}
+:enumerated: false
+x_t = \sum w_t
+```
+
+Differencing removes this accumulation:
+
+```{math}
+:enumerated: false
+\Delta x_t = w_t
+```
+
+---
+
+## A.5 Practical Interpretation
+
+```{admonition} Interpretation
+
+- Levels → long-term evolution  
+- Differences → short-term changes  
+
+In finance:
+
+- prices → nonstationary  
+- returns → stationary  
 ```

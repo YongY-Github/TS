@@ -252,7 +252,7 @@ This is one of the major strengths of ECM.
 
 We now estimate an ECM using the same data as in Chapter 20.
 
-This follows your notes closely. :contentReference[oaicite:1]{index=1}
+This follows your notes closely.
 
 ## Step 1: Estimate Long-Run Relationship
 
@@ -509,6 +509,236 @@ where multiple variables interact dynamically over time.
 - ECM arises naturally from ARDL models.
 - Cointegration provides the foundation for ECM.
 ```
+
+# Concept Check
+
+## Basic
+
+1. What is an Error Correction Model (ECM)?
+
+2. What is the role of the error correction term?
+
+3. What does the coefficient $\lambda$ represent?
+
+---
+
+## Intuition
+
+4. Why do cointegrated variables require an adjustment mechanism?
+
+5. What does it mean for deviations from equilibrium to be temporary?
+
+6. Explain the “rubber band” analogy in the context of ECM.
+
+---
+
+## Structure
+
+7. What are the two main components of an ECM?
+
+8. What does $\Delta x_t$ capture?
+
+9. What does $e_{t-1}$ capture?
+
+---
+
+## Short-Run vs Long-Run
+
+10. What is the difference between:
+
+   - short-run effect  
+   - long-run equilibrium  
+
+11. Why is it important to distinguish between the two?
+
+---
+
+## Stability
+
+12. Why must the adjustment coefficient $\lambda$ be negative?
+
+13. What happens if $\lambda > 0$?
+
+---
+
+## Challenge
+
+14. Suppose $\lambda = -0.9$.
+
+   - What does this imply about adjustment speed?
+
+---
+
+# Interpretation & Practice
+
+1. A model shows:
+
+- significant short-run effect  
+- insignificant error correction term  
+
+   - What does this imply?
+
+2. The error correction term is:
+
+- negative  
+- statistically significant  
+
+   - What does this indicate?
+
+3. The error correction term is positive.
+
+   - What does this imply?
+
+4. A model shows:
+
+- weak short-run effect  
+- strong error correction  
+
+   - How would you interpret this?
+
+---
+
+## Cointegration Link
+
+5. Why is ECM only valid when variables are cointegrated?
+
+6. If variables are not cointegrated, what happens to the error correction term?
+
+---
+
+## ARDL Link
+
+7. How is ECM related to ARDL models?
+
+---
+
+## Economic Interpretation
+
+8. Suppose consumption and income are cointegrated.
+
+- What does the ECM tell us about adjustment?
+
+---
+
+## Challenge
+
+9. A model fits well in differences but ignores the error correction term.
+
+- What might be missing?
+
+---
+
+# Numerical Practice
+
+## ECM Interpretation
+
+1. Suppose:
+
+```{math}
+:enumerated: false
+\Delta y_t = 0.5 \Delta x_t - 0.4 e_{t-1}
+```
+
+- What is the short-run effect?
+- What is the speed of adjustment?
+
+---
+
+## Adjustment Speed
+
+2. If:
+
+```{math}
+:enumerated: false
+\lambda = -0.2
+```
+
+- What proportion of disequilibrium is corrected each period?
+
+---
+
+3. If:
+
+```{math}
+:enumerated: false
+\lambda = -0.8
+```
+
+- How does this compare?
+
+---
+
+## Sign Interpretation
+
+4. Suppose:
+
+```{math}
+:enumerated: false
+\lambda = 0.3
+```
+
+- What does this imply?
+- Is the system stable?
+
+---
+
+## Model Interpretation
+
+5. Suppose ECM estimation gives:
+
+- $\gamma_1 = 0.6$  
+- $\lambda = -0.15$  
+
+---
+
+- Interpret both coefficients.
+
+---
+
+## Diagnostics
+
+6. Residuals from ECM show autocorrelation.
+
+- What does this imply?
+- What should be done?
+
+---
+
+## Challenge
+
+7. Suppose:
+
+- strong cointegration  
+- but $\lambda$ is very small  
+
+---
+
+- What does this imply about adjustment dynamics?
+
+---
+
+8. Suppose:
+
+- $\lambda$ is large in magnitude  
+- but short-run effects are weak  
+
+---
+
+- What does this imply about the system?
+
+---
+
+9. You estimate an ECM for exchange rate and price level.
+
+You find:
+
+- $\lambda = -0.3$  
+- significant  
+
+---
+
+- What does this imply about adjustment toward purchasing power parity?
+- How quickly does the system return to equilibrium?
 
 ---
 

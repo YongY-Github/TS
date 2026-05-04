@@ -562,8 +562,214 @@ In the next chapter, we introduce **cointegration**, which allows us to study me
 - The test compares restricted and unrestricted models.
 - Lag length matters.
 - Stationarity matters.
-- GRETL can implement Granger tests directly using VAR models.
+- Gretl can implement Granger tests directly using VAR models.
 ```
+
+# Concept Check
+
+## Basic
+
+1. What is Granger causality?
+
+2. What does it mean for $x_t$ to Granger-cause $y_t$?
+
+3. What is the difference between predictive causality and true causality?
+
+---
+
+## Intuition
+
+4. Why can a variable help predict another without truly causing it?
+
+5. Why is Granger causality fundamentally a forecasting concept?
+
+6. Why is it important to include lagged values of $y_t$ in the test?
+
+---
+
+## Models
+
+7. What is the difference between:
+
+   - restricted model  
+   - unrestricted model  
+
+8. What is the null hypothesis in a Granger causality test?
+
+9. What does it mean to reject the null hypothesis?
+
+---
+
+## Testing
+
+10. What does the F-test compare?
+
+11. What does a large F-statistic indicate?
+
+---
+
+## Lag Length
+
+12. Why does lag length matter in Granger causality testing?
+
+13. What happens if too few lags are used?
+
+14. What happens if too many lags are used?
+
+---
+
+## Stationarity
+
+15. Why must variables be stationary before applying Granger causality tests?
+
+---
+
+## Challenge
+
+16. Can Granger causality exist in both directions?  
+   - What does this imply?
+
+---
+
+# Interpretation & Practice
+
+1. A test finds that $x_t$ Granger-causes $y_t$.
+
+   - What does this mean?
+   - What does it NOT mean?
+
+2. A test fails to reject the null.
+
+   - What conclusion can you draw?
+   - What can you NOT conclude?
+
+3. Both $x_t$ and $y_t$ Granger-cause each other.
+
+   - What type of relationship might this indicate?
+
+4. A model includes too few lags.
+
+   - How might this affect the test?
+
+5. A model includes too many lags.
+
+   - What problem might arise?
+
+---
+
+## Stationarity Interpretation
+
+6. You run a Granger test on nonstationary variables in levels.
+
+   - What is the risk?
+
+7. After differencing, the Granger result disappears.
+
+   - What does this suggest?
+
+---
+
+## Economic Interpretation
+
+8. Interest rates Granger-cause inflation.
+
+   - Why should we interpret this result cautiously?
+
+---
+
+## Challenge
+
+9. A third variable affects both $x_t$ and $y_t$.
+
+   - How could this affect Granger causality results?
+
+---
+
+# Numerical Practice
+
+## Understanding the Test
+
+1. Suppose:
+
+- $SSR_R = 120$
+- $SSR_U = 80$
+- $q = 2$
+- $T = 50$
+- $k = 4$
+
+---
+
+- Compute the F-statistic.
+
+---
+
+## Interpretation
+
+2. The F-statistic is large and statistically significant.
+
+- What is your decision?
+- What does it imply?
+
+---
+
+## Model Comparison
+
+3. Suppose:
+
+- restricted model fits poorly  
+- unrestricted model fits much better  
+
+---
+
+- What does this suggest?
+
+---
+
+## Lag Structure
+
+4. Suppose only one lag is included, but the true relationship requires two lags.
+
+- What happens to the test?
+
+---
+
+## Stationarity
+
+5. Suppose both variables are random walks.
+
+- Why might the test be misleading?
+
+---
+
+## VAR Output Interpretation
+
+6. Suppose Gretl reports:
+
+```
+All lags of x: F(2,36) = 5.2 [0.01]
+```
+
+- What does this mean?
+- What is your conclusion?
+
+---
+
+## Challenge
+
+7. Suppose:
+
+- $x_t$ does not Granger-cause $y_t$  
+- but $y_t$ Granger-causes $x_t$
+
+- How would you interpret this?
+
+---
+
+8. Suppose:
+
+- results change dramatically when lag length changes  
+
+- What does this suggest?
 
 ---
 

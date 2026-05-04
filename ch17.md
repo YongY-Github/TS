@@ -49,6 +49,18 @@ A regression can look statistically impressive even when the variables are compl
 
 This is the problem of **spurious regression**.
 
+```{admonition} The Core Danger
+Spurious regression fools you into believing in relationships that do not exist.
+```
+
+The model may report:
+
+- high $R^2$
+- statistically significant coefficients
+- convincing-looking results
+
+But these are driven by shared trending behavior — not by a true economic relationship.
+
 ---
 
 # 17.2 Why Nonstationarity Creates Trouble
@@ -823,6 +835,232 @@ These models allow us to study how variables affect each other over time.
 - Differencing often removes spurious relationships.
 - Cointegration provides an important exception.
 ```
+
+# Concept Check
+
+### Basic
+
+1. What is spurious regression?
+
+2. Why can two unrelated time series appear to be related?
+
+3. What role does nonstationarity play in spurious regression?
+
+---
+
+### Intuition
+
+4. Why do random walks tend to drift over time?
+
+5. How can two independent random walks appear to move together?
+
+6. Why is a high $R^2$ not reliable evidence of a relationship in time series data?
+
+---
+
+### Intermediate
+
+7. What assumptions of classical regression are violated with nonstationary data?
+
+8. Why are t-statistics and p-values unreliable in spurious regressions?
+
+9. What is the key diagnostic principle involving residuals?
+
+---
+
+### Diagnostics
+
+10. What does it mean if regression residuals are nonstationary?
+
+11. Why is residual autocorrelation a warning sign?
+
+---
+
+### Fixing the Problem
+
+12. Why does differencing often remove spurious relationships?
+
+---
+
+### Challenge
+
+13. Can a regression in levels ever be valid with nonstationary variables?
+   - Explain.
+
+---
+
+# Interpretation & Practice
+
+1. A regression produces:
+
+- high $R^2$
+- significant coefficient
+- strong trend in residuals  
+
+   - What does this suggest?
+
+2. Two variables trend upward over time.
+
+- Regression shows strong relationship.
+
+   - What is the key concern?
+
+3. Residuals from a regression appear highly persistent.
+
+   - What does this imply?
+
+4. After differencing, the regression coefficient becomes insignificant.
+
+   - What does this suggest about the original relationship?
+
+5. ADF test fails to reject unit root for residuals.
+
+   - What does this imply?
+
+6. Suppose inflation and GDP both trend upward.
+
+- Regression suggests a strong relationship.
+
+   - What must you check before concluding causality?
+
+---
+
+### Challenge
+
+7. A regression in levels produces stationary residuals.
+
+   - What does this suggest?
+   - What concept does this relate to?
+
+---
+
+# Numerical Practice
+
+## Random Walk Construction
+
+1. Suppose:
+
+```{math}
+:enumerated: false
+x_t = x_{t-1} + e_t
+```
+
+with shocks:
+
+```{math}
+:enumerated: false
+e_t = 2, -1, 3
+```
+
+and $x_0 = 0$.
+
+- Compute $x_1, x_2, x_3$
+
+---
+
+## Differencing
+
+2. Using the values above:
+
+- Compute $\Delta x_t$
+
+---
+
+## Interpretation
+
+3. Why is $\Delta x_t$ stationary but $x_t$ is not?
+
+---
+
+## Regression Output
+
+4. Suppose a regression produces:
+
+- $R^2 = 0.85$  
+- coefficient significant  
+- residuals highly autocorrelated  
+
+---
+
+- What is the likely problem?
+
+---
+
+## ADF Interpretation
+
+5. Suppose you estimate a regression between two time series and obtain the following ADF test results:
+
+| Series        | ADF p-value |
+|--------------|------------:|
+| $x_t$        | 0.82        |
+| $y_t$        | 0.76        |
+| residuals    | 0.80        |
+
+- What do these results suggest about $x_t$ and $y_t$?
+- Are the residuals stationary?
+- Is the regression likely to be spurious?
+
+---
+
+6. Now consider an alternative case:
+
+| Series        | ADF p-value |
+|--------------|------------:|
+| $x_t$        | 0.88        |
+| $y_t$        | 0.91        |
+| residuals    | 0.02        |
+
+---
+
+- What do these results suggest about $x_t$ and $y_t$?
+- Are the residuals stationary?
+- What does this imply about the regression?
+- What concept does this relate to?
+
+---
+
+```{admonition} Hint
+- High p-value → fail to reject unit root → nonstationary  
+- Low p-value → reject unit root → stationary  
+```
+
+---
+
+8. Why is it possible for $x_t$ and $y_t$ to be nonstationary, but the residuals to be stationary?
+
+---
+
+### Model Comparison
+
+7. Suppose:
+
+- Levels regression shows strong relationship  
+- Differences regression shows no relationship  
+
+---
+
+- What conclusion should you draw?
+
+---
+
+### Challenge
+
+8. Suppose you regress two random walks and obtain:
+
+- significant coefficient  
+- high $R^2$  
+
+---
+
+- Why is this misleading?
+- What underlying property causes this?
+
+---
+
+9. Suppose residuals are stationary.
+
+- What does this imply?
+- What is the next step in analysis?
 
 ---
 
