@@ -12,27 +12,35 @@ In earlier chapters, we studied:
 - cointegration,
 - and error correction models (ECMs).
 
-We saw that some variables may drift over time individually, yet still maintain stable long-run relationships.
+We also introduced:
 
-Examples include:
+- VAR models,
+- multivariate dynamics,
+- and impulse response analysis.
 
-- money supply and prices,
-- GDP and credit,
-- exchange rates and inflation,
-- stock indices across markets.
+VAR models allow economic variables to interact dynamically through time.
 
-In the previous two chapters, we introduced VAR models for multivariate dynamics.
-
-But standard VAR models become problematic when variables are:
+But an important problem arises when variables are:
 
 ```{admonition} Important
 Nonstationary but cointegrated.
-```
+````
 
-This chapter introduces the solution:
+Many macroeconomic and financial variables display precisely this behavior.
+
+Examples include:
+
+* money supply and prices,
+* GDP and credit,
+* exchange rates and inflation,
+* stock indices across markets.
+
+These variables may drift individually through time, yet still maintain stable long-run relationships.
+
+This raises an important question.
 
 ```{admonition} Central Question
-How can we combine long-run equilibrium relationships with short-run multivariate dynamics?
+How can we model short-run dynamics while preserving long-run equilibrium relationships?
 ```
 
 The answer is the:
@@ -43,13 +51,17 @@ Vector Error Correction Model (VECM)
 
 VECMs combine:
 
-- cointegration,
-- VAR dynamics,
-- and equilibrium adjustment
+* multivariate dynamics,
+* cointegration,
+* and equilibrium adjustment
 
 within a unified framework.
 
-Throughout the chapter, we use Thai macroeconomic data as a running example.
+```{admonition} Key Idea
+A VECM allows variables to drift temporarily apart, but not indefinitely.
+```
+
+Throughout this chapter, we use Thai macroeconomic data as a running example.
 
 ---
 
@@ -57,71 +69,78 @@ Throughout the chapter, we use Thai macroeconomic data as a running example.
 
 By the end of this chapter, you should be able to:
 
-- explain the intuition behind VECMs
-- distinguish VARs from VECMs
-- understand equilibrium correction
-- interpret error correction terms
-- estimate VECMs
-- understand cointegration rank
-- interpret adjustment coefficients
-- perform Johansen cointegration tests
-- analyze long-run and short-run dynamics jointly
+* explain the intuition behind VECMs
+* distinguish VARs from VECMs
+* understand equilibrium correction
+* interpret error correction terms
+* understand short-run versus long-run dynamics
+* estimate VECMs
+* understand cointegration rank
+* interpret adjustment coefficients
+* perform Johansen cointegration tests
+* interpret VECMs economically
 
 ---
 
-# 24.1 Why VAR Models Are Not Enough
+# 24.1 Why Standard VAR Models Become Problematic
 
-Recall that standard VAR models usually require stationary variables.
+Standard VAR models usually require stationary variables.
 
 But many macroeconomic variables are:
 
-- trending,
-- persistent,
-- integrated of order one.
+* trending,
+* persistent,
+* and integrated of order one.
 
 Examples include:
 
-- CPI,
-- money supply,
-- nominal GDP,
-- price levels.
+* CPI,
+* money supply,
+* nominal GDP,
+* and price levels.
 
 ---
 
 ## The Problem
 
-If we estimate a VAR using nonstationary variables:
+Suppose we estimate a VAR using nonstationary variables.
 
-- spurious relationships may emerge,
-- standard inference becomes unreliable.
+Several problems may arise:
 
-One solution is:
+* spurious relationships,
+* unreliable statistical inference,
+* unstable long-run behavior.
+
+One common solution is:
 
 ```{admonition} Observation
 Difference the data.
 ```
 
-But differencing creates another problem.
+Differencing often restores stationarity.
+
+But differencing introduces another important problem.
 
 ```{admonition} Important
-Differencing removes long-run equilibrium information.
+Differencing may remove economically meaningful long-run relationships.
 ```
 
 For example:
 
-- inflation and money supply may move together over decades,
-- GDP and credit may share long-run trends.
+* inflation and money supply may move together over decades,
+* GDP and credit may share common long-run trends,
+* exchange rates and prices may adjust toward purchasing power parity.
 
 Pure differencing may destroy this information.
 
 ---
 
-# 24.2 Cointegration Revisited
+# 24.2 Cointegration and Long-Run Equilibrium
 
 Suppose two variables:
 
-- trend upward individually,
-- but maintain stable long-run relationships.
+* drift through time individually,
+* but maintain a stable long-run relationship.
 
 Then they may be:
 
@@ -129,30 +148,52 @@ Then they may be:
 Cointegrated.
 ```
 
-## Thai Macro Example
-
-Suppose:
-
-- Thai CPI,
-- and broad money supply (BM)
-
-both trend upward through time.
-
-Even though both series are nonstationary individually, they may still move together in the long run because:
-
-- monetary expansion influences prices,
-- inflation affects money demand,
-- central bank policy links the two variables.
+Cointegration implies that long-run equilibrium forces exist even when short-run fluctuations are substantial.
 
 ```{admonition} Key Idea
-Cointegration implies long-run equilibrium relationships despite short-run fluctuations.
+Cointegration combines nonstationarity with long-run equilibrium.
 ```
 
 ---
 
-# 24.3 From ECM to VECM
+## Intuition
 
-Recall the simple ECM:
+Cointegrated variables may temporarily drift apart.
+
+But equilibrium forces gradually pull them back together.
+
+This creates a distinction between:
+
+* short-run deviations,
+* and long-run equilibrium restoration.
+
+---
+
+# 24.3 Rubber-Band Analogy
+
+A useful analogy is:
+
+```{admonition} Analogy
+Imagine two variables connected by a rubber band.
+```
+
+Short-run shocks may pull the variables apart temporarily.
+
+But the rubber band creates pressure toward equilibrium.
+
+This is precisely the role of the:
+
+```{admonition} Definition
+Error correction mechanism.
+```
+
+---
+
+# 24.4 From ECM to VECM
+
+Earlier in the book, we studied single-equation ECMs.
+
+For example:
 
 ```{math}
 :enumerated: false
@@ -176,63 +217,76 @@ The term:
 
 measures deviation from long-run equilibrium.
 
+---
+
 ## Extending to Multiple Variables
 
 A VECM generalizes this idea to:
 
-- several variables,
-- several equations,
-- multiple equilibrium relationships.
+* several variables,
+* several equations,
+* and multiple equilibrium relationships.
 
----
-
-# 24.4 Intuition of the VECM
-
-A VECM combines:
-
-- short-run dynamics,
-- and long-run equilibrium adjustment.
-
-```{admonition} Intuition
-Variables may drift apart temporarily, but equilibrium forces gradually pull them back together.
+```{admonition} Observation
+A VECM is essentially a VAR designed for cointegrated systems.
 ```
 
 ---
 
-# 24.5 Rubber-Band Analogy
+# 24.5 Short-Run versus Long-Run Dynamics
 
-A useful analogy is:
+One of the most important features of a VECM is the separation between:
 
-```{admonition} Analogy
-Imagine two variables connected by a rubber band.
-```
+* short-run movements,
+* and long-run equilibrium adjustment.
 
-Short-run shocks may pull variables apart.
+---
 
-But the rubber band creates pressure toward long-run equilibrium.
+## Short-Run Dynamics
 
-This is precisely the role of the:
+Short-run fluctuations capture:
 
-```{admonition} Definition
-Error correction mechanism.
+* temporary shocks,
+* cyclical movements,
+* and immediate reactions.
+
+These effects may generate temporary deviations from equilibrium.
+
+---
+
+## Long-Run Dynamics
+
+Long-run dynamics capture:
+
+* equilibrium restoration,
+* persistent relationships,
+* and gradual adjustment forces.
+
+```{admonition} Key Idea
+VECMs simultaneously model temporary fluctuations and long-run equilibrium adjustment.
 ```
 
 ---
 
-# 24.6 Thai Macro Example
+# 24.6 Thai Macroeconomic Example
 
 We now examine Thai macroeconomic variables.
 
 Our dataset contains:
 
-- CPI,
-- broad money supply (BM),
-- real GDP,
-- GDP deflator.
+* CPI,
+* broad money supply (BM),
+* and real GDP.
+
+These variables are useful because:
+
+* they display strong trends,
+* they may be nonstationary,
+* and economic theory suggests possible long-run relationships.
 
 ---
 
-## Loading the Data
+# 24.7 Loading the Data
 
 ```{code-cell} python
 import pandas as pd
@@ -273,19 +327,16 @@ thai = pd.read_csv(
 thai.head()
 ```
 
-## Plotting CPI and Broad Money
+---
 
-Because CPI and broad money are measured on very different scales, it is useful to display them using two vertical axes.
+# 24.8 Plotting the Variables
 
 ```{code-cell} python
 import matplotlib.pyplot as plt
 
 fig, ax1 = plt.subplots(figsize=(10,5))
 
-# ==========================================
-# Left Axis: CPI
-# ==========================================
-
+# Left axis: CPI
 ax1.plot(
     thai["year"],
     thai["cpi"],
@@ -294,13 +345,9 @@ ax1.plot(
 )
 
 ax1.set_xlabel("Year")
-
 ax1.set_ylabel("CPI")
 
-# ==========================================
-# Right Axis: Broad Money
-# ==========================================
-
+# Right axis: Broad Money
 ax2 = ax1.twinx()
 
 ax2.plot(
@@ -313,18 +360,9 @@ ax2.plot(
 
 ax2.set_ylabel("Broad Money")
 
-# ==========================================
-# Title
-# ==========================================
-
 plt.title("Thailand: CPI and Broad Money")
 
-# ==========================================
-# Combined Legend
-# ==========================================
-
 lines1, labels1 = ax1.get_legend_handles_labels()
-
 lines2, labels2 = ax2.get_legend_handles_labels()
 
 ax1.legend(
@@ -333,35 +371,130 @@ ax1.legend(
     loc="upper left"
 )
 
-plt.savefig("figs/ch24/cpiBM.png", dpi=300, bbox_inches="tight")
-plt.close()   # replace with plt.show()
+plt.savefig(
+    "figs/ch24/cpiBM.png",
+    dpi=300,
+    bbox_inches="tight"
+)
+
+plt.close()
 ```
 
 ![CPI BM](figs/ch24/cpiBM.png)
 
 ```{admonition} Observation
 Both CPI and broad money display strong upward trends through time.
-
-This suggests the possibility of:
-- nonstationarity,
-- long-run co-movement,
-- and potential cointegration.
-```
-
-```{admonition} Observation
-Both variables display strong upward trends through time.
 ```
 
 This immediately raises important questions:
 
-- Are the series nonstationary?
-- Do they share a common long-run equilibrium relationship?
+* Are the variables nonstationary?
+* Do they share a long-run equilibrium relationship?
+* Could they be cointegrated?
 
 ---
 
-# 24.7 The VECM Representation
+# 24.9 A Simple VECM Representation
 
-A VECM may be written as:
+A simple VECM may be written as:
+
+```{math}
+:enumerated: false
+\Delta y_t
+=
+\alpha
++
+\beta_1 \Delta y_{t-1}
++
+\beta_2 \Delta x_{t-1}
++
+\lambda (y_{t-1} - \gamma x_{t-1})
++
+u_t
+````
+
+This model combines:
+
+* short-run dynamics,
+* and long-run equilibrium correction.
+
+```{admonition} Key Idea
+VECMs allow temporary deviations from equilibrium, but include forces that gradually restore long-run balance.
+```
+
+---
+
+## Short-Run Dynamics
+
+The differenced variables:
+
+```{math}
+:enumerated: false
+\Delta y_{t-1}
+\quad \text{and} \quad
+\Delta x_{t-1}
+```
+
+capture:
+
+* short-run fluctuations,
+* temporary shocks,
+* and immediate dynamic interactions.
+
+These effects describe how variables move from period to period.
+
+---
+
+## Long-Run Equilibrium Correction
+
+The term:
+
+```{math}
+:enumerated: false
+(y_{t-1} - \gamma x_{t-1})
+```
+
+measures deviation from long-run equilibrium.
+
+If the variables drift too far apart, the system gradually adjusts.
+
+```{admonition} Intuition
+The error correction term acts like a restoring force pulling variables back toward equilibrium.
+```
+
+---
+
+## Adjustment Speed
+
+The coefficient:
+
+```{math}
+:enumerated: false
+\lambda
+```
+
+measures how strongly the system reacts to disequilibrium.
+
+* large values imply faster adjustment,
+* smaller values imply slower correction.
+
+```{admonition} Observation
+Some economic systems return toward equilibrium quickly, while others adjust only gradually.
+```
+
+---
+
+# 24.10 Extending to Multivariate Systems
+
+In larger systems involving several variables, the same ideas continue to apply.
+
+A multivariate VECM contains:
+
+* short-run dynamics,
+* long-run equilibrium relationships,
+* and adjustment mechanisms.
+
+Economists often write these systems compactly using matrix notation.
 
 ```{math}
 :enumerated: false
@@ -373,108 +506,88 @@ A VECM may be written as:
 +
 \cdots
 +
-\Gamma_{p-1}\Delta Y_{t-p+1}
-+
 u_t
 ```
 
-where:
+You do not need to focus heavily on the matrix algebra.
 
-- $\Delta Y_t$ = differenced variables,
-- $\Pi Y_{t-1}$ = equilibrium correction,
-- $\Gamma_i$ = short-run dynamics.
+Conceptually, the interpretation remains the same:
+
+* differenced terms capture short-run movements,
+* while the equilibrium term captures long-run correction forces.
+
+```{admonition} Important
+The key economic intuition is more important than the matrix notation itself.
+```
 
 ---
 
-# 24.8 The Error Correction Matrix
+# 24.11 Cointegration and Adjustment
 
-The matrix:
-
-```{math}
-:enumerated: false
-\Pi
-```
-
-contains the long-run information.
-
-It can be decomposed as:
+The long-run equilibrium structure of a VECM is often summarized using:
 
 ```{math}
 :enumerated: false
 \Pi = \alpha \beta'
 ```
 
-where:
+Conceptually:
 
-- $\beta$ = cointegration vectors,
-- $\alpha$ = adjustment coefficients.
+* $\beta$ describes the long-run equilibrium relationships,
+* while $\alpha$ measures how strongly variables adjust when equilibrium is disturbed.
 
-```{admonition} Definition
-Cointegration vectors describe long-run equilibrium relationships.
-```
-
-```{admonition} Definition
-Adjustment coefficients measure how strongly variables respond to disequilibrium.
+```{admonition} Key Idea
+$\beta$ describes equilibrium relationships, while $\alpha$ measures adjustment speed.
 ```
 
 ---
 
-# 24.9 Cointegration Rank
+## Intuition
 
-An important concept is:
+Suppose prices rise much faster than money supply.
+
+The system may become temporarily unbalanced.
+
+Adjustment mechanisms may then generate:
+
+* slower price growth,
+* faster money growth,
+* or both.
+
+This gradual return toward equilibrium is the essence of error correction dynamics.
+
+---
+
+# 24.12 Cointegration Rank
+
+An important concept in VECMs is the:
 
 ```{admonition} Definition
 Cointegration rank.
 ```
 
-## Interpretation
+The rank determines how many long-run equilibrium relationships exist in the system.
 
-| Rank | Interpretation |
-|---|---|
-| 0 | no cointegration |
-| 1 | one long-run equilibrium relationship |
+| Rank     | Interpretation                    |
+| -------- | --------------------------------- |
+| 0        | no cointegration                  |
+| 1        | one equilibrium relationship      |
 | multiple | several equilibrium relationships |
 
 ```{admonition} Important
-The cointegration rank determines how many equilibrium relationships exist in the system.
+The cointegration rank determines the long-run structure of the system.
 ```
 
 ---
 
-# 24.10 Short-Run vs Long-Run Dynamics
+# 24.13 Johansen Cointegration Test
 
-VECMs separate:
+The Johansen procedure is the standard approach for testing cointegration in multivariate systems.
 
-- short-run movements,
-- and long-run adjustment.
+Unlike the Engle–Granger approach, Johansen testing allows:
 
-## Short Run
-
-Captured by:
-
-```{math}
-:enumerated: false
-\Gamma_i \Delta Y_{t-i}
-```
-
-## Long Run
-
-Captured by:
-
-```{math}
-:enumerated: false
-\Pi Y_{t-1}
-```
-
-```{admonition} Key Idea
-VECMs simultaneously model temporary fluctuations and long-run equilibrium adjustment.
-```
-
----
-
-# 24.11 The Johansen Cointegration Test
-
-The Johansen procedure is the standard method for testing cointegration in multivariate systems.
+* multiple variables,
+* and multiple cointegrating relationships.
 
 ```{admonition} Definition
 The Johansen test estimates the cointegration rank of a multivariate system.
@@ -482,27 +595,22 @@ The Johansen test estimates the cointegration rank of a multivariate system.
 
 ---
 
-# 24.12 Trace and Maximum Eigenvalue Tests
+# 24.14 Trace and Maximum Eigenvalue Tests
 
-The Johansen method commonly reports:
+Johansen procedures commonly report:
 
-- trace statistics,
-- maximum eigenvalue statistics.
+* trace statistics,
+* and maximum eigenvalue statistics.
 
-These are used to test:
+These help answer the question:
 
 ```{admonition} Central Question
-How many cointegrating vectors exist?
+How many cointegrating relationships exist?
 ```
 
 ---
 
-# 24.13 Johansen Test in Python
-
-We now test for cointegration between:
-
-- Thai CPI,
-- and broad money supply.
+# 24.15 Johansen Test in Python
 
 ```{code-cell} python
 from statsmodels.tsa.vector_ar.vecm import coint_johansen
@@ -518,7 +626,7 @@ johansen_test = coint_johansen(
 print(johansen_test.lr1)
 ```
 
-``` verbatim
+```verbatim
 [7.30400737e+00 1.97612579e-03]
 ```
 
@@ -528,9 +636,7 @@ Large test statistics suggest evidence of cointegration.
 
 ---
 
-# 24.14 Estimating a VECM in Python
-
-We now estimate a VECM.
+# 24.16 Estimating a VECM in Python
 
 ```{code-cell} python
 from statsmodels.tsa.vector_ar.vecm import VECM
@@ -546,53 +652,14 @@ results = model.fit()
 print(results.summary())
 ```
 
-``` verbatim
-Det. terms outside the coint. relation & lagged endog. parameters for equation cpi
-==============================================================================
-                 coef    std err          z      P>|z|      [0.025      0.975]
-------------------------------------------------------------------------------
-L1.cpi        -0.0496      0.233     -0.213      0.831      -0.505       0.406
-L1.BM_       1.14e-05   1.23e-05      0.929      0.353   -1.26e-05    3.54e-05
-L2.cpi         0.1963      0.246      0.797      0.426      -0.287       0.679
-L2.BM_     -6.798e-06   1.28e-05     -0.531      0.596   -3.19e-05    1.83e-05
-Det. terms outside the coint. relation & lagged endog. parameters for equation BM_
-==============================================================================
-                 coef    std err          z      P>|z|      [0.025      0.975]
-------------------------------------------------------------------------------
-L1.cpi     -6233.3424   4210.754     -1.480      0.139   -1.45e+04    2019.584
-L1.BM_         0.6357      0.222      2.863      0.004       0.200       1.071
-L2.cpi     -4809.5980   4462.296     -1.078      0.281   -1.36e+04    3936.341
-L2.BM_         0.1610      0.232      0.694      0.488      -0.294       0.616
-                Loading coefficients (alpha) for equation cpi                 
-==============================================================================
-                 coef    std err          z      P>|z|      [0.025      0.975]
-------------------------------------------------------------------------------
-ec1            0.0349      0.017      1.999      0.046       0.001       0.069
-                Loading coefficients (alpha) for equation BM_                 
-==============================================================================
-                 coef    std err          z      P>|z|      [0.025      0.975]
-------------------------------------------------------------------------------
-ec1          852.4602    316.000      2.698      0.007     233.112    1471.808
-          Cointegration relations for loading-coefficients-column 1           
-==============================================================================
-                 coef    std err          z      P>|z|      [0.025      0.975]
-------------------------------------------------------------------------------
-beta.1         1.0000          0          0      0.000       1.000       1.000
-beta.2     -3.752e-05   3.11e-05     -1.207      0.228   -9.85e-05    2.34e-05
-==============================================================================
-```
-
 ---
 
-```{admonition} Observation
+# 24.17 Interpreting the VECM Results
+
 The VECM combines:
-- differenced short-run dynamics,
-- and long-run equilibrium correction.
-```
 
----
-
-# 24.15 Error Correction Terms
+* differenced short-run dynamics,
+* and long-run equilibrium correction.
 
 A crucial component is the:
 
@@ -602,6 +669,8 @@ Error correction term.
 
 This measures deviation from long-run equilibrium.
 
+---
+
 ## Example
 
 Suppose money supply rises much faster than prices.
@@ -610,9 +679,9 @@ The VECM captures pressure for future adjustment.
 
 Possible responses include:
 
-- inflation increasing,
-- money growth slowing,
-- or both.
+* inflation increasing,
+* money growth slowing,
+* or both.
 
 ```{admonition} Key Idea
 The error correction term pulls the system back toward equilibrium.
@@ -620,7 +689,7 @@ The error correction term pulls the system back toward equilibrium.
 
 ---
 
-# 24.16 Adjustment Speeds
+# 24.18 Adjustment Speeds
 
 Adjustment coefficients measure:
 
@@ -628,34 +697,48 @@ Adjustment coefficients measure:
 How quickly do variables return toward equilibrium?
 ```
 
-## Large Adjustment Coefficient
+---
 
-- fast correction,
-- rapid equilibrium restoration.
+## Large Adjustment Coefficients
 
-## Small Adjustment Coefficient
+Large coefficients suggest:
 
-- slow adjustment,
-- persistent disequilibrium.
+* rapid correction,
+* strong equilibrium restoration,
+* and faster adjustment.
 
 ---
 
-# 24.17 Impulse Responses in VECMs
+## Small Adjustment Coefficients
 
-Impulse responses can also be generated from VECMs.
+Small coefficients suggest:
 
-However, the responses now reflect:
+* slow adjustment,
+* persistent disequilibrium,
+* and weaker correction forces.
 
-- short-run dynamics,
-- and long-run equilibrium structure.
+---
 
-```{admonition} Observation
-Cointegration strongly influences long-run impulse responses.
+# 24.19 VECMs versus VARs in Differences
+
+A differenced VAR removes long-run equilibrium information.
+
+A VECM preserves it.
+
+| Feature                | VAR in Differences | VECM         |
+| ---------------------- | ------------------ | ------------ |
+| stationary dynamics    | ✓                  | ✓            |
+| long-run equilibrium   | ✗                  | ✓            |
+| cointegration          | ignored            | incorporated |
+| equilibrium adjustment | ✗                  | ✓            |
+
+```{admonition} Key Insight
+A VECM preserves long-run equilibrium relationships that differenced VARs discard.
 ```
 
 ---
 
-# 24.18 Forecasting with VECMs
+# 24.20 Forecasting with VECMs
 
 VECMs are often superior to differenced VARs when cointegration exists.
 
@@ -663,9 +746,9 @@ Why?
 
 Because they preserve:
 
-- equilibrium relationships,
-- long-run information,
-- adjustment dynamics.
+* equilibrium relationships,
+* long-run information,
+* and adjustment dynamics.
 
 ```{admonition} Important
 Ignoring cointegration may reduce forecasting performance.
@@ -673,58 +756,45 @@ Ignoring cointegration may reduce forecasting performance.
 
 ---
 
-# 24.19 Financial Applications of VECMs
+# 24.22 Financial Applications of VECMs
 
 VECMs are widely used in finance.
 
 Examples include:
 
-- pairs trading,
-- stock market integration,
-- exchange-rate systems,
-- interest-rate term structure.
+* pairs trading,
+* stock market integration,
+* exchange-rate systems,
+* and interest-rate term structure.
+
+---
 
 ## Example: Pairs Trading
 
 If two stock prices are cointegrated:
 
-- temporary deviations may create trading opportunities.
+* temporary deviations may create trading opportunities.
 
 This idea underlies many statistical arbitrage strategies.
 
 ---
 
-# 24.20 Macroeconomic Applications
+# 24.22 Macroeconomic Applications
 
 VECMs are also widely used in macroeconomics.
 
 Examples include:
 
-- money demand,
-- purchasing power parity,
-- inflation dynamics,
-- monetary policy transmission.
+* money demand,
+* purchasing power parity,
+* inflation dynamics,
+* and monetary policy transmission.
 
 ---
 
-# 24.21 VECM vs VAR
+# 24.23 Gretl Example: Johansen Test and VECM
 
-| Feature | VAR | VECM |
-|---|---|---|
-| stationary variables | ✓ | ✓ |
-| nonstationary variables | problematic | ✓ |
-| cointegration | ignored | incorporated |
-| long-run equilibrium | no | yes |
-
-```{admonition} Key Insight
-A VECM is essentially a VAR designed for cointegrated variables.
-```
-
----
-
-# 24.22 Gretl Example: Johansen Test
-
-Gretl provides built-in cointegration tools.
+Gretl provides built-in tools for cointegration testing and VECM estimation.
 
 ---
 
@@ -746,11 +816,11 @@ Model → Time Series → VECM
 
 ## Step 3
 
-Select:
+Choose:
 
-- lag length,
-- deterministic terms,
-- cointegration rank.
+* lag length,
+* deterministic terms,
+* and cointegration rank.
 
 ---
 
@@ -760,15 +830,15 @@ Select:
 
 ---
 
-## Gretl Example: Estimating a VECM
+## Step 4
 
-After selecting rank and lags:
+Estimate the VECM.
 
-GRETL estimates:
+GRETL reports:
 
-- cointegration vectors,
-- adjustment coefficients,
-- short-run dynamics.
+* cointegration vectors,
+* adjustment coefficients,
+* and short-run dynamics.
 
 ---
 
@@ -778,7 +848,7 @@ GRETL estimates:
 
 ---
 
-# 24.23 Common Mistakes
+# 24.24 Common Mistakes
 
 ```{admonition} Common Mistakes
 :class: warning
@@ -803,40 +873,42 @@ Poor lag choices may distort inference.
 
 # 24.25 Looking Ahead
 
-This concludes our introduction to multivariate time series models.
+This concludes our introduction to multivariate time series systems.
 
 We have now studied:
 
-- VAR models,
-- impulse responses,
-- and VECMs.
+* VAR models,
+* impulse responses,
+* and VECMs.
 
 The next part of the book turns toward:
 
-- volatility,
-- ARCH models,
-- and GARCH models.
+* volatility,
+* ARCH models,
+* and GARCH models.
 
 We shift from modeling:
 
 ```{admonition} Observation
-The mean.
+The conditional mean.
 ```
 
 toward modeling:
 
 ```{admonition} Observation
-The variance.
+The conditional variance.
 ```
 
 of financial time series.
+
+---
 
 # Key Takeaways
 
 ```{admonition} Summary
 - VECMs combine short-run dynamics with long-run equilibrium adjustment.
 - Cointegration implies stable long-run relationships among nonstationary variables.
-- The Johansen test determines cointegration rank.
+- The Johansen test estimates cointegration rank.
 - Error correction terms measure disequilibrium.
 - Adjustment coefficients determine equilibrium restoration speed.
 - VECMs preserve long-run information that differenced VARs lose.

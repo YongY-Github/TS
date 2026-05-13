@@ -8,13 +8,22 @@ kernelspec:
 
 In the previous chapter, we introduced VAR models as systems of interacting time series.
 
-But VAR coefficients themselves are often difficult to interpret directly.
+VAR models allow:
+
+- multiple variables,
+- dynamic feedback,
+- and recursive interactions
+
+to be modeled jointly.
+
+But VAR coefficient tables are often difficult to interpret directly.
 
 Suppose we estimate a VAR involving:
 
-- inflation,
+- stock returns,
+- volatility,
 - interest rates,
-- and output.
+- or inflation.
 
 A natural question immediately arises:
 
@@ -22,25 +31,24 @@ A natural question immediately arises:
 What happens dynamically after an economic shock?
 ```
 
-For example:
-
-- What happens to inflation after a monetary policy shock?
-- What happens to GDP after an oil-price shock?
-- What happens to exchange rates after an interest-rate increase?
-
 Impulse response functions (IRFs) were developed precisely to answer such questions.
+
+IRFs trace:
+
+- how shocks propagate,
+- how long effects persist,
+- and how systems gradually adjust through time.
 
 This chapter introduces:
 
-- economic shocks,
-- dynamic propagation,
+- dynamic shock propagation,
 - impulse response functions,
 - orthogonalization,
 - identification,
 - confidence intervals,
-- and economic interpretation.
+- and forecast error variance decomposition (FEVD).
 
-The emphasis is intuition-first and applications-oriented.
+The emphasis remains intuition-first and applications-oriented.
 
 ---
 
@@ -105,7 +113,33 @@ IRFs attempt to answer these questions visually and dynamically.
 
 ---
 
-# 23.3 Intuition: Dropping a Stone into Water
+# 23.3 Why VAR Coefficients Are Difficult to Interpret
+
+In univariate models, coefficients are often interpreted directly.
+
+VAR systems are different.
+
+Because variables interact dynamically:
+
+- effects propagate across variables,
+- responses accumulate through time,
+- and feedback loops emerge.
+
+A shock today may influence:
+
+- tomorrow,
+- next week,
+- or many future periods.
+
+```{admonition} Key Idea
+Impulse responses translate complex VAR dynamics into interpretable economic stories.
+```
+
+This is why IRFs became one of the central tools of modern macroeconomics and finance.
+
+---
+
+# 23.4 Intuition: Dropping a Stone into Water
 
 A useful analogy is:
 
@@ -131,7 +165,7 @@ A shock today may generate ripple effects across variables and across time.
 
 ---
 
-# 23.4 Impulse Responses in a VAR
+# 23.5 Impulse Responses in a VAR
 
 Consider a VAR involving:
 
@@ -161,7 +195,7 @@ This creates rich dynamic behavior.
 
 ---
 
-# 23.5 A Simple Example
+## Example
 
 Suppose central banks unexpectedly raise interest rates.
 
@@ -182,37 +216,74 @@ Many economic effects emerge gradually rather than instantly.
 
 ---
 
-# 23.6 Shape of Impulse Responses
-
-Impulse responses may display different patterns.
-
----
-
-## Rapid Decay
-
-Effects disappear quickly.
-
----
-
-## Persistent Effects
-
-Responses decay slowly over time.
-
----
-
-## Oscillating Responses
-
-Variables may overshoot and fluctuate before stabilizing.
-
----
+# 23.6 Reading Impulse Response Functions
 
 ```{admonition} Important
 The shape of the impulse response contains important economic information.
 ```
 
+Impulse response functions contain several types of economic information.
+
+When reading an IRF, economists often focus on:
+
+- direction,
+- timing,
+- persistence,
+- and stability.
+
 ---
 
-# 23.7 Positive and Negative Responses
+## Direction
+
+Does the response move:
+
+- upward,
+- downward,
+- or change sign through time?
+
+---
+
+## Timing
+
+Does the response occur:
+
+- immediately,
+- gradually,
+- or with delay?
+
+---
+
+## Persistence
+
+Do effects disappear quickly?
+
+Or do they remain for many periods?
+
+---
+
+## Stability
+
+Does the response eventually return toward zero?
+
+```{admonition} Important
+Stable systems generally produce impulse responses that eventually die out.
+```
+
+---
+
+## Oscillation
+
+Some responses:
+
+- overshoot,
+- fluctuate,
+- and oscillate before stabilizing.
+
+This often reflects rich dynamic feedback within the system.
+
+---
+
+## Positive and Negative Responses
 
 Impulse responses may be:
 
@@ -228,26 +299,197 @@ For example:
 
 ---
 
-# 23.8 Orthogonalized Shocks
+# 23.7 Common Shapes of Impulse Responses
 
-A major complication arises because VAR residuals are often correlated.
+Impulse responses may display several common dynamic patterns.
+
+Understanding these patterns helps economists interpret dynamic systems more effectively.
+
+## Rapidly Decaying Response
+
+Some shocks disappear quickly.
+
+This suggests:
+
+- weak persistence,
+- fast adjustment,
+- and strong system stability.
+
+```{code-cell} python
+:tags: [hide-input]
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+h = np.arange(15)
+
+irf = np.exp(-0.8*h)
+
+plt.figure(figsize=(7,4))
+
+plt.plot(h, irf, marker="o")
+
+plt.axhline(0, linestyle="--", linewidth=1)
+
+plt.title("Rapidly Decaying Impulse Response")
+plt.xlabel("Horizon")
+plt.ylabel("Response")
+
+plt.tight_layout()
+
+plt.savefig("figs/ch23/rapid_decay.png",
+            dpi=300,
+            bbox_inches="tight")
+
+plt.close()
+```
+
+![Rapid Decay IRF](figs/ch23/rapid_decay.png)
+
+---
+
+## Persistent Response
+
+Some shocks decay only gradually.
+
+This suggests:
+
+- strong persistence,
+- long memory,
+- or slow adjustment dynamics.
+
+```{code-cell} python
+:tags: [hide-input]
+
+h = np.arange(20)
+
+irf = 0.95**h
+
+plt.figure(figsize=(7,4))
+
+plt.plot(h, irf, marker="o")
+
+plt.axhline(0, linestyle="--", linewidth=1)
+
+plt.title("Persistent Impulse Response")
+plt.xlabel("Horizon")
+plt.ylabel("Response")
+
+plt.tight_layout()
+
+plt.savefig("figs/ch23/persistent_irf.png",
+            dpi=300,
+            bbox_inches="tight")
+
+plt.close()
+```
+![Persistent Response IRF](figs/ch23/persistent_irf.png)
+
+---
+
+## Oscillating Response
+
+Some systems overshoot and oscillate before stabilizing.
+
+This may reflect:
+
+- delayed adjustment,
+- cyclical dynamics,
+- or strong feedback effects.
+
+```{code-cell} python
+:tags: [hide-input]
+
+h = np.arange(20)
+
+irf = np.exp(-0.15*h) * np.cos(1.2*h)
+
+plt.figure(figsize=(7,4))
+
+plt.plot(h, irf, marker="o")
+
+plt.axhline(0, linestyle="--", linewidth=1)
+
+plt.title("Oscillating Impulse Response")
+plt.xlabel("Horizon")
+plt.ylabel("Response")
+
+plt.tight_layout()
+
+plt.savefig("figs/ch23/oscillating_irf.png",
+            dpi=300,
+            bbox_inches="tight")
+
+plt.close()
+```
+
+![Oscillating IRF](figs/ch23/oscillating_irf.png)
+
+---
+
+## Explosive Response
+
+An unstable system may produce impulse responses that grow through time.
+
+This suggests:
+
+- instability,
+- explosive dynamics,
+- or misspecification.
+
+```{code-cell} python
+:tags: [hide-input]
+
+h = np.arange(12)
+
+irf = 1.15**h
+
+plt.figure(figsize=(7,4))
+
+plt.plot(h, irf, marker="o")
+
+plt.axhline(0, linestyle="--", linewidth=1)
+
+plt.title("Explosive Impulse Response")
+plt.xlabel("Horizon")
+plt.ylabel("Response")
+
+plt.tight_layout()
+
+plt.savefig("figs/ch23/explosive_irf.png",
+            dpi=300,
+            bbox_inches="tight")
+
+plt.close()
+```
+
+![Explosive IRF](figs/ch23/explosive_irf.png)
+
+# 23.8 Why Orthogonalization Is Necessary
+
+A major complication arises because VAR shocks are often correlated.
 
 For example:
 
-- inflation shocks,
+- stock-market shocks,
+- volatility shocks,
 - and interest-rate shocks
 
 may occur simultaneously.
 
----
+This creates an important problem.
+
+```{admonition} Central Question
+How can we isolate a shock to one variable while holding other shocks constant?
+```
+
+This is the motivation for orthogonalization.
+
+# 23.9 Cholesky Decomposition
 
 ```{admonition} Problem
 How can we isolate a pure shock to one variable?
 ```
-
----
-
-# 23.9 Cholesky Decomposition
 
 One common solution is:
 
@@ -257,59 +499,77 @@ Cholesky decomposition
 
 This transforms correlated shocks into orthogonal shocks.
 
----
-
 ```{admonition} Definition
 Orthogonal shocks are shocks that are statistically uncorrelated with one another.
 ```
 
----
+## Intuition
 
-# 23.10 Ordering Matters
+Suppose stock returns and volatility both move unexpectedly today.
 
-With Cholesky decomposition, variable ordering becomes important.
+Cholesky decomposition attempts to separate:
+
+- the pure return shock,
+- from the pure volatility shock.
+
+This allows impulse responses to trace cleaner dynamic effects.
+
+
+# 23.10 Ordering and Identification
+
+Orthogonalized impulse responses depend on variable ordering.
 
 Example ordering:
 
-1. GDP
-2. Inflation
-3. Interest rate
+1. returns
+2. volatility
+3. interest rate
 
-This ordering implicitly assumes:
+This ordering implicitly imposes assumptions about contemporaneous relationships.
 
-- GDP affects inflation contemporaneously,
-- inflation affects interest rates contemporaneously,
-- but not vice versa within the same period.
+For example:
 
----
+- returns may affect volatility immediately,
+- but volatility may affect returns only with delay.
 
 ```{admonition} Important
-Impulse responses may depend heavily on variable ordering.
+Impulse responses may depend heavily on ordering assumptions.
 ```
 
+## Why Ordering Matters
+
+Different orderings may produce:
+
+- different impulse responses,
+- different persistence patterns,
+- and different economic conclusions.
+
+This is one reason IRFs should be interpreted carefully.
+
 ---
 
-# 23.11 Identification Problems
+# 23.11 Structural Interpretation
 
-VAR models describe correlations and dynamics.
+Reduced-form VARs describe:
 
-But economists often want structural interpretation.
+- dynamic dependence,
+- correlations,
+- and propagation patterns.
 
-This requires identifying assumptions.
+But economists are often interested in structural interpretation.
 
----
-
-## Example
-
-Question:
+For example:
 
 ```text
 What is a monetary policy shock?
 ```
 
-Answering this requires economic theory.
+Answering this requires economic theory and identifying assumptions.
 
----
+```{admonition} Important
+Impulse responses are not automatically causal.
+```
+Structural interpretation requires assumptions about the economic system.
 
 ```{admonition} Key Insight
 Impulse responses are not automatically causal.
@@ -319,7 +579,7 @@ Structural interpretation requires assumptions.
 
 ---
 
-# 23.12 Confidence Intervals
+# 23.12 Confidence Intervals and Uncertainty
 
 Impulse responses are estimated statistically.
 
@@ -329,14 +589,15 @@ Confidence intervals help assess statistical precision.
 
 ---
 
-## Example
+## Interpretation
 
 Wide confidence bands imply:
 
 - substantial uncertainty,
-- less reliable inference.
+- lower precision,
+- and weaker statistical confidence.
 
----
+Responses close to zero may not be economically meaningful.
 
 ```{admonition} Important
 Impulse responses should always be interpreted together with confidence intervals.
@@ -346,7 +607,18 @@ Impulse responses should always be interpreted together with confidence interval
 
 # 23.13 Estimating IRFs in Python
 
-We now estimate impulse responses using Python.
+We now estimate impulse responses using a financial VAR system.
+
+The system contains:
+
+- SPY daily log returns,
+- and a rolling volatility proxy.
+
+This example is useful because:
+
+- financial shocks often propagate dynamically,
+- volatility is highly persistent,
+- and responses are visually intuitive.
 
 ```{code-cell} python
 import yfinance as yf
@@ -395,6 +667,13 @@ results = model.fit(2)
 # Impulse responses
 irf = results.irf(12)
 
+fig, axes = plt.subplots(
+    2,2,
+    figsize=(10,8),
+    facecolor="white"
+    )
+
+# plt.style.use("default")
 irf.plot()
 
 plt.savefig("figs/ch23/irf.png", dpi=300, bbox_inches="tight")
@@ -409,62 +688,95 @@ Impulse responses typically decay gradually through time.
 
 ---
 
-# 23.14 Interpreting an IRF Plot
+# 23.14 Interpreting the IRF Results
 
-Suppose we observe:
+Figure above shows impulse responses for the VAR system containing:
 
-- positive initial response,
-- gradual decay,
-- eventual convergence toward zero.
+- stock returns,
+- and volatility.
+
+Several important dynamic patterns emerge.
+
+---
+
+## Returns Shock → Returns
+
+The response of returns to their own shock decays very quickly.
 
 This suggests:
 
-- shocks matter temporarily,
-- but long-run stability eventually returns.
+- weak persistence in returns,
+- rapid adjustment,
+- and relatively short-lived shocks.
 
 ---
 
-## Persistent Responses
+## Volatility Shock → Volatility
 
-If responses decay very slowly:
+Volatility responses are much more persistent.
 
-- shocks may have long-lasting effects.
+The effects decay only gradually through time.
 
-This is common in:
+```{admonition} Observation
+Volatility shocks often display substantial persistence in financial markets.
+````
 
-- volatility,
-- inflation,
-- exchange rates.
-
----
-
-# 23.15 Cumulative Impulse Responses
-
-Sometimes we are interested in total accumulated effects.
-
-This leads to cumulative impulse responses.
+This is one reason volatility modeling becomes especially important in finance.
 
 ---
 
-## Example
+## Cross-Variable Responses
 
-Question:
+The off-diagonal impulse responses show how shocks propagate across variables.
 
-```text
-How much total inflation is generated by an oil shock over two years?
+For example:
+
+* return shocks influence future volatility,
+* volatility shocks influence future returns.
+
+This illustrates the dynamic feedback captured by VAR systems.
+
+---
+
+## Confidence Bands
+
+The dashed lines represent confidence intervals.
+
+Wide confidence bands imply:
+
+* greater uncertainty,
+* and less statistical precision.
+
+Responses close to zero may not be economically meaningful.
+
+---
+
+## General Interpretation
+
+Impulse responses help answer questions such as:
+
+* How large are shock effects?
+* How long do effects persist?
+* Do shocks disappear quickly or slowly?
+* Are responses economically plausible?
+
+```{admonition} Key Idea
+IRFs translate VAR systems into dynamic economic interpretation.
 ```
 
-Cumulative responses help answer this.
-
 ---
 
-# 23.16 Forecast Error Variance Decomposition
+# 23.15 Forecast Error Variance Decomposition (FEVD)
 
-Impulse responses are closely related to:
+Impulse responses show how shocks propagate dynamically.
 
-```text
-Forecast Error Variance Decomposition (FEVD)
+Another important question is:
+
+```{admonition} Central Question
+Which shocks matter most?
 ```
+
+Forecast Error Variance Decomposition (FEVD) helps answer this question.
 
 FEVD measures how much forecast uncertainty comes from different shocks.
 
@@ -474,9 +786,19 @@ FEVD measures how much forecast uncertainty comes from different shocks.
 Variance decomposition measures the relative importance of shocks in explaining forecast uncertainty.
 ```
 
+## Intuition
+
+Suppose volatility forecasts are highly uncertain.
+
+FEVD asks:
+
+- how much uncertainty comes from volatility shocks?
+- how much comes from return shocks?
+- which shocks dominate over time?
+
 ---
 
-# 23.17 Impulse Responses and Economic Theory
+# 23.16 Interpreting FEVD Results
 
 Impulse responses are especially useful because they connect:
 
@@ -497,9 +819,20 @@ Examples include:
 IRFs translate abstract VAR coefficients into economically interpretable dynamic stories.
 ```
 
+FEVD tables summarize the relative importance of different shocks.
+
+For example:
+
+- volatility shocks may dominate short-run volatility forecasts,
+- while return shocks may become more important over longer horizons.
+
+```{admonition} Observation
+FEVD complements IRFs by measuring the relative importance of shocks rather than their direction.
+```
+
 ---
 
-# 23.18 Example: Monetary Policy Shock
+# 23.17 Impulse Responses and Economic Theory
 
 Suppose central banks unexpectedly raise interest rates.
 
@@ -526,7 +859,7 @@ policy transmission lag
 
 ---
 
-# 23.19 Impulse Responses in Finance
+# 23.18 Impulse Responses in Finance
 
 IRFs are also widely used in finance.
 
@@ -551,27 +884,7 @@ VAR and IRF methods are commonly used to study such problems.
 
 ---
 
-# 23.20 Generalized Impulse Responses
-
-Standard orthogonalized IRFs depend on ordering assumptions.
-
-An alternative is:
-
-```text
-Generalized Impulse Responses
-```
-
-These reduce sensitivity to ordering.
-
----
-
-```{admonition} Observation
-Different identification approaches may produce different impulse responses.
-```
-
----
-
-# 23.21 IRFs and Stability
+# 23.19 IRFs and Stability
 
 In stable systems:
 
@@ -589,9 +902,34 @@ Stable VAR systems generally produce impulse responses that die out over time.
 
 ---
 
-# 23.22 GRETL Example: Impulse Responses
+# 23.20 Generalized Impulse Responses
 
-GRETL provides built-in tools for IRF analysis.
+Standard orthogonalized IRFs depend on ordering assumptions.
+
+An alternative approach is Generalized Impulse Responses
+
+Generalized IRFs reduce sensitivity to variable ordering.
+
+
+## Trade-Off
+
+Orthogonalized IRFs:
+
+- are easier to interpret structurally,
+- but depend heavily on ordering.
+
+Generalized IRFs:
+
+- reduce ordering sensitivity,
+- but may be harder to interpret economically.
+- Different identification approaches may produce different impulse responses.
+
+
+---
+
+# 23.21 Gretl Example: Impulse Responses
+
+Gretl provides built-in tools for IRF analysis.
 
 ---
 
@@ -634,7 +972,7 @@ Choose:
 
 ---
 
-# 23.23 Reading IRF Graphs
+# 23.22 Reading IRF Graphs
 
 Typical IRF graphs show:
 
@@ -651,7 +989,7 @@ Responses close to zero imply weak dynamic effects.
 
 ---
 
-# 23.24 Common Mistakes
+# 23.23 Common Mistakes
 
 ```{admonition} Common Mistakes
 :class: warning
@@ -674,22 +1012,34 @@ Unstable systems may produce misleading impulse responses.
 
 ---
 
-# 23.25 Looking Ahead
+# 23.24 Looking Ahead
 
-Impulse responses provide powerful tools for analyzing dynamic systems.
+Impulse responses allow us to move from:
 
-The next chapter introduces:
+```{admonition} Observation
+Estimating multivariate systems.
+```
+toward:
 
-- Vector Error Correction Models (VECMs),
-- cointegrated systems,
-- and long-run equilibrium relationships.
+```{admonition}
+Understanding dynamic shock propagation.
+```
 
-We will combine:
+The next chapter introduces Vector Error Correction Models (VECMs), which combine:
 
 - short-run dynamics,
-- and long-run adjustment
+- long-run equilibrium,
+- and multivariate adjustment mechanisms
 
-within a unified multivariate framework.
+within a unified framework.
+
+We will move from 
+
+- temporary dynamic interactions
+
+toward:
+
+- long-run equilibrium systems.
 
 ---
 
@@ -698,12 +1048,13 @@ within a unified multivariate framework.
 ```{admonition} Summary
 - Impulse responses trace the dynamic effects of shocks.
 - Economic shocks often propagate gradually through time.
-- IRFs help interpret VAR dynamics economically.
-- Orthogonalization is needed because VAR shocks are often correlated.
+- IRFs help translate VAR systems into economic interpretation.
+- Persistence and decay patterns contain important economic information.
+- Orthogonalization is necessary because VAR shocks are often correlated.
 - Cholesky decomposition introduces ordering assumptions.
-- Confidence intervals are crucial for interpretation.
-- IRFs are widely used in macroeconomics and finance.
-- Structural interpretation requires identifying assumptions.
+- Confidence intervals are essential for interpretation.
+- FEVD measures the relative importance of shocks in forecast uncertainty.
+- Structural interpretation requires economic assumptions.
 ```
 
 # Concept Check

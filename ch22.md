@@ -12,16 +12,26 @@ For example:
 
 - AR models explained persistence in one variable,
 - ARIMA models modeled trends and differencing,
+- forecasting models projected future values from past observations,
 - ECM models described long-run equilibrium adjustment.
 
-But many economic and financial variables evolve together.
+These models are powerful when the focus is a single variable through time.
+
+But many economic and financial systems involve several variables evolving together.
 
 Examples include:
 
 - inflation and interest rates,
 - GDP growth and unemployment,
 - exchange rates and inflation,
-- stock returns across markets.
+- stock returns and volatility,
+- oil prices and inflation.
+
+Economic systems often involve:
+
+- feedback,
+- interaction,
+- and dynamic dependence across variables.
 
 ```{admonition} Central Question
 How can we model several interacting time series simultaneously?
@@ -29,16 +39,17 @@ How can we model several interacting time series simultaneously?
 
 Vector autoregression (VAR) models were developed precisely for this purpose.
 
+VAR models allow multiple variables, feedback channels, and dynamic interactions to be modeled jointly.
+
 This chapter introduces:
 
 - multivariate dynamics,
 - vector autoregressions,
 - lag selection,
-- impulse responses,
-- forecast error variance decompositions,
+- stability,
 - and VAR forecasting.
 
-The emphasis is intuition-first and applications-oriented.
+The emphasis remains intuition-first and applications-oriented.
 
 ---
 
@@ -49,10 +60,8 @@ By the end of this chapter, you should be able to:
 - explain the intuition behind VAR models
 - distinguish univariate and multivariate models
 - estimate VAR models
-- interpret lagged interactions
-- understand impulse response functions
-- understand forecast error variance decomposition
 - select lag lengths
+- interpret lagged interactions
 - perform basic VAR forecasting
 - interpret VAR results economically
 
@@ -257,12 +266,15 @@ As the number of variables and lags increases, estimation becomes more complex.
 
 # 22.8 Stationarity in VAR Models
 
-VAR models usually require stationary variables.
+Stationarity remains important in multivariate time series models.
+
+Standard VAR models are typically estimated using stationary variables.
 
 If variables are nonstationary:
 
 - spurious relationships may emerge,
-- inference becomes unreliable.
+- statistical inference becomes unreliable,
+- and forecasts may become unstable.
 
 ```{admonition} Important
 Stationarity remains crucial in multivariate models.
@@ -275,7 +287,9 @@ If variables are nonstationary:
 - difference the data,
 - or use cointegration and VECM methods.
 
-We studied these ideas in previous chapters.
+We studied unit roots and cointegration earlier in the book.
+
+Differencing may remove important long-run information when variables are cointegrated.
 
 ---
 
@@ -299,7 +313,24 @@ VAR models attempt to capture these dynamic feedback effects.
 
 # 22.10 Estimating a VAR in Python
 
-We now estimate a simple VAR model using inflation and interest rate data.
+We now estimate a simple VAR using financial data.
+
+The system contains two variables:
+
+- SPY daily log returns,
+- a rolling 20-day volatility proxy.
+
+This example is useful because returns and volatility often interact dynamically.
+
+For example:
+
+- large negative returns may be followed by higher volatility,
+- high-volatility periods may affect subsequent returns,
+- and both variables may display persistence through time.
+
+```{admonition} Note
+This is a reduced-form VAR example. It is useful for studying dynamic dependence, but it should not be interpreted as a structural causal model.
+```
 
 ```{code-cell} python
 import yfinance as yf
@@ -308,24 +339,25 @@ import numpy as np
 
 from statsmodels.tsa.api import VAR
 
-# Download data
+# Download SPY data
 spy = yf.download(
     "SPY",
     start="2015-01-01",
     auto_adjust=False
 )
 
-# Compute returns
+# Extract adjusted close prices
+prices = spy["Adj Close"]
+
+# Compute daily log returns in percent
 returns = 100 * np.log(
-    spy["Adj Close"] /
-    spy["Adj Close"].shift(1)
+    prices / prices.shift(1)
 )
 
-returns = returns.dropna()
-
-# Create second variable
+# Rolling 20-day volatility proxy
 volatility = returns.rolling(20).std()
 
+# Combine variables
 data = pd.concat(
     [returns, volatility],
     axis=1
@@ -338,7 +370,7 @@ data.columns = [
 
 data = data.dropna()
 
-# Estimate VAR
+# Estimate VAR(2)
 model = VAR(data)
 
 results = model.fit(2)
@@ -347,54 +379,76 @@ print(results.summary())
 ```
 
 ``` verbatim
-[*********************100%***********************]  1 of 1 completed
   Summary of Regression Results   
 ==================================
 Model:                         VAR
 Method:                        OLS
-Date:           Thu, 30, Apr, 2026
-Time:                     14:12:37
+Date:           Thu, 07, May, 2026
+Time:                     16:08:54
 --------------------------------------------------------------------
-No. of Equations:         2.00000    BIC:                   -4.95074
-Nobs:                     2825.00    HQIC:                  -4.96419
-Log likelihood:          -984.358    FPE:                 0.00693077
-AIC:                     -4.97178    Det(Omega_mle):      0.00690631
+No. of Equations:         2.00000    BIC:                   -4.95229
+Nobs:                     2830.00    HQIC:                  -4.96572
+Log likelihood:          -983.966    FPE:                 0.00692024
+AIC:                     -4.97330    Det(Omega_mle):      0.00689585
 --------------------------------------------------------------------
 Results for equation Returns
 ================================================================================
                    coefficient       std. error           t-stat            prob
 --------------------------------------------------------------------------------
-const                 0.002458         0.037697            0.065           0.948
-L1.Returns           -0.116849         0.018947           -6.167           0.000
-L1.Volatility        -0.509801         0.271344           -1.879           0.060
-L2.Returns            0.052044         0.018966            2.744           0.006
-L2.Volatility         0.564860         0.271448            2.081           0.037
+const                 0.003909         0.037664            0.104           0.917
+L1.Returns           -0.116688         0.018935           -6.162           0.000
+L1.Volatility        -0.517839         0.271001           -1.911           0.056
+L2.Returns            0.051612         0.018954            2.723           0.006
+L2.Volatility         0.572478         0.271108            2.112           0.035
 ================================================================================
 
 Results for equation Volatility
 ================================================================================
                    coefficient       std. error           t-stat            prob
 --------------------------------------------------------------------------------
-const                 0.009339         0.002575            3.627           0.000
-L1.Returns           -0.008155         0.001294           -6.301           0.000
-L1.Volatility         1.177278         0.018536           63.514           0.000
-L2.Returns           -0.006887         0.001296           -5.316           0.000
-L2.Volatility        -0.186537         0.018543          -10.060           0.000
+const                 0.009302         0.002573            3.615           0.000
+L1.Returns           -0.008181         0.001294           -6.324           0.000
+L1.Volatility         1.176947         0.018513           63.574           0.000
+L2.Returns           -0.006876         0.001295           -5.310           0.000
+L2.Volatility        -0.186193         0.018520          -10.053           0.000
 ================================================================================
 
 Correlation matrix of residuals
                Returns  Volatility
-Returns       1.000000   -0.121504
-Volatility   -0.121504    1.000000
+Returns       1.000000   -0.122110
+Volatility   -0.122110    1.000000
 ```
 
 ```{admonition} Observation
 Each equation contains lagged values of both variables.
 ```
+---
+
+# 22.11 Reading VAR Output
+
+A VAR output table may initially appear overwhelming.
+
+Remember:
+
+- each equation has its own dynamics,
+- each variable depends on lagged values of all variables,
+- and feedback effects accumulate through time.
+
+Rather than focusing immediately on individual coefficients, it is often more useful to ask broader questions:
+
+- Which variables appear persistent?
+- Which cross-variable effects appear strongest?
+- Do relationships appear economically plausible?
+- Do shocks appear temporary or long-lasting?
+
+```{admonition} Important
+VAR interpretation usually emphasizes system dynamics rather than isolated coefficients.
+```
+This is one reason impulse response analysis becomes especially important in multivariate time series models.
 
 ---
 
-# 22.11 Choosing Lag Lengths
+# 22.12 Choosing Lag Lengths
 
 One important decision is:
 
@@ -413,7 +467,7 @@ Too many lags:
 
 ---
 
-# 22.12 Information Criteria
+## Information Criteria
 
 VAR lag lengths are often selected using:
 
@@ -475,151 +529,170 @@ also matter.
 
 ---
 
-# 22.14 Interpreting VAR Coefficients
+# 22.14 Stability of VAR Models
 
-Individual VAR coefficients are often difficult to interpret directly.
+A stable VAR system eventually absorbs shocks.
 
-Why?
+After temporary disturbances:
 
-Because:
+- variables gradually return toward typical behavior,
+- dynamic effects decay,
+- and forecasts remain bounded.
 
-- variables interact dynamically,
-- effects propagate over time,
-- feedback loops exist.
-
+An unstable system may instead produce explosive dynamics.
 
 ```{admonition} Important
-VAR analysis usually focuses on dynamic responses rather than individual coefficients.
+Stable VAR systems are generally required for meaningful interpretation and forecasting.
 ```
 
----
+## Intuition
 
-# 22.15 Impulse Response Functions (IRFs)
+Suppose a shock temporarily increases inflation.
 
-Impulse response functions are one of the most important VAR tools.
+In a stable system:
 
-```{admonition} Definition
-An impulse response function traces the effect of a shock through time.
-```
+- inflation eventually settles,
+- interest rates stabilize,
+- and the system returns toward normal dynamics.
 
-## Example
+In an unstable system:
 
-Question:
+- responses may grow larger over time,
+- feedback effects may amplify,
+- and forecasts may explode unrealistically.
 
-```text
-What happens to inflation after an interest-rate shock?
-```
+## Stability and Dynamic Systems
 
-IRFs attempt to answer this dynamically.
+VAR models are dynamic systems.
 
----
+Small changes today may influence future periods through recursive feedback.
 
-# 22.16 Intuition of Impulse Responses
+A stable system prevents these effects from growing indefinitely.
 
-Suppose interest rates unexpectedly rise today.
+This idea becomes especially important when studying:
 
-This shock may affect:
+- impulse responses,
+- dynamic forecasting,
+- and long-horizon simulations.
 
-- inflation,
-- output,
-- unemployment,
-- exchange rates.
 
-And these effects may persist for many periods.
+# 22.15 Inverse Roots and Stability
+
+One common way to assess VAR stability is through inverse roots plots.
+
+A stable VAR requires all inverse roots to lie inside the unit circle.
 
 ```{admonition} Key Idea
-Impulse responses describe the dynamic propagation of shocks.
+If inverse roots lie inside the unit circle, shocks eventually die out.
 ```
 
----
+## Intuition
 
-# 22.17 Impulse Responses in Python
+The unit circle acts like a stability boundary.
+
+Inside the circle → stable dynamics
+Outside the circle → unstable or explosive dynamics
+
+
+## Add this inverse-roots code
 
 ```{code-cell} python
 import matplotlib.pyplot as plt
+import numpy as np
 
-irf = results.irf(12)
+# Statsmodels reports roots of the VAR characteristic polynomial.
+# Stability requires these roots to lie outside the unit circle.
+# Inverse roots should therefore lie inside the unit circle.
 
-irf.plot()
+inverse_roots = 1 / results.roots
 
-plt.savefig("figs/ch22/irf.png", dpi=300, bbox_inches="tight")
-plt.close()   # replace with plt.show()
+fig, ax = plt.subplots(figsize=(6,6))
+
+circle = plt.Circle(
+    (0, 0),
+    1,
+    fill=False,
+    linestyle="--"
+)
+
+ax.add_artist(circle)
+
+ax.scatter(
+    inverse_roots.real,
+    inverse_roots.imag
+)
+
+ax.axhline(0, linewidth=1)
+ax.axvline(0, linewidth=1)
+
+ax.set_xlim(-1.2, 1.2)
+ax.set_ylim(-1.2, 1.2)
+ax.set_aspect("equal")
+
+ax.set_title("Inverse Roots of the VAR Model")
+ax.set_xlabel("Real")
+ax.set_ylabel("Imaginary")
+
+plt.savefig("figs/ch22/inverse_roots.png", dpi=300, bbox_inches="tight")
+plt.close()
 ```
 
-![Impulse Response Function](figs/ch22/irf.png)
+![Inverse Root](figs/ch22/inverse_roots.png)
 
-```{admonition} Observation
-Impulse responses often decay gradually through time.
+---
+
+# 22.16 Forecasting with VAR Models
+
+VAR models are widely used for forecasting because they incorporate:
+
+- multiple variables,
+- dynamic interactions,
+- and recursive feedback effects.
+
+Unlike univariate models, VAR forecasts allow information from several variables to influence future predictions jointly.
+
+```{admonition} Key Idea
+VAR models treat forecasting as a system-wide problem rather than a single-equation problem.
 ```
 
 ---
 
-# 22.18 Forecast Error Variance Decomposition
+# 22.17 Dynamic Forecasting in VAR Models
 
-Another important VAR tool is variance decomposition.
+VAR forecasts are recursive.
 
-```{admonition} Definition
-Forecast error variance decomposition measures how much forecast uncertainty is explained by different shocks.
+Forecasts for future periods depend partly on previous forecasts.
+
+For example:
+
+```{math}
+:enumerated: false
+\hat Y_{t+2}
 ```
 
-## Example
+depends partly on:
 
-How much of inflation uncertainty is explained by:
 
-- inflation shocks?
-- interest-rate shocks?
-
-Variance decomposition helps answer this question.
-
----
-
-# 22.19 Variance Decomposition in Python
-
-```{code-cell} python
-fevd = results.fevd(12)
-
-print(fevd.summary())
+```{math}
+:enumerated: false
+\hat Y_{t+1}
 ```
 
-``` verbatim
-FEVD for Returns
-       Returns  Volatility
-0     1.000000    0.000000
-1     0.998821    0.001179
-2     0.998824    0.001176
-3     0.998822    0.001178
-4     0.998802    0.001198
-5     0.998783    0.001217
-6     0.998762    0.001238
-7     0.998742    0.001258
-8     0.998721    0.001279
-9     0.998702    0.001298
-10    0.998682    0.001318
-11    0.998664    0.001336
+This recursive structure allows VAR models to capture rich dynamic interactions across variables.
 
-FEVD for Volatility
-       Returns  Volatility
-0     0.014764    0.985236
-1     0.034354    0.965646
-2     0.055795    0.944205
-3     0.067071    0.932929
-4     0.074163    0.925837
-5     0.078737    0.921263
-6     0.081928    0.918072
-7     0.084261    0.915739
-8     0.086039    0.913961
-9     0.087438    0.912562
-10    0.088567    0.911433
-11    0.089496    0.910504
-```
+## Intuition
 
-```{admonition} Interpretation
-Variance decomposition measures the relative importance of different shocks over time.
-```
+Suppose stock-market volatility rises unexpectedly.
 
----
+The VAR may predict:
 
-# 22.20 Forecasting with VAR Models
+- lower future returns,
+- which then influence future volatility,
+- which then feed back into later forecasts.
+
+This creates dynamic forecast paths rather than isolated predictions.
+
+# 22.18 VAR Forecasting in Python
 
 VAR models are widely used for forecasting.
 
@@ -629,11 +702,11 @@ Because they incorporate:
 - interactions,
 - and dynamic feedback,
 
-they often outperform simple univariate models. :contentReference[oaicite:3]{index=3}
+they often outperform simple univariate models.
 
 ---
 
-# 22.21 Example: VAR Forecasting
+## Example: VAR Forecasting
 
 ```{code-cell} python
 forecast = results.forecast(
@@ -651,58 +724,40 @@ print(forecast_df)
 
 ``` verbatim
     Returns  Volatility
-0  0.113503    0.716344
-1  0.041964    0.713565
-2  0.044320    0.714654
-3  0.038196    0.716929
-4  0.038490    0.719438
-5  0.038143    0.722006
-6  0.038306    0.724563
-7  0.038417    0.727095
-8  0.038566    0.729598
-9  0.038709    0.732069
+0 -0.007599    0.600904
+1  0.130212    0.588281
+2  0.027692    0.588780
+3  0.039283    0.591609
+4  0.031460    0.595456
+5  0.032598    0.599441
+6  0.032200    0.603460
+7  0.032506    0.607443
+8  0.032688    0.611383
+9  0.032922    0.615275
 ```
 
 ---
 
-# 22.22 Structural VARs (SVARs)
+# 22.19 Beyond Coefficients: Dynamic Responses
 
-Basic VARs describe correlations and dynamics.
+VAR coefficient tables alone are often difficult to interpret economically.
 
-But economists are often interested in causality.
+Because variables interact dynamically through time, economists frequently analyze systems using:
 
-This leads to:
+- impulse response functions (IRFs),
+- and forecast error variance decomposition (FEVD).
 
-```text
-Structural VARs (SVARs)
-```
+These tools help trace:
 
-```{admonition} Important
-Structural VARs require identifying assumptions derived from theory or institutions.
-```
+- how shocks propagate,
+- how long effects persist,
+- and which shocks matter most.
 
----
-
-# 22.23 Ordering and Identification
-
-Impulse responses often depend on:
-
-- variable ordering,
-- identifying restrictions.
-
-This is one of the major challenges in VAR analysis.
-
-## Example
-
-Does monetary policy affect inflation immediately?
-
-Or only with delays?
-
-Different assumptions imply different structural interpretations.
+The next chapter develops these ideas in detail.
 
 ---
 
-# 22.24 Common Applications of VAR Models
+# 22.20 Common Applications of VAR Models
 
 VARs are widely used in:
 
@@ -722,7 +777,7 @@ Examples include:
 
 ---
 
-# 22.25 Gretl Example: Estimating a VAR
+# 22.21 Gretl Example: Estimating a VAR
 
 Gretl provides built-in tools for VAR estimation.
 
@@ -766,7 +821,7 @@ Choose:
 
 ---
 
-# 22.26 Gretl Diagnostics
+## Gretl Diagnostics
 
 After estimation, GRETL provides:
 
@@ -783,21 +838,7 @@ After estimation, GRETL provides:
 
 ---
 
-# 22.27 Stability of VAR Models
-
-A stable VAR produces impulse responses that eventually die out.
-
-Unstable VARs may produce explosive dynamics.
-
----
-
-```{admonition} Important
-Stable VARs are generally required for meaningful forecasting and interpretation.
-```
-
----
-
-# 22.28 Common Mistakes
+# 22.23 Common Mistakes
 
 ```{admonition} Common Mistakes
 :class: warning
@@ -818,17 +859,19 @@ Impulse responses may depend heavily on assumptions.
 Reduced-form VARs do not automatically identify causal relationships.
 ```
 
-# 22.29 Looking Ahead
+# 22.24 Looking Ahead
 
-VAR models provide a flexible framework for multivariate dynamics.
+VAR models provide a flexible framework for studying interacting time series systems.
 
-The next chapter introduces:
+But coefficient tables alone rarely provide the clearest economic interpretation.
 
-- impulse response analysis in greater detail,
-- dynamic shock propagation,
-- and structural interpretation.
+The next chapter introduces impulse response functions (IRFs), which trace how shocks propagate dynamically through multivariate systems.
 
-We will then extend these ideas to VECMs for cointegrated systems.
+We will move from:
+
+```{admonition} Observation
+Estimating systems.
+```
 
 ---
 
@@ -837,12 +880,12 @@ We will then extend these ideas to VECMs for cointegrated systems.
 ```{admonition} Summary
 - VAR models analyze multiple interacting time series jointly.
 - Each variable depends on its own lags and the lags of other variables.
-- VARs are widely used in macroeconomics and finance.
+- VARs treat variables in the system as endogenous.
 - Stationarity remains important in VAR analysis.
-- Impulse responses trace dynamic effects of shocks.
-- Variance decomposition measures the importance of different shocks.
-- VARs are powerful forecasting tools.
-- Structural interpretation requires identifying assumptions.
+- Lag length affects model fit, complexity, and forecasting performance.
+- Stable VAR systems are generally required for meaningful interpretation and forecasting.
+- VAR models are useful tools for system-wide forecasting.
+- VARs provide the foundation for later analysis of dynamic shock propagation.
 ```
 
 # Concept Check
